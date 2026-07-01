@@ -1,0 +1,13 @@
+.git
+.gitignore
+.github
+.config
+**/bin
+**/obj
+**/TestResults
+**/.vs
+**/.vscode
+**/*.user
+**/*.suo
+docker-compose.yml
+deploy-compose.yml
