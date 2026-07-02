@@ -14,7 +14,7 @@ public sealed class PingEndpointTests(ApiFactory factory) : IClassFixture<ApiFac
         using var client = factory.CreateClient();
         var cancellationToken = TestContext.Current.CancellationToken;
 
-        var response = await client.GetAsync("/ping", cancellationToken);
+        var response = await client.GetAsync("/api/ping", cancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 

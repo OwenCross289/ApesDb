@@ -1,3 +1,4 @@
+using ApesDb.Api;
 using ApesDb.Api.Options;
 using FastEndpoints;
 using FastEndpoints.Swagger;
@@ -20,7 +21,7 @@ var app = builder.Build();
 
 app.UseRouting();
 app.UseSwaggerGen();
-app.UseFastEndpoints();
+app.UseFastEndpoints(config => config.Endpoints.RoutePrefix = ApiRoutes.Api.Prefix);
 app.UseEndpoints(_ => { });
 
 if (!app.Environment.IsDevelopment())

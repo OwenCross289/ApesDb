@@ -6,7 +6,7 @@ public sealed class PingEndpoint : EndpointWithoutRequest<PingResponse>
 {
     public override void Configure()
     {
-        Get("/ping");
+        Get(ApiRoutes.Ping.Path);
         AllowAnonymous();
         Summary(summary =>
         {
