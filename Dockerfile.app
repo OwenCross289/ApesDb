@@ -1,3 +1,19 @@
+FROM node:24-bookworm-slim AS frontend-build
+WORKDIR /src
+
+COPY ["package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", "nx.json", "tsconfig.base.json", "./"]
+COPY ["src/frontend/apesdb/package.json", "src/frontend/apesdb/"]
+COPY ["src/frontend/common/package.json", "src/frontend/common/"]
+COPY ["src/frontend/ui/package.json", "src/frontend/ui/"]
+
+RUN corepack enable && corepack prepare pnpm@11.9.0 --activate && pnpm install --frozen-lockfile
+
+COPY ["src/frontend/apesdb", "src/frontend/apesdb"]
+COPY ["src/frontend/common", "src/frontend/common"]
+COPY ["src/frontend/ui", "src/frontend/ui"]
+
+RUN pnpm build
+
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
@@ -21,5 +37,6 @@ ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
 COPY --from=build /app/publish .
+COPY --from=frontend-build /src/src/frontend/apesdb/dist ./wwwroot
 
 ENTRYPOINT ["dotnet", "ApesDb.Api.dll"]

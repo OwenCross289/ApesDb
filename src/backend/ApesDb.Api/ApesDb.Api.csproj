@@ -2,5 +2,6 @@
   <ItemGroup>
     <PackageReference Include="FastEndpoints" />
     <PackageReference Include="FastEndpoints.Swagger" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" />
   </ItemGroup>
 </Project>
