@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.VisualStudio.JavaScript.SDK/1.0.5984942">
+  <PropertyGroup>
+    <BuildCommand>echo Common TypeScript builds are managed by Nx.</BuildCommand>
+    <ShouldRunNpmInstall>false</ShouldRunNpmInstall>
+    <ShouldRunBuildScript>false</ShouldRunBuildScript>
+  </PropertyGroup>
+</Project>

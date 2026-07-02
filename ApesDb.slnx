@@ -1,16 +1,28 @@
 <Solution>
   <Folder Name="/Solution Items/">
     <File Path=".gitignore" />
+    <File Path=".dockerignore" />
     <File Path="Directory.Build.props" />
     <File Path="Directory.Packages.props" />
     <File Path="README.md" />
+    <File Path="deploy-compose.yml" />
     <File Path="docker-compose.yml" />
     <File Path="global.json" />
+    <File Path="nx.json" />
+    <File Path="package.json" />
+    <File Path="pnpm-workspace.yaml" />
+    <File Path="tsconfig.base.json" />
   </Folder>
-  <Folder Name="/src/">
-    <Project Path="src/ApesDb.Api/ApesDb.Api.csproj" />
+  <Folder Name="/src/backend/">
+    <Project Path="src/backend/ApesDb.Api/ApesDb.Api.csproj" />
+    <Project Path="src/backend/ApesDb.Worker/ApesDb.Worker.csproj" />
   </Folder>
-  <Folder Name="/tests/">
-    <Project Path="tests/ApesDb.Api.IntegrationTests/ApesDb.Api.IntegrationTests.csproj" />
+  <Folder Name="/src/frontend/">
+    <Project Path="src/frontend/apesdb/ApesDb.Frontend.esproj" />
+    <Project Path="src/frontend/common/ApesDb.Common.esproj" />
+    <Project Path="src/frontend/ui/ApesDb.Ui.esproj" />
+  </Folder>
+  <Folder Name="/tests/backend/">
+    <Project Path="tests/backend/ApesDb.Api.IntegrationTests/ApesDb.Api.IntegrationTests.csproj" />
   </Folder>
 </Solution>

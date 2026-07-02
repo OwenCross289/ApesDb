@@ -9,5 +9,11 @@
 **/.vscode
 **/*.user
 **/*.suo
+node_modules
+.nx
+dist
+coverage
+src/frontend/**/dist
+src/frontend/**/.vite
 docker-compose.yml
 deploy-compose.yml

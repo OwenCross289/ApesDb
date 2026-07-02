@@ -22,6 +22,14 @@ TestResults/
 *.nupkg
 *.snupkg
 
+# Node / Nx
+node_modules/
+.nx/
+dist/
+coverage/
+src/frontend/**/dist/
+src/frontend/**/.vite/
+
 # OS files
 .DS_Store
 Thumbs.db

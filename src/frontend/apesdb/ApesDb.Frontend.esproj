@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.VisualStudio.JavaScript.SDK/1.0.5984942">
+  <PropertyGroup>
+    <StartupCommand>pnpm nx serve apesdb</StartupCommand>
+    <BuildCommand>echo Frontend builds are managed by Nx.</BuildCommand>
+    <ShouldRunNpmInstall>false</ShouldRunNpmInstall>
+    <ShouldRunBuildScript>false</ShouldRunBuildScript>
+  </PropertyGroup>
+</Project>

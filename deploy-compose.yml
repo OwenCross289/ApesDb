@@ -1,8 +1,25 @@
 services:
-  api:
-    image: ghcr.io/owencross289/apesdb:latest
+  app:
+    image: ghcr.io/owencross289/apesdb/app:latest
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=apesdb;Username=apesdb;Password=apesdb
+      ConnectionStrings__Redis: redis:6379
     ports:
       - "8080"
+    depends_on:
+      - postgres
+      - redis
+
+  worker:
+    image: ghcr.io/owencross289/apesdb/worker:latest
+    environment:
+      DOTNET_ENVIRONMENT: Production
+      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=apesdb;Username=apesdb;Password=apesdb
+      ConnectionStrings__Redis: redis:6379
+    depends_on:
+      - postgres
+      - redis
 
   postgres:
     image: postgres:18

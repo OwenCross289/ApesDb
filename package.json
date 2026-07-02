@@ -1,0 +1,37 @@
+{
+  "name": "apesdb",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.9.0",
+  "scripts": {
+    "serve": "cross-env NX_DAEMON=false nx serve apesdb",
+    "build": "cross-env NX_DAEMON=false nx build apesdb",
+    "lint": "cross-env NX_DAEMON=false nx run-many -t lint",
+    "format": "cross-env NX_DAEMON=false nx run-many -t format",
+    "format:check": "cross-env NX_DAEMON=false nx run-many -t format:check",
+    "affected:lint": "cross-env NX_DAEMON=false nx affected -t lint"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "4.3.2",
+    "@vitejs/plugin-react": "6.0.3",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "lucide-react": "1.23.0",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "tailwind-merge": "3.6.0",
+    "tailwindcss": "4.3.2"
+  },
+  "devDependencies": {
+    "@nx/js": "23.0.1",
+    "@nx/vite": "23.0.1",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "cross-env": "10.1.0",
+    "nx": "23.0.1",
+    "oxfmt": "0.57.0",
+    "oxlint": "1.72.0",
+    "typescript": "6.0.3",
+    "vite": "8.1.3"
+  }
+}

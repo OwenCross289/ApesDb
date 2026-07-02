@@ -5,13 +5,13 @@ COPY ["ApesDb.slnx", "./"]
 COPY ["Directory.Build.props", "./"]
 COPY ["Directory.Packages.props", "./"]
 COPY ["global.json", "./"]
-COPY ["src/ApesDb.Api/ApesDb.Api.csproj", "src/ApesDb.Api/"]
+COPY ["src/backend/ApesDb.Api/ApesDb.Api.csproj", "src/backend/ApesDb.Api/"]
 
-RUN dotnet restore "src/ApesDb.Api/ApesDb.Api.csproj"
+RUN dotnet restore "src/backend/ApesDb.Api/ApesDb.Api.csproj"
 
 COPY . .
 
-RUN dotnet publish "src/ApesDb.Api/ApesDb.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "src/backend/ApesDb.Api/ApesDb.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app

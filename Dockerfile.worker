@@ -1,0 +1,21 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+COPY ["ApesDb.slnx", "./"]
+COPY ["Directory.Build.props", "./"]
+COPY ["Directory.Packages.props", "./"]
+COPY ["global.json", "./"]
+COPY ["src/backend/ApesDb.Worker/ApesDb.Worker.csproj", "src/backend/ApesDb.Worker/"]
+
+RUN dotnet restore "src/backend/ApesDb.Worker/ApesDb.Worker.csproj"
+
+COPY . .
+
+RUN dotnet publish "src/backend/ApesDb.Worker/ApesDb.Worker.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+FROM mcr.microsoft.com/dotnet/runtime:10.0 AS final
+WORKDIR /app
+
+COPY --from=build /app/publish .
+
+ENTRYPOINT ["dotnet", "ApesDb.Worker.dll"]
