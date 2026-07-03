@@ -10,6 +10,15 @@ builder
     .Services.AddOptions<FrontendSpaOptions>()
     .BindConfiguration(FrontendSpaOptions.SectionName)
     .Validate(options => !string.IsNullOrWhiteSpace(options.DevServerUrl));
+builder
+    .Services.AddOptions<IgdbOptions>()
+    .BindConfiguration(IgdbOptions.SectionName)
+    .Validate(
+        options =>
+            !string.IsNullOrWhiteSpace(options.ClientId)
+            && !string.IsNullOrWhiteSpace(options.ClientSecret),
+        "IGDB client credentials must be configured."
+    );
 builder.Services.AddFastEndpoints();
 builder.Services.SwaggerDocument();
 builder.Services.AddSpaStaticFiles(options =>
