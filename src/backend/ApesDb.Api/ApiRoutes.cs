@@ -11,4 +11,9 @@ public static class ApiRoutes
     {
         public const string Path = "ping";
     }
+
+    public static class Games
+    {
+        public const string Top = "games/top";
+    }
 }
