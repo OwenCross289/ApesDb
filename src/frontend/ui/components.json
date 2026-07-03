@@ -1,16 +1,24 @@
 {
   "$schema": "https://ui.shadcn.com/schema.json",
-  "style": "new-york",
+  "style": "radix-mira",
   "rsc": false,
   "tsx": true,
   "tailwind": {
     "config": "",
     "css": "src/styles.css",
-    "baseColor": "zinc",
+    "baseColor": "neutral",
     "cssVariables": true
   },
   "aliases": {
-    "components": "@apesdb/ui",
-    "utils": "@apesdb/ui"
-  }
+    "components": "@apesdb/ui/lib",
+    "ui": "@apesdb/ui/lib",
+    "lib": "@apesdb/ui/lib",
+    "utils": "@apesdb/ui/lib/utils",
+    "hooks": "@apesdb/ui/hooks"
+  },
+  "iconLibrary": "lucide",
+  "rtl": false,
+  "menuColor": "default",
+  "menuAccent": "bold",
+  "registries": {}
 }

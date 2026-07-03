@@ -8,6 +8,8 @@ export default defineConfig({
   resolve: {
     alias: {
       "@apesdb/common": fileURLToPath(new URL("../common/src/index.ts", import.meta.url)),
+      "@apesdb/ui/lib": fileURLToPath(new URL("../ui/src/lib", import.meta.url)),
+      "@apesdb/ui/hooks": fileURLToPath(new URL("../ui/src/hooks", import.meta.url)),
       "@apesdb/ui": fileURLToPath(new URL("../ui/src/index.ts", import.meta.url)),
     },
   },

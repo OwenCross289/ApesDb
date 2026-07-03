@@ -9,7 +9,8 @@
     "noEmit": true,
     "paths": {
       "@apesdb/common": ["src/frontend/common/src/index.ts"],
-      "@apesdb/ui": ["src/frontend/ui/src/index.ts"]
+      "@apesdb/ui": ["src/frontend/ui/src/index.ts"],
+      "@apesdb/ui/*": ["src/frontend/ui/src/*"]
     },
     "resolveJsonModule": true,
     "skipLibCheck": true,
