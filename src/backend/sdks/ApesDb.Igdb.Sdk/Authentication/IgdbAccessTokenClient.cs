@@ -6,7 +6,9 @@ namespace ApesDb.Igdb.Sdk.Authentication;
 internal sealed class IgdbAccessTokenClient(HttpClient httpClient, IOptions<IgdbOptions> options)
     : IIgdbAccessTokenClient
 {
-    public async Task<IgdbAccessTokenResponse> RequestTokenAsync(CancellationToken cancellationToken)
+    public async Task<IgdbAccessTokenResponse> RequestTokenAsync(
+        CancellationToken cancellationToken
+    )
     {
         var value = options.Value;
         var tokenUrl =

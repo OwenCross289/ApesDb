@@ -5,6 +5,8 @@ services:
       ASPNETCORE_ENVIRONMENT: Production
       ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=apesdb;Username=apesdb;Password=apesdb
       ConnectionStrings__Redis: redis:6379
+      Igdb__ClientId: ${IGDB_CLIENT_ID}
+      Igdb__ClientSecret: ${IGDB_CLIENT_SECRET}
     ports:
       - "8080"
     depends_on:

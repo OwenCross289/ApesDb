@@ -58,8 +58,6 @@ public sealed class IgdbGameService(IIgdbApi api) : IIgdbGameService
 
     private static DateTimeOffset? ToDateTimeOffset(long? unixSeconds)
     {
-        return unixSeconds.HasValue
-            ? DateTimeOffset.FromUnixTimeSeconds(unixSeconds.Value)
-            : null;
+        return unixSeconds.HasValue ? DateTimeOffset.FromUnixTimeSeconds(unixSeconds.Value) : null;
     }
 }

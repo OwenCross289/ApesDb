@@ -5,7 +5,8 @@ public interface IIgdbAccessTokenProvider
     Task<string> GetAccessTokenAsync(CancellationToken cancellationToken);
 }
 
-public sealed class IgdbAccessTokenProvider(IIgdbAccessTokenClient client) : IIgdbAccessTokenProvider
+public sealed class IgdbAccessTokenProvider(IIgdbAccessTokenClient client)
+    : IIgdbAccessTokenProvider
 {
     private static readonly TimeSpan RefreshSkew = TimeSpan.FromMinutes(5);
     private readonly SemaphoreSlim semaphore = new(1, 1);

@@ -100,7 +100,9 @@ public static class IgdbSdkServiceCollectionExtensions
 
         return outcome.Result is { } response
             && (
-                response.StatusCode is HttpStatusCode.RequestTimeout or HttpStatusCode.TooManyRequests
+                response.StatusCode
+                    is HttpStatusCode.RequestTimeout
+                        or HttpStatusCode.TooManyRequests
                 || (int)response.StatusCode >= 500
             );
     }
