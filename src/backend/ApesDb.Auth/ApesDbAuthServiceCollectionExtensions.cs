@@ -18,10 +18,7 @@ namespace ApesDb.Auth;
 
 public static class ApesDbAuthServiceCollectionExtensions
 {
-    public static IServiceCollection AddApesDbAuth(
-        this IServiceCollection services,
-        IConfiguration configuration
-    )
+    public static IServiceCollection AddApesDbAuth(this IServiceCollection services, IConfiguration configuration)
     {
         services
             .AddOptions<Auth0Options>()
@@ -91,10 +88,9 @@ public static class ApesDbAuthServiceCollectionExtensions
                         {
                             var userProvisioningService =
                                 context.HttpContext.RequestServices.GetRequiredService<IUserProvisioningService>();
-                            var provisionedUser =
-                                await userProvisioningService.EnsureUserFromPrincipalAsync(
-                                    context.Principal!
-                                );
+                            var provisionedUser = await userProvisioningService.EnsureUserFromPrincipalAsync(
+                                context.Principal!
+                            );
 
                             context
                                 .Principal!.Identities.First()
@@ -105,17 +101,13 @@ public static class ApesDbAuthServiceCollectionExtensions
             );
 
         services
-            .AddOptions<CookieAuthenticationOptions>(
-                CookieAuthenticationDefaults.AuthenticationScheme
-            )
+            .AddOptions<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme)
             .Configure<ITicketStore>((options, store) => options.SessionStore = store);
 
         services
             .AddAuthorizationBuilder()
             .SetFallbackPolicy(
-                new AuthorizationPolicyBuilder()
-                    .AddRequirements(new FallbackAuthorizationRequirement())
-                    .Build()
+                new AuthorizationPolicyBuilder().AddRequirements(new FallbackAuthorizationRequirement()).Build()
             );
 
         return services;

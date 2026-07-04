@@ -8,10 +8,7 @@ public sealed class IgdbAuthenticationHandler : DelegatingHandler
     private readonly IOptions<IgdbOptions> _options;
     private readonly IIgdbAccessTokenProvider _tokenProvider;
 
-    public IgdbAuthenticationHandler(
-        IOptions<IgdbOptions> options,
-        IIgdbAccessTokenProvider tokenProvider
-    )
+    public IgdbAuthenticationHandler(IOptions<IgdbOptions> options, IIgdbAccessTokenProvider tokenProvider)
     {
         _options = options;
         _tokenProvider = tokenProvider;

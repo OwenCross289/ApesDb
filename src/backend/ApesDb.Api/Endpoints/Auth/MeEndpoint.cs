@@ -13,8 +13,7 @@ public sealed class MeEndpoint : EndpointWithoutRequest<AuthUserResponse>
     public override Task HandleAsync(CancellationToken ct)
     {
         var userId =
-            User.FindFirstValue("ApesDbUserId")
-            ?? throw new InvalidOperationException("Missing user id claim.");
+            User.FindFirstValue("ApesDbUserId") ?? throw new InvalidOperationException("Missing user id claim.");
         var email = User.FindFirstValue(ClaimTypes.Email) ?? string.Empty;
         var name = User.FindFirstValue(ClaimTypes.Name) ?? string.Empty;
 

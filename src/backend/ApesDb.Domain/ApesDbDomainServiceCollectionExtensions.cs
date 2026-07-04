@@ -8,10 +8,7 @@ namespace ApesDb.Domain;
 
 public static class ApesDbDomainServiceCollectionExtensions
 {
-    public static IServiceCollection AddApesDbDomain(
-        this IServiceCollection services,
-        IConfiguration configuration
-    )
+    public static IServiceCollection AddApesDbDomain(this IServiceCollection services, IConfiguration configuration)
     {
         services
             .AddOptions<DatabaseOptions>()
@@ -19,13 +16,14 @@ public static class ApesDbDomainServiceCollectionExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        services.AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
-        {
-            var databaseOptions = serviceProvider.GetRequiredService<IOptions<DatabaseOptions>>()
-                .Value;
+        services.AddDbContext<ApplicationDbContext>(
+            (serviceProvider, options) =>
+            {
+                var databaseOptions = serviceProvider.GetRequiredService<IOptions<DatabaseOptions>>().Value;
 
-            options.UseNpgsql(databaseOptions.ConnectionString);
-        });
+                options.UseNpgsql(databaseOptions.ConnectionString);
+            }
+        );
 
         return services;
     }

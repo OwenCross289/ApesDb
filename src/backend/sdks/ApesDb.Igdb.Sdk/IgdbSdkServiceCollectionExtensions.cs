@@ -15,18 +15,14 @@ namespace ApesDb.Igdb.Sdk;
 
 public static class IgdbSdkServiceCollectionExtensions
 {
-    public static IServiceCollection AddIgdbSdk(
-        this IServiceCollection services,
-        IConfiguration configuration
-    )
+    public static IServiceCollection AddIgdbSdk(this IServiceCollection services, IConfiguration configuration)
     {
         services
             .AddOptions<IgdbOptions>()
             .Bind(configuration.GetSection(IgdbOptions.SectionName))
             .Validate(
                 options =>
-                    !string.IsNullOrWhiteSpace(options.ClientId)
-                    && !string.IsNullOrWhiteSpace(options.ClientSecret),
+                    !string.IsNullOrWhiteSpace(options.ClientId) && !string.IsNullOrWhiteSpace(options.ClientSecret),
                 "IGDB client credentials must be configured."
             )
             .Validate(
@@ -64,8 +60,7 @@ public static class IgdbSdkServiceCollectionExtensions
                             Delay = TimeSpan.FromMilliseconds(250),
                             BackoffType = DelayBackoffType.Exponential,
                             UseJitter = true,
-                            ShouldHandle = static args =>
-                                ValueTask.FromResult(ShouldRetry(args.Outcome)),
+                            ShouldHandle = static args => ValueTask.FromResult(ShouldRetry(args.Outcome)),
                         }
                     );
                     builder.AddRateLimiter(
@@ -88,21 +83,14 @@ public static class IgdbSdkServiceCollectionExtensions
 
     private static bool ShouldRetry(Outcome<HttpResponseMessage> outcome)
     {
-        if (
-            outcome.Exception
-            is HttpRequestException
-                or TimeoutRejectedException
-                or RateLimiterRejectedException
-        )
+        if (outcome.Exception is HttpRequestException or TimeoutRejectedException or RateLimiterRejectedException)
         {
             return true;
         }
 
         return outcome.Result is { } response
             && (
-                response.StatusCode
-                    is HttpStatusCode.RequestTimeout
-                        or HttpStatusCode.TooManyRequests
+                response.StatusCode is HttpStatusCode.RequestTimeout or HttpStatusCode.TooManyRequests
                 || (int)response.StatusCode >= 500
             );
     }

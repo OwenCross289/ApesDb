@@ -19,8 +19,7 @@ public sealed class TopGamesEndpoint : EndpointWithoutRequest
         Summary(summary =>
         {
             summary.Summary = "Lists the top 10 games from IGDB.";
-            summary.Description =
-                "Returns the top 10 IGDB games by IGDB visits, preserving the popularity rank.";
+            summary.Description = "Returns the top 10 IGDB games by IGDB visits, preserving the popularity rank.";
         });
     }
 

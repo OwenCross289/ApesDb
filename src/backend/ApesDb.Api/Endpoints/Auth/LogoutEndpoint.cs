@@ -27,8 +27,7 @@ public sealed class LogoutEndpoint : EndpointWithoutRequest<LogoutResponse>
 
         var auth0 = _options.Value;
         var request = HttpContext.Request;
-        var returnTo =
-            $"{request.Scheme}://{request.Host}{request.PathBase}{auth0.PostLogoutRedirectUri}";
+        var returnTo = $"{request.Scheme}://{request.Host}{request.PathBase}{auth0.PostLogoutRedirectUri}";
 
         var logoutUrl =
             $"https://{auth0.Domain}/v2/logout?client_id={Uri.EscapeDataString(auth0.ClientId)}"

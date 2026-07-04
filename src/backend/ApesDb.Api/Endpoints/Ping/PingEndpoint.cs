@@ -11,8 +11,7 @@ public sealed class PingEndpoint : EndpointWithoutRequest<PingResponse>
         Summary(summary =>
         {
             summary.Summary = "Health-style ping endpoint.";
-            summary.Description =
-                "Returns a basic payload so the API host can be verified quickly.";
+            summary.Description = "Returns a basic payload so the API host can be verified quickly.";
         });
     }
 

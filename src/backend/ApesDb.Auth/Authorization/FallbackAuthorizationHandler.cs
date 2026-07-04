@@ -5,8 +5,7 @@ namespace ApesDb.Auth.Authorization;
 
 public sealed record FallbackAuthorizationRequirement : IAuthorizationRequirement;
 
-public sealed class FallbackAuthorizationHandler
-    : AuthorizationHandler<FallbackAuthorizationRequirement>
+public sealed class FallbackAuthorizationHandler : AuthorizationHandler<FallbackAuthorizationRequirement>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 

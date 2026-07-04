@@ -16,10 +16,7 @@ public sealed class RedisTicketStore : ITicketStore
     private readonly IFusionCache _cache;
     private readonly IDataProtector _protector;
 
-    public RedisTicketStore(
-        IFusionCacheProvider cacheProvider,
-        IDataProtectionProvider dataProtectionProvider
-    )
+    public RedisTicketStore(IFusionCacheProvider cacheProvider, IDataProtectionProvider dataProtectionProvider)
     {
         _cache = cacheProvider.GetCache(CacheName);
         _protector = dataProtectionProvider.CreateProtector(DataProtectorPurpose);

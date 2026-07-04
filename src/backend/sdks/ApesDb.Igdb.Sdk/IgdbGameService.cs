@@ -22,13 +22,9 @@ public sealed class IgdbGameService : IIgdbGameService
         }
 
         var popularityQuery =
-            "fields game_id,value,popularity_type; "
-            + $"sort value desc; limit {limit}; where popularity_type = 1;";
+            "fields game_id,value,popularity_type; " + $"sort value desc; limit {limit}; where popularity_type = 1;";
 
-        var popularity = await _api.QueryPopularityPrimitivesAsync(
-            popularityQuery,
-            cancellationToken
-        );
+        var popularity = await _api.QueryPopularityPrimitivesAsync(popularityQuery, cancellationToken);
 
         if (popularity.Count == 0)
         {

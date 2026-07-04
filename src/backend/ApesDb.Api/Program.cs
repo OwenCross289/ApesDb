@@ -24,9 +24,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.KnownProxies.Clear();
 });
 
-var cacheOptions = builder
-    .Configuration.GetRequiredSection(CacheOptions.SectionName)
-    .Get<CacheOptions>()!;
+var cacheOptions = builder.Configuration.GetRequiredSection(CacheOptions.SectionName).Get<CacheOptions>()!;
 var redisConfiguration = BuildRedisConfiguration(cacheOptions);
 
 builder.Services.AddStackExchangeRedisCache(options =>
@@ -51,9 +49,7 @@ builder.Services.SwaggerDocument();
 builder.Services.AddSpaStaticFiles(options =>
 {
     options.RootPath = builder.Environment.IsDevelopment()
-        ? Path.GetFullPath(
-            Path.Combine(builder.Environment.ContentRootPath, "../../frontend/apesdb/dist")
-        )
+        ? Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "../../frontend/apesdb/dist"))
         : "wwwroot";
 });
 

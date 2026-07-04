@@ -25,10 +25,7 @@ public sealed class UserProvisioningService : IUserProvisioningService
         var email = principal.FindFirstValue(ClaimTypes.Email) ?? string.Empty;
         var name = principal.FindFirstValue(ClaimTypes.Name) ?? string.Empty;
 
-        var user = await _dbContext.Users.FirstOrDefaultAsync(
-            u => u.Auth0Subject == subject,
-            cancellationToken
-        );
+        var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Auth0Subject == subject, cancellationToken);
 
         if (user is null)
         {
