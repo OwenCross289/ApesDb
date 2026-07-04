@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "Users" (
+CREATE TABLE IF NOT EXISTS "public"."Users" (
     "Id" uuid NOT NULL,
     "Auth0Subject" character varying(256) NOT NULL,
     "Email" character varying(256) NOT NULL,
@@ -8,5 +8,5 @@ CREATE TABLE IF NOT EXISTS "Users" (
     CONSTRAINT "PK_Users" PRIMARY KEY ("Id")
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS "IX_Users_Auth0Subject" ON "Users" ("Auth0Subject");
-CREATE INDEX IF NOT EXISTS "IX_Users_Email" ON "Users" ("Email");
+CREATE UNIQUE INDEX IF NOT EXISTS "IX_Users_Auth0Subject" ON "public"."Users" ("Auth0Subject");
+CREATE INDEX IF NOT EXISTS "IX_Users_Email" ON "public"."Users" ("Email");

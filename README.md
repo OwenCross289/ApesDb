@@ -160,17 +160,25 @@ docker compose down -v
 
 ## Database migrations
 
-Migrations are managed with [DbUp](https://dbup.github.io/) and run automatically on API startup when connected to a real Postgres database.
+Migrations are managed with [Flyway](https://documentation.red-gate.com/flyway) through Docker Compose.
 
-Migration scripts are SQL files embedded from `src/backend/ApesDb.Api/Data/Migrations/`. To add a new migration, create a file with the next numbered prefix, for example:
+Migration scripts live in `db/migrations/`. To add a new migration, create a Flyway versioned SQL file with the next version number, for example:
 
 ```bash
-src/backend/ApesDb.Api/Data/Migrations/002_AddProfileFields.sql
+db/migrations/V2__Add_profile_fields.sql
 ```
 
-DbUp tracks applied scripts in the `schemaversions` table and only runs each script once.
+Flyway tracks applied scripts in the `migrations.flyway_schema_history` table and only runs each migration once. `FLYWAY_BASELINE_ON_MIGRATE` is enabled in Compose so existing databases that were previously migrated by DbUp are adopted at version 1.
 
-The integration tests use an in-memory database, so migrations are skipped when `ConnectionStrings__Postgres` is set to `InMemory`.
+Flyway uses `migrations` as its default schema and also manages `public`. App tables should be schema-qualified as `public` in migration scripts.
+
+The local and deployment compose files run the `flyway` service against Postgres before the app and worker start. To run migrations manually:
+
+```bash
+docker compose run --rm flyway
+```
+
+The integration tests use an in-memory database and do not run Compose-managed migrations.
 
 ## Deployment environment variables
 

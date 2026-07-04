@@ -1,6 +1,7 @@
 packages:
   - src/frontend/*
 allowBuilds:
+  esbuild: true
   nx: true
 minimumReleaseAgeExclude:
   - vite@8.1.3

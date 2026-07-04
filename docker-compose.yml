@@ -12,6 +12,23 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql
 
+  flyway:
+    image: flyway/flyway:11-alpine
+    container_name: apesdb-flyway
+    command: migrate
+    environment:
+      FLYWAY_URL: jdbc:postgresql://postgres:5432/apesdb
+      FLYWAY_USER: apesdb
+      FLYWAY_PASSWORD: apesdb
+      FLYWAY_CONNECT_RETRIES: 60
+      FLYWAY_BASELINE_ON_MIGRATE: true
+      FLYWAY_DEFAULT_SCHEMA: migrations
+      FLYWAY_SCHEMAS: migrations,public
+    volumes:
+      - ./db/migrations:/flyway/sql:ro
+    depends_on:
+      - postgres
+
   redis:
     image: redis:8
     container_name: apesdb-redis

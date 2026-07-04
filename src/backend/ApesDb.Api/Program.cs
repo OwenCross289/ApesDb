@@ -163,6 +163,4 @@ app.UseSpa(spa =>
     );
 });
 
-MigrationRunner.Run(postgresConnection);
-
 app.Run();
