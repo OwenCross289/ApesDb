@@ -194,6 +194,7 @@ The production compose file expects the following environment variables:
 - `AUTH0_CLIENT_SECRET`
 - `IGDB_CLIENT_ID`
 - `IGDB_CLIENT_SECRET`
+- `POSTGRES_PASSWORD`
 - `REDIS_PASSWORD`
 
-The API reads database and cache settings from `Database:ConnectionString`, `Cache:ConnectionString`, and `Cache:Password`. In Docker Compose, use the equivalent `Database__ConnectionString`, `Cache__ConnectionString`, and `Cache__Password` environment variable names.
+The API and worker read database settings from `Database:ConnectionString`; the API also reads cache settings from `Cache:ConnectionString` and `Cache:Password`. In Docker Compose, use the equivalent `Database__ConnectionString`, `Cache__ConnectionString`, and `Cache__Password` environment variable names. The deployment compose file fails fast when required secrets are missing.

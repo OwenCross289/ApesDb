@@ -3,16 +3,16 @@ services:
     image: ghcr.io/owencross289/apesdb/app:latest
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      Database__ConnectionString: Host=postgres;Port=5432;Database=apesdb;Username=apesdb;Password=apesdb
+      Database__ConnectionString: Host=postgres;Port=5432;Database=apesdb;Username=apesdb;Password=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
       Cache__ConnectionString: redis:6379
-      Cache__Password: ${REDIS_PASSWORD}
-      Auth0__Domain: ${AUTH0_DOMAIN}
-      Auth0__ClientId: ${AUTH0_CLIENT_ID}
-      Auth0__ClientSecret: ${AUTH0_CLIENT_SECRET}
+      Cache__Password: ${REDIS_PASSWORD:?REDIS_PASSWORD is required}
+      Auth0__Domain: ${AUTH0_DOMAIN:?AUTH0_DOMAIN is required}
+      Auth0__ClientId: ${AUTH0_CLIENT_ID:?AUTH0_CLIENT_ID is required}
+      Auth0__ClientSecret: ${AUTH0_CLIENT_SECRET:?AUTH0_CLIENT_SECRET is required}
       Auth0__CallbackPath: /api/auth/callback
       Auth0__PostLogoutRedirectUri: /
-      Igdb__ClientId: ${IGDB_CLIENT_ID}
-      Igdb__ClientSecret: ${IGDB_CLIENT_SECRET}
+      Igdb__ClientId: ${IGDB_CLIENT_ID:?IGDB_CLIENT_ID is required}
+      Igdb__ClientSecret: ${IGDB_CLIENT_SECRET:?IGDB_CLIENT_SECRET is required}
     ports:
       - "8080"
     depends_on:
@@ -25,9 +25,9 @@ services:
     image: ghcr.io/owencross289/apesdb/worker:latest
     environment:
       DOTNET_ENVIRONMENT: Production
-      Database__ConnectionString: Host=postgres;Port=5432;Database=apesdb;Username=apesdb;Password=apesdb
+      Database__ConnectionString: Host=postgres;Port=5432;Database=apesdb;Username=apesdb;Password=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
       Cache__ConnectionString: redis:6379
-      Cache__Password: ${REDIS_PASSWORD}
+      Cache__Password: ${REDIS_PASSWORD:?REDIS_PASSWORD is required}
     depends_on:
       flyway:
         condition: service_completed_successfully
@@ -39,7 +39,7 @@ services:
     environment:
       POSTGRES_DB: apesdb
       POSTGRES_USER: apesdb
-      POSTGRES_PASSWORD: apesdb
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
     volumes:
       - postgres-data:/var/lib/postgresql
 
@@ -49,7 +49,7 @@ services:
     environment:
       FLYWAY_URL: jdbc:postgresql://postgres:5432/apesdb
       FLYWAY_USER: apesdb
-      FLYWAY_PASSWORD: apesdb
+      FLYWAY_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
       FLYWAY_CONNECT_RETRIES: 60
       FLYWAY_BASELINE_ON_MIGRATE: true
       FLYWAY_DEFAULT_SCHEMA: migrations
