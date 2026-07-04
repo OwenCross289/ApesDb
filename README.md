@@ -76,12 +76,23 @@ dotnet user-secrets set "Igdb:ClientSecret" "<your-igdb-client-secret>" --projec
 
 ## Run the API
 
-The API serves the built frontend in both Development and Production so that styling and asset loading are identical. Build the frontend first, then start the API:
+For full-stack local development, start the Vite dev server first:
 
 ```bash
-pnpm build
+pnpm serve
+```
+
+Then start the API:
+
+```bash
 dotnet run --project src/backend/ApesDb.Api
 ```
+
+Open the app through the API origin so auth cookies and API calls stay same-origin:
+
+- `https://localhost:7250`
+
+In Development, the API proxies SPA requests to Vite at `http://localhost:5173`, so frontend changes hot reload without rebuilding. In non-development environments, the API serves the built frontend from `wwwroot`.
 
 Default local URL from `launchSettings.json`:
 
@@ -97,7 +108,7 @@ Swagger UI:
 pnpm serve
 ```
 
-This starts the Vite dev server on `http://localhost:5173` for frontend-only development with HMR. Auth and cookie-based API calls will not work from this URL because the API expects requests from `https://localhost:7250`. For normal full-stack development, use `pnpm build && dotnet run --project src/backend/ApesDb.Api` and open `https://localhost:7250`.
+This starts the Vite dev server on `http://localhost:5173`. For normal full-stack development, also run the API and open `https://localhost:7250`; the API proxies SPA requests to Vite so HMR works while auth and API calls remain same-origin.
 
 Build the frontend:
 

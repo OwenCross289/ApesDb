@@ -20,9 +20,7 @@ builder.Services.AddFastEndpoints();
 builder.Services.SwaggerDocument();
 builder.Services.AddSpaStaticFiles(options =>
 {
-    options.RootPath = builder.Environment.IsDevelopment()
-        ? Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "../../frontend/apesdb/dist"))
-        : "wwwroot";
+    options.RootPath = "wwwroot";
 });
 
 var app = builder.Build();
@@ -34,13 +32,21 @@ app.UseSwaggerGen();
 app.UseFastEndpoints(config => config.Endpoints.RoutePrefix = ApiRoutes.Api.Prefix);
 app.UseEndpoints(_ => { });
 
-app.UseSpaStaticFiles();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseSpaStaticFiles();
+}
 
 app.UseSpa(spa =>
 {
     spa.Options.SourcePath = Path.GetFullPath(
-        Path.Combine(app.Environment.ContentRootPath, "../../frontend/apesdb/dist")
+        Path.Combine(app.Environment.ContentRootPath, "../../frontend/apesdb")
     );
+
+    if (app.Environment.IsDevelopment())
+    {
+        spa.UseProxyToSpaDevelopmentServer("http://localhost:5173");
+    }
 });
 
 app.Run();
