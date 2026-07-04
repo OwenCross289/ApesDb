@@ -1,51 +1,21 @@
 using ApesDb.Api;
-using ApesDb.Api.Options;
 using ApesDb.Auth;
 using ApesDb.Common;
 using ApesDb.Domain;
 using ApesDb.Igdb.Sdk;
 using FastEndpoints;
 using FastEndpoints.Swagger;
-using Microsoft.AspNetCore.HttpOverrides;
-using StackExchange.Redis;
-using ZiggyCreatures.Caching.Fusion;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder
-    .Services.AddOptions<CacheOptions>()
-    .BindConfiguration(CacheOptions.SectionName)
-    .ValidateDataAnnotations()
-    .ValidateOnStart();
-
-builder.Services.Configure<ForwardedHeadersOptions>(options =>
-{
-    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-    options.KnownIPNetworks.Clear();
-    options.KnownProxies.Clear();
-});
-
-var cacheOptions = builder.Configuration.GetRequiredSection(CacheOptions.SectionName).Get<CacheOptions>()!;
-var redisConfiguration = BuildRedisConfiguration(cacheOptions);
-
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.ConfigurationOptions = redisConfiguration;
-});
-
-builder.Services.AddFusionCacheSystemTextJsonSerializer();
-builder.Services.AddFusionCacheStackExchangeRedisBackplane(options =>
-{
-    options.ConfigurationOptions = redisConfiguration;
-});
-
-builder.Services.AddFusionCache().TryWithAutoSetup();
-
+builder.Services.AddApesDbForwardedHeaders();
 builder.Services.AddApesDbCommon();
+builder.Services.AddApesDbCache(builder.Configuration);
 builder.Services.AddApesDbDomain(builder.Configuration);
 builder.Services.AddApesDbAuth(builder.Configuration);
 
 builder.Services.AddIgdbSdk(builder.Configuration);
+
 builder.Services.AddFastEndpoints();
 builder.Services.SwaggerDocument();
 builder.Services.AddSpaStaticFiles(options =>
@@ -74,10 +44,3 @@ app.UseSpa(spa =>
 });
 
 app.Run();
-
-static ConfigurationOptions BuildRedisConfiguration(CacheOptions options)
-{
-    var configuration = ConfigurationOptions.Parse(options.ConnectionString);
-    configuration.Password = options.Password;
-    return configuration;
-}
