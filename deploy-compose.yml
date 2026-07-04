@@ -5,6 +5,11 @@ services:
       ASPNETCORE_ENVIRONMENT: Production
       ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=apesdb;Username=apesdb;Password=apesdb
       ConnectionStrings__Redis: redis:6379
+      Auth0__Domain: ${AUTH0_DOMAIN}
+      Auth0__ClientId: ${AUTH0_CLIENT_ID}
+      Auth0__ClientSecret: ${AUTH0_CLIENT_SECRET}
+      Auth0__CallbackPath: /api/auth/callback
+      Auth0__PostLogoutRedirectUri: /
       Igdb__ClientId: ${IGDB_CLIENT_ID}
       Igdb__ClientSecret: ${IGDB_CLIENT_SECRET}
     ports:

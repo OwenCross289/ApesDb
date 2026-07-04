@@ -1,48 +1,168 @@
+using System.Security.Claims;
 using ApesDb.Api;
+using ApesDb.Api.Authentication;
+using ApesDb.Api.Authorization;
+using ApesDb.Api.Data;
 using ApesDb.Api.Options;
+using ApesDb.Api.Services;
 using ApesDb.Igdb.Sdk;
 using FastEndpoints;
 using FastEndpoints.Swagger;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder
-    .Services.AddOptions<FrontendSpaOptions>()
-    .BindConfiguration(FrontendSpaOptions.SectionName)
-    .Validate(options => !string.IsNullOrWhiteSpace(options.DevServerUrl));
+    .Services.AddOptions<Auth0Options>()
+    .BindConfiguration(Auth0Options.SectionName)
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+});
+
+builder.Services.AddSingleton<ITicketStore, RedisTicketStore>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IAuthorizationHandler, FallbackAuthorizationHandler>();
+
+var postgresConnection = builder.Configuration.GetConnectionString("Postgres");
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    if (postgresConnection == "InMemory")
+    {
+        options.UseInMemoryDatabase("ApesDb");
+    }
+    else
+    {
+        options.UseNpgsql(postgresConnection);
+    }
+});
+
+builder.Services.AddScoped<IUserService, UserService>();
+
 builder.Services.AddIgdbSdk(builder.Configuration);
 builder.Services.AddFastEndpoints();
 builder.Services.SwaggerDocument();
 builder.Services.AddSpaStaticFiles(options =>
 {
-    options.RootPath = "wwwroot";
+    options.RootPath = builder.Environment.IsDevelopment()
+        ? Path.GetFullPath(
+            Path.Combine(builder.Environment.ContentRootPath, "../../frontend/apesdb/dist")
+        )
+        : "wwwroot";
+});
+
+var auth0Options = builder.Configuration.GetSection(Auth0Options.SectionName).Get<Auth0Options>()!;
+
+builder
+    .Services.AddAuthentication(options =>
+    {
+        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    })
+    .AddCookie(options =>
+    {
+        options.Cookie.Name = "apesdb.session";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.ExpireTimeSpan = TimeSpan.FromDays(7);
+        options.SlidingExpiration = true;
+
+        options.Events.OnRedirectToLogin = context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return Task.CompletedTask;
+        };
+
+        options.Events.OnRedirectToAccessDenied = context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            return Task.CompletedTask;
+        };
+    })
+    .AddOpenIdConnect(
+        "Auth0",
+        options =>
+        {
+            options.Authority = $"https://{auth0Options.Domain}";
+            options.ClientId = auth0Options.ClientId;
+            options.ClientSecret = auth0Options.ClientSecret;
+            options.CallbackPath = auth0Options.CallbackPath;
+            options.ResponseType = "code";
+            options.Scope.Add("openid");
+            options.Scope.Add("profile");
+            options.Scope.Add("email");
+            options.SaveTokens = false;
+            options.GetClaimsFromUserInfoEndpoint = true;
+            options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.ClaimActions.MapUniqueJsonKey("email", "email");
+            options.ClaimActions.MapUniqueJsonKey("name", "name");
+
+            options.Events = new OpenIdConnectEvents
+            {
+                OnTicketReceived = async context =>
+                {
+                    var userService =
+                        context.HttpContext.RequestServices.GetRequiredService<IUserService>();
+                    var user = await userService.EnsureUserAsync(context.Principal!);
+
+                    context
+                        .Principal!.Identities.First()
+                        .AddClaim(new Claim("ApesDbUserId", user.Id.ToString()));
+                },
+            };
+        }
+    );
+
+builder
+    .Services.AddOptions<CookieAuthenticationOptions>(
+        CookieAuthenticationDefaults.AuthenticationScheme
+    )
+    .Configure<ITicketStore>((options, store) => options.SessionStore = store);
+
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .AddRequirements(new FallbackAuthorizationRequirement())
+        .Build();
 });
 
 var app = builder.Build();
 
+app.UseForwardedHeaders();
 app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseSwaggerGen();
 app.UseFastEndpoints(config => config.Endpoints.RoutePrefix = ApiRoutes.Api.Prefix);
 app.UseEndpoints(_ => { });
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseSpaStaticFiles();
-}
+app.UseSpaStaticFiles();
 
 app.UseSpa(spa =>
 {
     spa.Options.SourcePath = Path.GetFullPath(
-        Path.Combine(app.Environment.ContentRootPath, "../../frontend/apesdb")
+        Path.Combine(app.Environment.ContentRootPath, "../../frontend/apesdb/dist")
     );
-
-    if (app.Environment.IsDevelopment())
-    {
-        var options = app.Services.GetRequiredService<IOptions<FrontendSpaOptions>>().Value;
-
-        spa.UseProxyToSpaDevelopmentServer(options.DevServerUrl);
-    }
 });
+
+MigrationRunner.Run(postgresConnection);
 
 app.Run();

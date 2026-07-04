@@ -27,5 +27,6 @@
   </Folder>
   <Folder Name="/tests/backend/">
     <Project Path="tests/backend/ApesDb.Api.IntegrationTests/ApesDb.Api.IntegrationTests.csproj" />
+    <Project Path="tests/backend/ApesDb.Api.UnitTests/ApesDb.Api.UnitTests.csproj" />
   </Folder>
 </Solution>
