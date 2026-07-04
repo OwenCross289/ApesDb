@@ -1,6 +1,7 @@
 using ApesDb.Api;
 using ApesDb.Api.Options;
 using ApesDb.Auth;
+using ApesDb.Common;
 using ApesDb.Domain;
 using ApesDb.Igdb.Sdk;
 using FastEndpoints;
@@ -40,6 +41,7 @@ builder.Services.AddFusionCacheStackExchangeRedisBackplane(options =>
 
 builder.Services.AddFusionCache().TryWithAutoSetup();
 
+builder.Services.AddApesDbCommon();
 builder.Services.AddApesDbDomain(builder.Configuration);
 builder.Services.AddApesDbAuth(builder.Configuration);
 

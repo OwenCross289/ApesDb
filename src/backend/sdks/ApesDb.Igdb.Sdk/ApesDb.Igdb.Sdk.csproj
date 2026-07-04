@@ -3,4 +3,8 @@
     <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
     <PackageReference Include="Refit.HttpClientFactory" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ApesDb.Common\ApesDb.Common.csproj" />
+  </ItemGroup>
 </Project>

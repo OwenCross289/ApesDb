@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using ApesDb.Common;
 using ApesDb.Domain;
 using ApesDb.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -8,10 +9,15 @@ namespace ApesDb.Auth.Services;
 public sealed class UserProvisioningService : IUserProvisioningService
 {
     private readonly ApplicationDbContext _dbContext;
+    private readonly IDateTimeProvider _dateTimeProvider;
 
-    public UserProvisioningService(ApplicationDbContext dbContext)
+    public UserProvisioningService(
+        ApplicationDbContext dbContext,
+        IDateTimeProvider dateTimeProvider
+    )
     {
         _dbContext = dbContext;
+        _dateTimeProvider = dateTimeProvider;
     }
 
     public async Task<ProvisionedUser> EnsureUserFromPrincipalAsync(
@@ -35,8 +41,8 @@ public sealed class UserProvisioningService : IUserProvisioningService
                 Auth0Subject = subject,
                 Email = email,
                 Name = name,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
+                CreatedAt = _dateTimeProvider.UtcNow,
+                UpdatedAt = _dateTimeProvider.UtcNow,
             };
             _dbContext.Users.Add(user);
         }
@@ -44,7 +50,7 @@ public sealed class UserProvisioningService : IUserProvisioningService
         {
             user.Email = email;
             user.Name = name;
-            user.UpdatedAt = DateTime.UtcNow;
+            user.UpdatedAt = _dateTimeProvider.UtcNow;
         }
 
         await _dbContext.SaveChangesAsync(cancellationToken);
