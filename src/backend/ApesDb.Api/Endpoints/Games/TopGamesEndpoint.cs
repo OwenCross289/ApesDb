@@ -3,8 +3,15 @@ using FastEndpoints;
 
 namespace ApesDb.Api.Endpoints.Games;
 
-public sealed class TopGamesEndpoint(IIgdbGameService gameService) : EndpointWithoutRequest
+public sealed class TopGamesEndpoint : EndpointWithoutRequest
 {
+    private readonly IIgdbGameService _gameService;
+
+    public TopGamesEndpoint(IIgdbGameService gameService)
+    {
+        _gameService = gameService;
+    }
+
     public override void Configure()
     {
         Get(ApiRoutes.Games.Top);
@@ -19,7 +26,7 @@ public sealed class TopGamesEndpoint(IIgdbGameService gameService) : EndpointWit
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var games = await gameService.ListTopGamesAsync(10, ct);
+        var games = await _gameService.ListTopGamesAsync(10, ct);
 
         await Send.OkAsync(games, ct);
     }

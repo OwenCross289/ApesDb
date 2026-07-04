@@ -5,9 +5,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ApesDb.Auth.Services;
 
-public sealed class UserProvisioningService(ApplicationDbContext dbContext)
-    : IUserProvisioningService
+public sealed class UserProvisioningService : IUserProvisioningService
 {
+    private readonly ApplicationDbContext _dbContext;
+
+    public UserProvisioningService(ApplicationDbContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
+
     public async Task<ProvisionedUser> EnsureUserFromPrincipalAsync(
         ClaimsPrincipal principal,
         CancellationToken cancellationToken = default
@@ -19,7 +25,7 @@ public sealed class UserProvisioningService(ApplicationDbContext dbContext)
         var email = principal.FindFirstValue(ClaimTypes.Email) ?? string.Empty;
         var name = principal.FindFirstValue(ClaimTypes.Name) ?? string.Empty;
 
-        var user = await dbContext.Users.FirstOrDefaultAsync(
+        var user = await _dbContext.Users.FirstOrDefaultAsync(
             u => u.Auth0Subject == subject,
             cancellationToken
         );
@@ -35,7 +41,7 @@ public sealed class UserProvisioningService(ApplicationDbContext dbContext)
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
             };
-            dbContext.Users.Add(user);
+            _dbContext.Users.Add(user);
         }
         else
         {
@@ -44,7 +50,7 @@ public sealed class UserProvisioningService(ApplicationDbContext dbContext)
             user.UpdatedAt = DateTime.UtcNow;
         }
 
-        await dbContext.SaveChangesAsync(cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
         return new ProvisionedUser(user.Id);
     }
 }

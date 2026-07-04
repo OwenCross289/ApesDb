@@ -6,9 +6,15 @@ using Microsoft.Extensions.Options;
 
 namespace ApesDb.Api.Endpoints.Auth;
 
-public sealed class LogoutEndpoint(IOptions<Auth0Options> options)
-    : EndpointWithoutRequest<LogoutResponse>
+public sealed class LogoutEndpoint : EndpointWithoutRequest<LogoutResponse>
 {
+    private readonly IOptions<Auth0Options> _options;
+
+    public LogoutEndpoint(IOptions<Auth0Options> options)
+    {
+        _options = options;
+    }
+
     public override void Configure()
     {
         Post($"{ApiRoutes.Auth.Prefix}/{ApiRoutes.Auth.Logout}");
@@ -19,7 +25,7 @@ public sealed class LogoutEndpoint(IOptions<Auth0Options> options)
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-        var auth0 = options.Value;
+        var auth0 = _options.Value;
         var request = HttpContext.Request;
         var returnTo =
             $"{request.Scheme}://{request.Host}{request.PathBase}{auth0.PostLogoutRedirectUri}";

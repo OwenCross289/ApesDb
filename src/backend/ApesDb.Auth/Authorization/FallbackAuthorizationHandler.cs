@@ -5,15 +5,22 @@ namespace ApesDb.Auth.Authorization;
 
 public sealed record FallbackAuthorizationRequirement : IAuthorizationRequirement;
 
-public sealed class FallbackAuthorizationHandler(IHttpContextAccessor httpContextAccessor)
+public sealed class FallbackAuthorizationHandler
     : AuthorizationHandler<FallbackAuthorizationRequirement>
 {
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public FallbackAuthorizationHandler(IHttpContextAccessor httpContextAccessor)
+    {
+        _httpContextAccessor = httpContextAccessor;
+    }
+
     protected override Task HandleRequirementAsync(
         AuthorizationHandlerContext context,
         FallbackAuthorizationRequirement requirement
     )
     {
-        var httpContext = httpContextAccessor.HttpContext;
+        var httpContext = _httpContextAccessor.HttpContext;
 
         // Allow anonymous access to the SPA and Swagger UI. API endpoints are protected
         // either by this fallback policy (for routes without explicit metadata) or by
