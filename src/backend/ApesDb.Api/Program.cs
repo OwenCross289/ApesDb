@@ -15,13 +15,28 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Options;
+using StackExchange.Redis;
+using ZiggyCreatures.Caching.Fusion;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder
     .Services.AddOptions<Auth0Options>()
     .BindConfiguration(Auth0Options.SectionName)
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+builder
+    .Services.AddOptions<DatabaseOptions>()
+    .BindConfiguration(DatabaseOptions.SectionName)
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+builder
+    .Services.AddOptions<CacheOptions>()
+    .BindConfiguration(CacheOptions.SectionName)
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
@@ -32,27 +47,33 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.KnownProxies.Clear();
 });
 
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = builder.Configuration.GetConnectionString("Redis");
-});
+var databaseOptions = builder
+    .Configuration.GetRequiredSection(DatabaseOptions.SectionName)
+    .Get<DatabaseOptions>()!;
+var cacheOptions = builder
+    .Configuration.GetRequiredSection(CacheOptions.SectionName)
+    .Get<CacheOptions>()!;
+
+builder
+    .Services.AddFusionCache()
+    .WithSystemTextJsonSerializer()
+    .WithDistributedCache(
+        new RedisCache(
+            new RedisCacheOptions { ConfigurationOptions = BuildRedisConfiguration(cacheOptions) }
+        )
+    )
+    .WithStackExchangeRedisBackplane(options =>
+    {
+        options.ConfigurationOptions = BuildRedisConfiguration(cacheOptions);
+    });
 
 builder.Services.AddSingleton<ITicketStore, RedisTicketStore>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IAuthorizationHandler, FallbackAuthorizationHandler>();
 
-var postgresConnection = builder.Configuration.GetConnectionString("Postgres");
-
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    if (postgresConnection == "InMemory")
-    {
-        options.UseInMemoryDatabase("ApesDb");
-    }
-    else
-    {
-        options.UseNpgsql(postgresConnection);
-    }
+    options.UseNpgsql(databaseOptions.ConnectionString);
 });
 
 builder.Services.AddScoped<IUserService, UserService>();
@@ -137,12 +158,13 @@ builder
     )
     .Configure<ITicketStore>((options, store) => options.SessionStore = store);
 
-builder.Services.AddAuthorization(options =>
-{
-    options.FallbackPolicy = new AuthorizationPolicyBuilder()
-        .AddRequirements(new FallbackAuthorizationRequirement())
-        .Build();
-});
+builder
+    .Services.AddAuthorizationBuilder()
+    .SetFallbackPolicy(
+        new AuthorizationPolicyBuilder()
+            .AddRequirements(new FallbackAuthorizationRequirement())
+            .Build()
+    );
 
 var app = builder.Build();
 
@@ -164,3 +186,10 @@ app.UseSpa(spa =>
 });
 
 app.Run();
+
+static ConfigurationOptions BuildRedisConfiguration(CacheOptions options)
+{
+    var configuration = ConfigurationOptions.Parse(options.ConnectionString);
+    configuration.Password = options.Password;
+    return configuration;
+}

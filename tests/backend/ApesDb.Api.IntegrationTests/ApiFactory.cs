@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -15,8 +14,9 @@ public sealed class ApiFactory : WebApplicationFactory<IApiMarker>
 {
     static ApiFactory()
     {
-        Environment.SetEnvironmentVariable("ConnectionStrings__Postgres", "InMemory");
-        Environment.SetEnvironmentVariable("ConnectionStrings__Redis", "unused:6379");
+        Environment.SetEnvironmentVariable("Database__ConnectionString", "InMemory");
+        Environment.SetEnvironmentVariable("Cache__ConnectionString", "unused:6379");
+        Environment.SetEnvironmentVariable("Cache__Password", "unused");
         Environment.SetEnvironmentVariable("Auth0__Domain", "test.auth0.com");
         Environment.SetEnvironmentVariable("Auth0__ClientId", "test-client-id");
         Environment.SetEnvironmentVariable("Auth0__ClientSecret", "test-client-secret");
@@ -28,8 +28,6 @@ public sealed class ApiFactory : WebApplicationFactory<IApiMarker>
     {
         builder.ConfigureServices(services =>
         {
-            services.AddSingleton<IDistributedCache, MemoryDistributedCache>();
-
             services
                 .AddAuthentication(TestAuthHandler.SchemeName)
                 .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(

@@ -146,6 +146,8 @@ Start the app, worker, Postgres, and Redis:
 docker compose up -d
 ```
 
+Local Redis requires the password `apesdb`. The API's committed local defaults match this through `Cache:ConnectionString=localhost:6379` and `Cache:Password=apesdb`.
+
 Stop services:
 
 ```bash
@@ -189,3 +191,6 @@ The production compose file expects the following environment variables:
 - `AUTH0_CLIENT_SECRET`
 - `IGDB_CLIENT_ID`
 - `IGDB_CLIENT_SECRET`
+- `REDIS_PASSWORD`
+
+The API reads database and cache settings from `Database:ConnectionString`, `Cache:ConnectionString`, and `Cache:Password`. In Docker Compose, use the equivalent `Database__ConnectionString`, `Cache__ConnectionString`, and `Cache__Password` environment variable names.

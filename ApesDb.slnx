@@ -13,6 +13,7 @@
     <File Path="pnpm-workspace.yaml" />
     <File Path="tsconfig.base.json" />
   </Folder>
+  <Folder Name="/src/" />
   <Folder Name="/src/backend/">
     <Project Path="src/backend/ApesDb.Api/ApesDb.Api.csproj" />
     <Project Path="src/backend/ApesDb.Worker/ApesDb.Worker.csproj" />
@@ -24,9 +25,5 @@
     <Project Path="src/frontend/apesdb/ApesDb.Frontend.esproj" />
     <Project Path="src/frontend/common/ApesDb.Common.esproj" />
     <Project Path="src/frontend/ui/ApesDb.Ui.esproj" />
-  </Folder>
-  <Folder Name="/tests/backend/">
-    <Project Path="tests/backend/ApesDb.Api.IntegrationTests/ApesDb.Api.IntegrationTests.csproj" />
-    <Project Path="tests/backend/ApesDb.Api.UnitTests/ApesDb.Api.UnitTests.csproj" />
   </Folder>
 </Solution>
