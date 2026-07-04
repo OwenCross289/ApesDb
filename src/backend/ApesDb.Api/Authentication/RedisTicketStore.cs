@@ -7,15 +7,21 @@ namespace ApesDb.Api.Authentication;
 
 public sealed class RedisTicketStore : ITicketStore
 {
+    public const string CacheName = "AuthTickets";
+    public const string CacheKeyPrefix = "auth:ticket:";
+
     private const string DataProtectorPurpose = "ApesDb.AuthTicket";
     private static readonly TimeSpan Expiration = TimeSpan.FromDays(7);
 
     private readonly IFusionCache _cache;
     private readonly IDataProtector _protector;
 
-    public RedisTicketStore(IFusionCache cache, IDataProtectionProvider dataProtectionProvider)
+    public RedisTicketStore(
+        IFusionCacheProvider cacheProvider,
+        IDataProtectionProvider dataProtectionProvider
+    )
     {
-        _cache = cache;
+        _cache = cacheProvider.GetCache(CacheName);
         _protector = dataProtectionProvider.CreateProtector(DataProtectorPurpose);
     }
 
@@ -31,28 +37,19 @@ public sealed class RedisTicketStore : ITicketStore
         var serialized = TicketSerializer.Default.Serialize(ticket);
         var protectedTicket = _protector.Protect(serialized);
 
-        await _cache.SetAsync(
-            GetCacheKey(key),
-            protectedTicket,
-            options => options.SetDuration(Expiration)
-        );
+        await _cache.SetAsync(key, protectedTicket, options => options.SetDuration(Expiration));
     }
 
     public async Task<AuthenticationTicket?> RetrieveAsync(string key)
     {
-        var cacheKey = GetCacheKey(key);
-        var protectedTicket = await _cache.GetOrDefaultAsync<byte[]>(cacheKey);
+        var protectedTicket = await _cache.GetOrDefaultAsync<byte[]>(key);
 
         if (protectedTicket is null)
         {
             return null;
         }
 
-        await _cache.SetAsync(
-            cacheKey,
-            protectedTicket,
-            options => options.SetDuration(Expiration)
-        );
+        await _cache.SetAsync(key, protectedTicket, options => options.SetDuration(Expiration));
 
         var serialized = _protector.Unprotect(protectedTicket);
         return TicketSerializer.Default.Deserialize(serialized);
@@ -60,8 +57,6 @@ public sealed class RedisTicketStore : ITicketStore
 
     public async Task RemoveAsync(string key)
     {
-        await _cache.RemoveAsync(GetCacheKey(key));
+        await _cache.RemoveAsync(key);
     }
-
-    private static string GetCacheKey(string key) => $"auth:ticket:{key}";
 }

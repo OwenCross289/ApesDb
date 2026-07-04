@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using ZiggyCreatures.Caching.Fusion;
@@ -53,19 +52,25 @@ var databaseOptions = builder
 var cacheOptions = builder
     .Configuration.GetRequiredSection(CacheOptions.SectionName)
     .Get<CacheOptions>()!;
+var redisConfiguration = BuildRedisConfiguration(cacheOptions);
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.ConfigurationOptions = redisConfiguration;
+});
+
+builder.Services.AddFusionCacheSystemTextJsonSerializer();
+builder.Services.AddFusionCacheStackExchangeRedisBackplane(options =>
+{
+    options.ConfigurationOptions = redisConfiguration;
+});
+
+builder.Services.AddFusionCache().TryWithAutoSetup();
 
 builder
-    .Services.AddFusionCache()
-    .WithSystemTextJsonSerializer()
-    .WithDistributedCache(
-        new RedisCache(
-            new RedisCacheOptions { ConfigurationOptions = BuildRedisConfiguration(cacheOptions) }
-        )
-    )
-    .WithStackExchangeRedisBackplane(options =>
-    {
-        options.ConfigurationOptions = BuildRedisConfiguration(cacheOptions);
-    });
+    .Services.AddFusionCache(RedisTicketStore.CacheName)
+    .WithCacheKeyPrefix(RedisTicketStore.CacheKeyPrefix)
+    .TryWithAutoSetup();
 
 builder.Services.AddSingleton<ITicketStore, RedisTicketStore>();
 builder.Services.AddHttpContextAccessor();
