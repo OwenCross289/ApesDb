@@ -5,7 +5,6 @@
   <ItemGroup>
     <PackageReference Include="FastEndpoints" />
     <PackageReference Include="FastEndpoints.Swagger" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
     <PackageReference Include="ZiggyCreatures.FusionCache" />
@@ -14,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ApesDb.Auth\ApesDb.Auth.csproj" />
     <ProjectReference Include="..\ApesDb.Domain\ApesDb.Domain.csproj" />
     <ProjectReference Include="..\sdks\ApesDb.Igdb.Sdk\ApesDb.Igdb.Sdk.csproj" />
   </ItemGroup>

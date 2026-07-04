@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ApesDb.Api.Options;
+namespace ApesDb.Auth.Options;
 
 public sealed class Auth0Options
 {

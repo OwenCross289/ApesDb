@@ -3,11 +3,12 @@ using ApesDb.Domain;
 using ApesDb.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace ApesDb.Api.Services;
+namespace ApesDb.Auth.Services;
 
-public sealed class UserService(ApplicationDbContext dbContext) : IUserService
+public sealed class UserProvisioningService(ApplicationDbContext dbContext)
+    : IUserProvisioningService
 {
-    public async Task<User> EnsureUserAsync(
+    public async Task<ProvisionedUser> EnsureUserFromPrincipalAsync(
         ClaimsPrincipal principal,
         CancellationToken cancellationToken = default
     )
@@ -44,6 +45,6 @@ public sealed class UserService(ApplicationDbContext dbContext) : IUserService
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);
-        return user;
+        return new ProvisionedUser(user.Id);
     }
 }

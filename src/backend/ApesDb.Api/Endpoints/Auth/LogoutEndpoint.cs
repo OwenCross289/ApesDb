@@ -1,4 +1,4 @@
-using ApesDb.Api.Options;
+using ApesDb.Auth.Options;
 using FastEndpoints;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;

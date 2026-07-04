@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
-namespace ApesDb.Api.Authorization;
+namespace ApesDb.Auth.Authorization;
 
 public sealed record FallbackAuthorizationRequirement : IAuthorizationRequirement;
 

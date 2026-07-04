@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using ZiggyCreatures.Caching.Fusion;
 
-namespace ApesDb.Api.Authentication;
+namespace ApesDb.Auth.Authentication;
 
 public sealed class RedisTicketStore : ITicketStore
 {
