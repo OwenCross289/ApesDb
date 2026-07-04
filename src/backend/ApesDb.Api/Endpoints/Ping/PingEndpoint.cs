@@ -12,7 +12,7 @@ public sealed class PingEndpoint : EndpointWithoutRequest<PingResponse>
         {
             summary.Summary = "Health-style ping endpoint.";
             summary.Description =
-                "Returns a basic payload so the API and integration test host can be verified quickly.";
+                "Returns a basic payload so the API host can be verified quickly.";
         });
     }
 

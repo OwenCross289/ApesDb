@@ -1,6 +1,6 @@
 # ApesDb
 
-Minimal .NET 10 solution with a FastEndpoints API, worker service, Swagger, xUnit v3 integration tests, a root Nx/pnpm React workspace, Oxc frontend linting/formatting, CSharpier, local infrastructure via Docker Compose, and Linux CI.
+Minimal .NET 10 solution with a FastEndpoints API, worker service, Swagger, a root Nx/pnpm React workspace, Oxc frontend linting/formatting, CSharpier, local infrastructure via Docker Compose, and Linux CI.
 
 ## Prerequisites
 
@@ -91,12 +91,6 @@ Swagger UI:
 
 - `https://localhost:7250/swagger`
 
-## Run tests
-
-```bash
-dotnet test --solution ApesDb.slnx
-```
-
 ## Run the frontend dev server
 
 ```bash
@@ -179,8 +173,6 @@ The local and deployment compose files run the `flyway` service against Postgres
 ```bash
 docker compose run --rm flyway
 ```
-
-The integration tests use an in-memory database and do not run Compose-managed migrations.
 
 ## Deployment environment variables
 

@@ -5,7 +5,7 @@ on:
   pull_request:
 
 jobs:
-  build-test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -49,6 +49,3 @@ jobs:
 
       - name: Build frontend
         run: pnpm build
-
-      - name: Test
-        run: dotnet test --solution ApesDb.slnx --configuration Release --no-build

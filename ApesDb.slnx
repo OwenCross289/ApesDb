@@ -16,6 +16,7 @@
   <Folder Name="/src/" />
   <Folder Name="/src/backend/">
     <Project Path="src/backend/ApesDb.Api/ApesDb.Api.csproj" />
+    <Project Path="src/backend/ApesDb.Domain/ApesDb.Domain.csproj" />
     <Project Path="src/backend/ApesDb.Worker/ApesDb.Worker.csproj" />
   </Folder>
   <Folder Name="/src/backend/sdks/">

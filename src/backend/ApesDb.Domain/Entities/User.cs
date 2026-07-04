@@ -1,4 +1,4 @@
-namespace ApesDb.Api.Data.Entities;
+namespace ApesDb.Domain.Entities;
 
 public sealed class User
 {

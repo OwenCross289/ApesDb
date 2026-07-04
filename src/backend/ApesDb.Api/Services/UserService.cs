@@ -1,6 +1,6 @@
 using System.Security.Claims;
-using ApesDb.Api.Data;
-using ApesDb.Api.Data.Entities;
+using ApesDb.Domain;
+using ApesDb.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApesDb.Api.Services;

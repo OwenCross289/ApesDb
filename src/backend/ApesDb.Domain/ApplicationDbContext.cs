@@ -1,7 +1,7 @@
-using ApesDb.Api.Data.Entities;
+using ApesDb.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace ApesDb.Api.Data;
+namespace ApesDb.Domain;
 
 public sealed class ApplicationDbContext : DbContext
 {

@@ -2,9 +2,9 @@ using System.Security.Claims;
 using ApesDb.Api;
 using ApesDb.Api.Authentication;
 using ApesDb.Api.Authorization;
-using ApesDb.Api.Data;
 using ApesDb.Api.Options;
 using ApesDb.Api.Services;
+using ApesDb.Domain;
 using ApesDb.Igdb.Sdk;
 using FastEndpoints;
 using FastEndpoints.Swagger;
@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using ZiggyCreatures.Caching.Fusion;
@@ -24,12 +23,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder
     .Services.AddOptions<Auth0Options>()
     .BindConfiguration(Auth0Options.SectionName)
-    .ValidateDataAnnotations()
-    .ValidateOnStart();
-
-builder
-    .Services.AddOptions<DatabaseOptions>()
-    .BindConfiguration(DatabaseOptions.SectionName)
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
@@ -46,9 +39,6 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.KnownProxies.Clear();
 });
 
-var databaseOptions = builder
-    .Configuration.GetRequiredSection(DatabaseOptions.SectionName)
-    .Get<DatabaseOptions>()!;
 var cacheOptions = builder
     .Configuration.GetRequiredSection(CacheOptions.SectionName)
     .Get<CacheOptions>()!;
@@ -76,11 +66,7 @@ builder.Services.AddSingleton<ITicketStore, RedisTicketStore>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IAuthorizationHandler, FallbackAuthorizationHandler>();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-{
-    options.UseNpgsql(databaseOptions.ConnectionString);
-});
-
+builder.Services.AddApesDbDomain(builder.Configuration);
 builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddIgdbSdk(builder.Configuration);

@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using ApesDb.Api.Data.Entities;
+using ApesDb.Domain.Entities;
 
 namespace ApesDb.Api.Services;
 

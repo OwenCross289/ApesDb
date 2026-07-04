@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ApesDb.Api.Options;
+namespace ApesDb.Domain.Options;
 
 public sealed class DatabaseOptions
 {
