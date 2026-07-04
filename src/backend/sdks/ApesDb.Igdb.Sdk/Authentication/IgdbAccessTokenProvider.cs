@@ -15,10 +15,7 @@ public sealed class IgdbAccessTokenProvider : IIgdbAccessTokenProvider
     private readonly SemaphoreSlim _semaphore = new(1, 1);
     private CachedToken? _cachedToken;
 
-    public IgdbAccessTokenProvider(
-        IIgdbAccessTokenClient client,
-        IDateTimeProvider dateTimeProvider
-    )
+    public IgdbAccessTokenProvider(IIgdbAccessTokenClient client, IDateTimeProvider dateTimeProvider)
     {
         _client = client;
         _dateTimeProvider = dateTimeProvider;

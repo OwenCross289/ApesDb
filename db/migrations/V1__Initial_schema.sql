@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS "public"."Users" (
-    "Id" uuid NOT NULL,
+    "Id" uuid NOT NULL DEFAULT uuidv7(),
     "Auth0Subject" character varying(256) NOT NULL,
     "Email" character varying(256) NOT NULL,
     "Name" character varying(256) NOT NULL,

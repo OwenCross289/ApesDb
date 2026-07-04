@@ -7,10 +7,7 @@ public sealed class Worker : BackgroundService
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly ILogger<Worker> _logger;
 
-    public Worker(
-        IDateTimeProvider dateTimeProvider,
-        ILogger<Worker> logger
-    )
+    public Worker(IDateTimeProvider dateTimeProvider, ILogger<Worker> logger)
     {
         _dateTimeProvider = dateTimeProvider;
         _logger = logger;

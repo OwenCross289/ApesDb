@@ -11,10 +11,7 @@ public sealed class UserProvisioningService : IUserProvisioningService
     private readonly ApplicationDbContext _dbContext;
     private readonly IDateTimeProvider _dateTimeProvider;
 
-    public UserProvisioningService(
-        ApplicationDbContext dbContext,
-        IDateTimeProvider dateTimeProvider
-    )
+    public UserProvisioningService(ApplicationDbContext dbContext, IDateTimeProvider dateTimeProvider)
     {
         _dbContext = dbContext;
         _dateTimeProvider = dateTimeProvider;
@@ -35,14 +32,16 @@ public sealed class UserProvisioningService : IUserProvisioningService
 
         if (user is null)
         {
+            var now = _dateTimeProvider.OffsetUtcNow;
+
             user = new User
             {
-                Id = Guid.NewGuid(),
+                Id = Guid.CreateVersion7(now.UtcDateTime),
                 Auth0Subject = subject,
                 Email = email,
                 Name = name,
-                CreatedAt = _dateTimeProvider.UtcNow,
-                UpdatedAt = _dateTimeProvider.UtcNow,
+                CreatedAt = now.UtcDateTime,
+                UpdatedAt = now.UtcDateTime,
             };
             _dbContext.Users.Add(user);
         }
