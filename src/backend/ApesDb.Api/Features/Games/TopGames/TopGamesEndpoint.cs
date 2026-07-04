@@ -1,7 +1,7 @@
 using ApesDb.Igdb.Sdk;
 using FastEndpoints;
 
-namespace ApesDb.Api.Endpoints.Games;
+namespace ApesDb.Api.Features.Games.TopGames;
 
 public sealed class TopGamesEndpoint : EndpointWithoutRequest
 {

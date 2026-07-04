@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using FastEndpoints;
 
-namespace ApesDb.Api.Endpoints.Auth;
+namespace ApesDb.Api.Features.Auth.Me;
 
 public sealed class MeEndpoint : EndpointWithoutRequest<AuthUserResponse>
 {

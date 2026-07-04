@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Options;
 
-namespace ApesDb.Api.Endpoints.Auth;
+namespace ApesDb.Api.Features.Auth.Logout;
 
 public sealed class LogoutEndpoint : EndpointWithoutRequest<LogoutResponse>
 {

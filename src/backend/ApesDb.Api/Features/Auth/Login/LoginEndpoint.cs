@@ -1,7 +1,7 @@
 using FastEndpoints;
 using Microsoft.AspNetCore.Authentication;
 
-namespace ApesDb.Api.Endpoints.Auth;
+namespace ApesDb.Api.Features.Auth.Login;
 
 public sealed class LoginEndpoint : EndpointWithoutRequest
 {

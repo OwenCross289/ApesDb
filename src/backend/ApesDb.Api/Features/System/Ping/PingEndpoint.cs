@@ -1,6 +1,6 @@
 using FastEndpoints;
 
-namespace ApesDb.Api.Endpoints.Ping;
+namespace ApesDb.Api.Features.System.Ping;
 
 public sealed class PingEndpoint : EndpointWithoutRequest<PingResponse>
 {
