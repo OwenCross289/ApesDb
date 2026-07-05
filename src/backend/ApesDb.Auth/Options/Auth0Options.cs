@@ -18,4 +18,6 @@ public sealed class Auth0Options
     public string CallbackPath { get; init; } = "/api/auth/callback";
 
     public string PostLogoutRedirectUri { get; init; } = "/";
+
+    public string GoogleConnectionName { get; init; } = "google-oauth2";
 }

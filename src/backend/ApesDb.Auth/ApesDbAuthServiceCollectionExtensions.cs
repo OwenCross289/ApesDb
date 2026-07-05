@@ -84,6 +84,18 @@ public static class ApesDbAuthServiceCollectionExtensions
 
                     options.Events = new OpenIdConnectEvents
                     {
+                        OnRedirectToIdentityProvider = context =>
+                        {
+                            if (
+                                context.Properties.Items.TryGetValue("connection", out var connection)
+                                && !string.IsNullOrWhiteSpace(connection)
+                            )
+                            {
+                                context.ProtocolMessage.Parameters["connection"] = connection!;
+                            }
+
+                            return Task.CompletedTask;
+                        },
                         OnTicketReceived = async context =>
                         {
                             var userProvisioningService =

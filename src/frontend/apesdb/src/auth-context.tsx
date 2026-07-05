@@ -6,11 +6,16 @@ export type AuthUser = {
   name: string;
 };
 
+type LoginOptions = {
+  returnUrl?: string;
+  connection?: string;
+};
+
 type AuthContextValue = {
   user: AuthUser | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (returnUrl?: string) => void;
+  login: (options?: LoginOptions) => void;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
 };
@@ -41,8 +46,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refresh();
   }, [refresh]);
 
-  const login = useCallback((returnUrl = "/") => {
-    window.location.href = `/api/auth/login?returnUrl=${encodeURIComponent(returnUrl)}`;
+  const login = useCallback(({ returnUrl = "/", connection }: LoginOptions = {}) => {
+    const params = new URLSearchParams();
+    params.set("returnUrl", returnUrl);
+
+    if (connection) {
+      params.set("connection", connection);
+    }
+
+    window.location.href = `/api/auth/login?${params.toString()}`;
   }, []);
 
   const logout = useCallback(async () => {

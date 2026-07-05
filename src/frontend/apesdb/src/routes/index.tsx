@@ -1,72 +1,98 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Button, ThemeModeSelector } from "@apesdb/ui";
+import { Button, ThemeModeSelector, useTheme } from "@apesdb/ui";
 import { appName } from "@apesdb/common";
-import { ArrowRight, Database } from "lucide-react";
 import { useAuth } from "../auth-context";
 
 export const Route = createFileRoute("/")({
   component: IndexComponent,
 });
 
+function GoogleIcon() {
+  return (
+    <svg className="size-4" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+        fill="#4285F4"
+      />
+      <path
+        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+        fill="#34A853"
+      />
+      <path
+        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+        fill="#FBBC05"
+      />
+      <path
+        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+        fill="#EA4335"
+      />
+    </svg>
+  );
+}
+
 function IndexComponent() {
   const { user, isAuthenticated, isLoading, login, logout } = useAuth();
+  const { resolvedMode } = useTheme();
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
-    <main className="min-h-screen">
-      <section className="mx-auto flex min-h-screen max-w-4xl flex-col justify-center gap-8 px-6">
-        <header className="flex flex-wrap items-center justify-between gap-4">
+    <main className="grid min-h-screen lg:grid-cols-2">
+      <section className="relative flex flex-col justify-center px-6 py-12 lg:px-16 xl:px-24">
+        <header className="absolute top-0 left-0 flex w-full items-center justify-between p-6">
           <p className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
             {appName}
           </p>
-          <div className="flex items-center gap-4">
-            <ThemeModeSelector />
-            {isLoading ? null : isAuthenticated ? (
-              <>
-                <span className="text-sm text-muted-foreground">{user?.email}</span>
-                <button
-                  type="button"
-                  onClick={() => logout()}
-                  className="text-sm font-medium underline underline-offset-4"
-                >
-                  Log out
-                </button>
-              </>
-            ) : (
-              <button
-                type="button"
-                onClick={() => login()}
-                className="text-sm font-medium underline underline-offset-4"
-              >
-                Log in
-              </button>
-            )}
-          </div>
+          <ThemeModeSelector />
         </header>
-        <div className="space-y-4">
-          <h1 className="text-4xl font-semibold tracking-tight">ApesDb frontend scaffold</h1>
-          <p className="max-w-2xl text-lg text-muted-foreground">
-            The shadcn preset is wired through the shared UI package and rendered from the app.
-          </p>
+        <div className="mx-auto w-full max-w-sm space-y-6">
+          {isAuthenticated ? (
+            <div className="space-y-4 text-center">
+              <h1 className="text-3xl font-semibold tracking-tight">Welcome back</h1>
+              <p className="text-muted-foreground">
+                Logged in as <span className="font-medium text-foreground">{user?.email}</span>.
+              </p>
+              <Button
+                className="w-full"
+                onClick={() => logout()}
+                size="lg"
+                type="button"
+                variant="outline"
+              >
+                Log out
+              </Button>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-2 text-center">
+                <h1 className="text-3xl font-semibold tracking-tight">Welcome</h1>
+                <p className="text-muted-foreground">Log in to {appName} to continue.</p>
+              </div>
+              <Button
+                className="w-full"
+                onClick={() => login({ connection: "google" })}
+                size="lg"
+                type="button"
+                variant="outline"
+              >
+                <GoogleIcon />
+                Continue with Google
+              </Button>
+              <p className="text-center text-xs text-muted-foreground">
+                By continuing, you agree to {appName}&apos;s Terms of Service and Privacy Policy.
+              </p>
+            </>
+          )}
         </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <Button type="button">
-            <Database />
-            Primary action
-            <ArrowRight data-icon="inline-end" />
-          </Button>
-          <Button type="button" variant="secondary">
-            Secondary
-          </Button>
-          <Button type="button" variant="outline">
-            Outline
-          </Button>
-          <Button type="button" variant="ghost">
-            Ghost
-          </Button>
-          <Button type="button" variant="destructive">
-            Destructive
-          </Button>
-        </div>
+      </section>
+      <section className="relative hidden bg-muted lg:block">
+        <img
+          alt={`${resolvedMode} mode preview`}
+          className="absolute inset-0 h-full w-full object-cover"
+          src={`/${resolvedMode}.png`}
+        />
       </section>
     </main>
   );

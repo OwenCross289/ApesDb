@@ -40,9 +40,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseSpa(spa =>
 {
-    spa.Options.SourcePath = Path.GetFullPath(
-        Path.Combine(app.Environment.ContentRootPath, "../../frontend/apesdb")
-    );
+    spa.Options.SourcePath = Path.GetFullPath(Path.Combine(app.Environment.ContentRootPath, "../../frontend/apesdb"));
 
     if (app.Environment.IsDevelopment())
     {

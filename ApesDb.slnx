@@ -21,6 +21,9 @@
     <Project Path="src/backend/ApesDb.Domain/ApesDb.Domain.csproj" />
     <Project Path="src/backend/ApesDb.Worker/ApesDb.Worker.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="src/backend/ApesDb.Auth.IntegrationTests/ApesDb.Auth.IntegrationTests.csproj" />
+  </Folder>
   <Folder Name="/src/backend/sdks/">
     <Project Path="src/backend/sdks/ApesDb.Igdb.Sdk/ApesDb.Igdb.Sdk.csproj" />
   </Folder>

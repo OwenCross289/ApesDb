@@ -39,9 +39,7 @@ public static class ApesDbApiServiceCollectionExtensions
 
     public static IServiceCollection AddApesDbDataProtection(this IServiceCollection services)
     {
-        var connectionMultiplexer = services
-            .BuildServiceProvider()
-            .GetRequiredService<IConnectionMultiplexer>();
+        var connectionMultiplexer = services.BuildServiceProvider().GetRequiredService<IConnectionMultiplexer>();
 
         services
             .AddDataProtection()
