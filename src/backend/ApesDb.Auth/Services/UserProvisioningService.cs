@@ -27,32 +27,30 @@ public sealed class UserProvisioningService : IUserProvisioningService
             ?? throw new InvalidOperationException("Missing subject claim.");
         var email = principal.FindFirstValue(ClaimTypes.Email) ?? string.Empty;
         var name = principal.FindFirstValue(ClaimTypes.Name) ?? string.Empty;
+        var now = _dateTimeProvider.UtcNow;
 
-        var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Auth0Subject == subject, cancellationToken);
-
-        if (user is null)
-        {
-            var now = _dateTimeProvider.OffsetUtcNow;
-
-            user = new User
+        var upserted = await _dbContext.Users.Upsert(
+                new User
+                {
+                    Auth0Subject = subject,
+                    Email = email,
+                    Name = name,
+                    CreatedAt = now,
+                    UpdatedAt = now,
+                }
+            )
+            .On(u => u.Auth0Subject)
+            .WhenMatched((existing, inserted) => new User
             {
-                Id = Guid.CreateVersion7(now.UtcDateTime),
-                Auth0Subject = subject,
-                Email = email,
-                Name = name,
-                CreatedAt = now.UtcDateTime,
-                UpdatedAt = now.UtcDateTime,
-            };
-            _dbContext.Users.Add(user);
-        }
-        else
-        {
-            user.Email = email;
-            user.Name = name;
-            user.UpdatedAt = _dateTimeProvider.UtcNow;
-        }
+                Id = existing.Id,
+                Auth0Subject = existing.Auth0Subject,
+                Email = inserted.Email,
+                Name = inserted.Name,
+                CreatedAt = existing.CreatedAt,
+                UpdatedAt = inserted.UpdatedAt,
+            })
+            .RunAndReturnAsync(cancellationToken);
 
-        await _dbContext.SaveChangesAsync(cancellationToken);
-        return new ProvisionedUser(user.Id);
+        return new ProvisionedUser(upserted.First().Id);
     }
 }

@@ -1,4 +1,5 @@
 using ApesDb.Api.Options;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using StackExchange.Redis;
 using ZiggyCreatures.Caching.Fusion;
@@ -18,6 +19,8 @@ public static class ApesDbApiServiceCollectionExtensions
         var cacheOptions = configuration.GetRequiredSection(CacheOptions.SectionName).Get<CacheOptions>()!;
         var redisConfiguration = BuildRedisConfiguration(cacheOptions);
 
+        services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisConfiguration));
+
         services.AddStackExchangeRedisCache(options =>
         {
             options.ConfigurationOptions = redisConfiguration;
@@ -30,6 +33,20 @@ public static class ApesDbApiServiceCollectionExtensions
         });
 
         services.AddFusionCache().TryWithAutoSetup();
+
+        return services;
+    }
+
+    public static IServiceCollection AddApesDbDataProtection(this IServiceCollection services)
+    {
+        var connectionMultiplexer = services
+            .BuildServiceProvider()
+            .GetRequiredService<IConnectionMultiplexer>();
+
+        services
+            .AddDataProtection()
+            .PersistKeysToStackExchangeRedis(connectionMultiplexer, "ApesDb.DataProtection.Keys")
+            .SetApplicationName("ApesDb");
 
         return services;
     }

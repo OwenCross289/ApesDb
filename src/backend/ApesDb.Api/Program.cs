@@ -11,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApesDbForwardedHeaders();
 builder.Services.AddApesDbCommon();
 builder.Services.AddApesDbCache(builder.Configuration);
+builder.Services.AddApesDbDataProtection();
 builder.Services.AddApesDbDomain(builder.Configuration);
 builder.Services.AddApesDbAuth(builder.Configuration);
 
