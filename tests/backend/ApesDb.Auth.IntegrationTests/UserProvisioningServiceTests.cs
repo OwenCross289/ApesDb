@@ -1,32 +1,67 @@
 using System.Security.Claims;
 using ApesDb.Auth.Services;
-using ApesDb.Common;
 using ApesDb.Domain;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
+using DotNet.Testcontainers.Networks;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
 using Testcontainers.PostgreSql;
 using Xunit;
 
 namespace ApesDb.Auth.IntegrationTests;
 
-public sealed class UserProvisioningServiceTests : IAsyncLifetime, IDisposable
+public sealed class UserProvisioningServiceTests : IAsyncLifetime
 {
-    private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder().WithImage("postgres:18").Build();
+    private const string DatabaseName = "apesdb";
+    private const string DatabaseUsername = "apesdb";
+    private const string DatabasePassword = "apesdb";
+    private const string PostgresNetworkAlias = "postgres";
+
+    private readonly INetwork _network;
+    private readonly PostgreSqlContainer _postgres;
+    private readonly IContainer _flyway;
+
+    public UserProvisioningServiceTests()
+    {
+        var migrationsDirectory = ResolveMigrationsDirectory();
+
+        _network = new NetworkBuilder().Build();
+        _postgres = new PostgreSqlBuilder()
+            .WithImage("postgres:18")
+            .WithDatabase(DatabaseName)
+            .WithUsername(DatabaseUsername)
+            .WithPassword(DatabasePassword)
+            .WithNetwork(_network)
+            .WithNetworkAliases(PostgresNetworkAlias)
+            .Build();
+        _flyway = new ContainerBuilder()
+            .WithImage("flyway/flyway:11-alpine")
+            .WithCommand("migrate")
+            .WithEnvironment("FLYWAY_URL", $"jdbc:postgresql://{PostgresNetworkAlias}:5432/{DatabaseName}")
+            .WithEnvironment("FLYWAY_USER", DatabaseUsername)
+            .WithEnvironment("FLYWAY_PASSWORD", DatabasePassword)
+            .WithEnvironment("FLYWAY_CONNECT_RETRIES", "60")
+            .WithEnvironment("FLYWAY_BASELINE_ON_MIGRATE", "true")
+            .WithEnvironment("FLYWAY_DEFAULT_SCHEMA", "migrations")
+            .WithEnvironment("FLYWAY_SCHEMAS", "migrations,public")
+            .WithResourceMapping(new DirectoryInfo(migrationsDirectory), "/flyway/sql")
+            .WithNetwork(_network)
+            .DependsOn(_postgres)
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Successfully applied"))
+            .Build();
+    }
 
     public async Task InitializeAsync()
     {
         await _postgres.StartAsync();
-        await ApplyMigrationsAsync();
+        await _flyway.StartAsync();
     }
 
     public async Task DisposeAsync()
     {
+        await _flyway.DisposeAsync();
         await _postgres.DisposeAsync();
-    }
-
-    public void Dispose()
-    {
-        _postgres.DisposeAsync().AsTask().GetAwaiter().GetResult();
+        await _network.DisposeAsync();
     }
 
     [Fact]
@@ -121,43 +156,21 @@ public sealed class UserProvisioningServiceTests : IAsyncLifetime, IDisposable
         return new ApplicationDbContext(options);
     }
 
-    private async Task ApplyMigrationsAsync()
+    private static string ResolveMigrationsDirectory()
     {
-        var sql = await File.ReadAllTextAsync("V1__Initial_schema.sql");
-        await using var connection = new NpgsqlConnection(_postgres.GetConnectionString());
-        await connection.OpenAsync();
-        await using var command = new NpgsqlCommand(sql, connection);
-        await command.ExecuteNonQueryAsync();
-    }
-}
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
 
-public sealed class FixedDateTimeProvider : IDateTimeProvider
-{
-    public FixedDateTimeProvider(DateTime utcNow)
-    {
-        UtcNow = utcNow;
-        Now = utcNow.ToLocalTime();
-        OffsetNow = new DateTimeOffset(Now);
-        OffsetUtcNow = new DateTimeOffset(utcNow);
-    }
-
-    public DateTime Now { get; private set; }
-
-    public DateTime UtcNow
-    {
-        get => _utcNow;
-        set
+        while (directory is not null)
         {
-            _utcNow = value;
-            Now = value.ToLocalTime();
-            OffsetNow = new DateTimeOffset(Now);
-            OffsetUtcNow = new DateTimeOffset(value);
+            var migrationsDirectory = Path.Combine(directory.FullName, "db", "migrations");
+            if (Directory.Exists(migrationsDirectory))
+            {
+                return migrationsDirectory;
+            }
+
+            directory = directory.Parent;
         }
+
+        throw new DirectoryNotFoundException("Could not find db/migrations from the test runtime directory.");
     }
-
-    public DateTimeOffset OffsetNow { get; private set; }
-
-    public DateTimeOffset OffsetUtcNow { get; private set; }
-
-    private DateTime _utcNow;
 }

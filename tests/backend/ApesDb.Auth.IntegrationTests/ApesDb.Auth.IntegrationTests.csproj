@@ -8,19 +8,14 @@
     <PackageReference Include="coverlet.collector" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Testcontainers" />
     <PackageReference Include="Testcontainers.PostgreSql" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../ApesDb.Auth/ApesDb.Auth.csproj" />
-    <ProjectReference Include="../ApesDb.Domain/ApesDb.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="../../../db/migrations/V1__Initial_schema.sql">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="../../../src/backend/ApesDb.Auth/ApesDb.Auth.csproj" />
+    <ProjectReference Include="../../../src/backend/ApesDb.Domain/ApesDb.Domain.csproj" />
   </ItemGroup>
 </Project>
