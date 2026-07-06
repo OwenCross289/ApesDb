@@ -29,11 +29,13 @@ var app = builder.Build();
 app.UseForwardedHeaders();
 app.UseRouting();
 
-app.Use((context, next) =>
-{
-    context.Request.Scheme = "https";
-    return next();
-});
+app.Use(
+    (context, next) =>
+    {
+        context.Request.Scheme = "https";
+        return next();
+    }
+);
 
 app.UseApesDbAuth();
 app.UseSwaggerGen();
