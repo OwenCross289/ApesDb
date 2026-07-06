@@ -93,3 +93,13 @@ export function useAuth(): AuthContextValue {
 
   return context;
 }
+
+export function AuthGate({ children }: { children: (auth: AuthContextValue) => ReactNode }) {
+  const auth = useAuth();
+
+  if (auth.isLoading) {
+    return null;
+  }
+
+  return <>{children(auth)}</>;
+}
