@@ -1,0 +1,26 @@
+name: compose validation
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate-compose:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate Docker stack compose files
+        env:
+          POSTGRES_PASSWORD: dummy
+          REDIS_PASSWORD: dummy
+          AUTH0_DOMAIN: dummy
+          AUTH0_CLIENT_ID: dummy
+          AUTH0_CLIENT_SECRET: dummy
+          IGDB_CLIENT_ID: dummy
+          IGDB_CLIENT_SECRET: dummy
+        run: |
+          docker stack config -c deploy-compose.yml > /tmp/deploy-compose.rendered.yml
+          docker stack config -c docker-compose.yml > /tmp/docker-compose.rendered.yml

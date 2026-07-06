@@ -16,10 +16,8 @@ services:
     ports:
       - "8080"
     depends_on:
-      flyway:
-        condition: service_completed_successfully
-      redis:
-        condition: service_started
+      - flyway
+      - redis
 
   worker:
     image: ghcr.io/owencross289/apesdb/worker:latest
@@ -29,10 +27,8 @@ services:
       Cache__ConnectionString: redis:6379
       Cache__Password: ${REDIS_PASSWORD:?REDIS_PASSWORD is required}
     depends_on:
-      flyway:
-        condition: service_completed_successfully
-      redis:
-        condition: service_started
+      - flyway
+      - redis
 
   postgres:
     image: postgres:18
@@ -50,8 +46,8 @@ services:
       FLYWAY_URL: jdbc:postgresql://postgres:5432/apesdb
       FLYWAY_USER: apesdb
       FLYWAY_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
-      FLYWAY_CONNECT_RETRIES: 60
-      FLYWAY_BASELINE_ON_MIGRATE: true
+      FLYWAY_CONNECT_RETRIES: "60"
+      FLYWAY_BASELINE_ON_MIGRATE: "true"
       FLYWAY_DEFAULT_SCHEMA: migrations
       FLYWAY_SCHEMAS: migrations,public
     volumes:
