@@ -2,8 +2,15 @@ using ApesDb.Igdb.Sdk.Models;
 
 namespace ApesDb.Igdb.Sdk;
 
-public sealed class IgdbGameService(IIgdbApi api) : IIgdbGameService
+public sealed class IgdbGameService : IIgdbGameService
 {
+    private readonly IIgdbApi _api;
+
+    public IgdbGameService(IIgdbApi api)
+    {
+        _api = api;
+    }
+
     public async Task<IReadOnlyList<TopIgdbGame>> ListTopGamesAsync(
         int limit = 10,
         CancellationToken cancellationToken = default
@@ -15,13 +22,9 @@ public sealed class IgdbGameService(IIgdbApi api) : IIgdbGameService
         }
 
         var popularityQuery =
-            "fields game_id,value,popularity_type; "
-            + $"sort value desc; limit {limit}; where popularity_type = 1;";
+            "fields game_id,value,popularity_type; " + $"sort value desc; limit {limit}; where popularity_type = 1;";
 
-        var popularity = await api.QueryPopularityPrimitivesAsync(
-            popularityQuery,
-            cancellationToken
-        );
+        var popularity = await _api.QueryPopularityPrimitivesAsync(popularityQuery, cancellationToken);
 
         if (popularity.Count == 0)
         {
@@ -32,7 +35,7 @@ public sealed class IgdbGameService(IIgdbApi api) : IIgdbGameService
         var gamesQuery =
             "fields id,name,slug,summary,total_rating,first_release_date,cover.image_id; "
             + $"where id = ({string.Join(",", gameIds)}); limit {gameIds.Length};";
-        var games = await api.QueryGamesAsync(gamesQuery, cancellationToken);
+        var games = await _api.QueryGamesAsync(gamesQuery, cancellationToken);
         var gamesById = games.ToDictionary(game => game.Id);
 
         return popularity

@@ -1,6 +1,8 @@
 # Build output
 bin/
 obj/
+obj/Debug/
+obj\\Debug/
 out/
 
 # User-specific files

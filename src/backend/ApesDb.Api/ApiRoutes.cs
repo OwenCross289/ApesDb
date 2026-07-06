@@ -16,4 +16,12 @@ public static class ApiRoutes
     {
         public const string Top = "games/top";
     }
+
+    public static class Auth
+    {
+        public const string Prefix = "auth";
+        public const string Login = "login";
+        public const string Logout = "logout";
+        public const string Me = "me";
+    }
 }

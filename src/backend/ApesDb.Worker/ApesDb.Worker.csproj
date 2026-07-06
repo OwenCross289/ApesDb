@@ -3,4 +3,9 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="TickerQ" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ApesDb.Common\ApesDb.Common.csproj" />
+    <ProjectReference Include="..\ApesDb.Domain\ApesDb.Domain.csproj" />
+  </ItemGroup>
 </Project>

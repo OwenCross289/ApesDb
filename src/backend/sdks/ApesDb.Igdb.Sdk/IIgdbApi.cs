@@ -14,8 +14,5 @@ public interface IIgdbApi
 
     [Post("/games")]
     [Headers("Accept: application/json", "Content-Type: text/plain")]
-    Task<IReadOnlyList<IgdbGame>> QueryGamesAsync(
-        [Body] string query,
-        CancellationToken cancellationToken
-    );
+    Task<IReadOnlyList<IgdbGame>> QueryGamesAsync([Body] string query, CancellationToken cancellationToken);
 }

@@ -5,9 +5,18 @@
   <ItemGroup>
     <PackageReference Include="FastEndpoints" />
     <PackageReference Include="FastEndpoints.Swagger" />
+    <PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
+    <PackageReference Include="ZiggyCreatures.FusionCache" />
+    <PackageReference Include="ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis" />
+    <PackageReference Include="ZiggyCreatures.FusionCache.Serialization.SystemTextJson" />
   </ItemGroup>
+
   <ItemGroup>
+    <ProjectReference Include="..\ApesDb.Common\ApesDb.Common.csproj" />
+    <ProjectReference Include="..\ApesDb.Auth\ApesDb.Auth.csproj" />
+    <ProjectReference Include="..\ApesDb.Domain\ApesDb.Domain.csproj" />
     <ProjectReference Include="..\sdks\ApesDb.Igdb.Sdk\ApesDb.Igdb.Sdk.csproj" />
   </ItemGroup>
 </Project>

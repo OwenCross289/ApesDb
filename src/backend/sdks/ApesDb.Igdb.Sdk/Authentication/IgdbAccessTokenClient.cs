@@ -3,27 +3,30 @@ using Microsoft.Extensions.Options;
 
 namespace ApesDb.Igdb.Sdk.Authentication;
 
-internal sealed class IgdbAccessTokenClient(HttpClient httpClient, IOptions<IgdbOptions> options)
-    : IIgdbAccessTokenClient
+internal sealed class IgdbAccessTokenClient : IIgdbAccessTokenClient
 {
-    public async Task<IgdbAccessTokenResponse> RequestTokenAsync(
-        CancellationToken cancellationToken
-    )
+    private readonly HttpClient _httpClient;
+    private readonly IOptions<IgdbOptions> _options;
+
+    public IgdbAccessTokenClient(HttpClient httpClient, IOptions<IgdbOptions> options)
     {
-        var value = options.Value;
+        _httpClient = httpClient;
+        _options = options;
+    }
+
+    public async Task<IgdbAccessTokenResponse> RequestTokenAsync(CancellationToken cancellationToken)
+    {
+        var value = _options.Value;
         var tokenUrl =
             $"{value.TokenUrl}?client_id={Uri.EscapeDataString(value.ClientId)}"
             + $"&client_secret={Uri.EscapeDataString(value.ClientSecret)}"
             + "&grant_type=client_credentials";
 
-        using var response = await httpClient.PostAsync(tokenUrl, content: null, cancellationToken);
+        using var response = await _httpClient.PostAsync(tokenUrl, content: null, cancellationToken);
         response.EnsureSuccessStatusCode();
 
-        var token = await response.Content.ReadFromJsonAsync<IgdbAccessTokenResponse>(
-            cancellationToken
-        );
+        var token = await response.Content.ReadFromJsonAsync<IgdbAccessTokenResponse>(cancellationToken);
 
-        return token
-            ?? throw new InvalidOperationException("IGDB token response did not include a body.");
+        return token ?? throw new InvalidOperationException("IGDB token response did not include a body.");
     }
 }
