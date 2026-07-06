@@ -1,5 +1,8 @@
 import { Link, Outlet, createFileRoute, redirect, useRouterState } from "@tanstack/react-router";
 import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
   Separator,
   Sidebar,
   SidebarContent,
@@ -59,6 +62,9 @@ function AppLayout() {
 function AppSidebar() {
   const { user, logout } = useAuth();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const accountName = user?.name.trim();
+  const accountLabel = accountName || "Signed in";
+  const accountTooltip = accountName || "Account";
 
   return (
     <Sidebar collapsible="icon">
@@ -99,11 +105,15 @@ function AppSidebar() {
         </div>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" tooltip={user?.email ?? "Account"}>
-              <UserCircle />
+            <SidebarMenuButton size="lg" tooltip={accountTooltip}>
+              <Avatar className="size-8 rounded-md">
+                <AvatarImage alt={accountLabel} src={user?.pictureUrl ?? undefined} />
+                <AvatarFallback className="rounded-md bg-sidebar-accent text-sidebar-foreground">
+                  <UserCircle className="size-4" />
+                </AvatarFallback>
+              </Avatar>
               <div className="grid flex-1 text-left leading-tight">
-                <span className="truncate font-medium">{user?.name || "Signed in"}</span>
-                <span className="truncate text-xs text-sidebar-foreground/70">{user?.email}</span>
+                <span className="truncate font-medium">{accountLabel}</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>

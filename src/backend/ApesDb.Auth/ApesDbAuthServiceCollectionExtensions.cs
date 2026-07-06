@@ -79,8 +79,9 @@ public static class ApesDbAuthServiceCollectionExtensions
                     options.SaveTokens = false;
                     options.GetClaimsFromUserInfoEndpoint = true;
                     options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    options.ClaimActions.MapUniqueJsonKey("email", "email");
-                    options.ClaimActions.MapUniqueJsonKey("name", "name");
+                    options.ClaimActions.MapUniqueJsonKey(ClaimTypes.Email, "email");
+                    options.ClaimActions.MapUniqueJsonKey(ClaimTypes.Name, "name");
+                    options.ClaimActions.MapUniqueJsonKey("picture", "picture");
 
                     options.Events = new OpenIdConnectEvents
                     {

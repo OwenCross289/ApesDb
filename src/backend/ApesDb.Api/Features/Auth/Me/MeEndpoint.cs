@@ -16,7 +16,8 @@ public sealed class MeEndpoint : EndpointWithoutRequest<AuthUserResponse>
             User.FindFirstValue("ApesDbUserId") ?? throw new InvalidOperationException("Missing user id claim.");
         var email = User.FindFirstValue(ClaimTypes.Email) ?? string.Empty;
         var name = User.FindFirstValue(ClaimTypes.Name) ?? string.Empty;
+        var pictureUrl = User.FindFirstValue("picture");
 
-        return Send.OkAsync(new AuthUserResponse(Guid.Parse(userId), email, name), ct);
+        return Send.OkAsync(new AuthUserResponse(Guid.Parse(userId), email, name, pictureUrl), ct);
     }
 }

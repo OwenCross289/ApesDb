@@ -71,6 +71,32 @@ public sealed class UserProvisioningServiceTests : IAsyncLifetime, IDisposable
         Assert.Equal(updatedDate, user.UpdatedAt);
     }
 
+    [Fact]
+    public async Task EnsureUserFromPrincipalAsync_PersistsMappedAuth0NameClaim()
+    {
+        var fixedDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var dateTimeProvider = new FixedDateTimeProvider(fixedDate);
+        await using var dbContext = CreateDbContext();
+        var service = new UserProvisioningService(dbContext, dateTimeProvider);
+        var principal = new ClaimsPrincipal(
+            new ClaimsIdentity(
+                new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, "auth0|789"),
+                    new Claim(ClaimTypes.Email, "mapped@example.com"),
+                    new Claim(ClaimTypes.Name, "Mapped Auth0 Name"),
+                    new Claim("name", "Literal Name Claim"),
+                },
+                "Test"
+            )
+        );
+
+        await service.EnsureUserFromPrincipalAsync(principal);
+
+        var user = await dbContext.Users.SingleAsync(u => u.Auth0Subject == "auth0|789");
+        Assert.Equal("Mapped Auth0 Name", user.Name);
+    }
+
     private static ClaimsPrincipal CreatePrincipal(string subject, string email, string name)
     {
         return new ClaimsPrincipal(
