@@ -1,11 +1,15 @@
 import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
+import { createRoot, type Root } from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { ThemeProvider, Toaster } from "@apesdb/ui";
 import { AuthProvider, useAuth } from "./auth-context";
 import { registerPwaUpdateListener } from "./register-pwa-update-listener";
 import { routeTree } from "./routeTree.gen";
 import "./styles.css";
+
+type HotData = {
+  root?: Root;
+};
 
 registerPwaUpdateListener();
 
@@ -22,7 +26,20 @@ declare module "@tanstack/react-router" {
   }
 }
 
-createRoot(document.getElementById("root")!).render(
+const rootElement = document.getElementById("root");
+
+if (!rootElement) {
+  throw new Error("Root element #root was not found.");
+}
+
+const hotData = import.meta.hot?.data as HotData | undefined;
+const root = hotData?.root ?? createRoot(rootElement);
+
+if (hotData) {
+  hotData.root = root;
+}
+
+root.render(
   <StrictMode>
     <ThemeProvider>
       <AuthProvider>

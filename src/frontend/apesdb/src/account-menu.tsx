@@ -45,7 +45,7 @@ export function AccountMenu({ user, onLogout }: AccountMenuProps) {
             <SheetTitle>{accountLabel}</SheetTitle>
             <SheetDescription>{accountDescription}</SheetDescription>
           </SheetHeader>
-          <div className="px-6 pb-6">
+          <div className="px-6 pt-6 pb-6">
             <AccountMenuContent
               accountDescription={accountDescription}
               accountLabel={accountLabel}
