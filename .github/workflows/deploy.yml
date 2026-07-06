@@ -13,6 +13,7 @@ permissions:
 env:
   APP_IMAGE_NAME: ghcr.io/${{ github.repository }}/app
   WORKER_IMAGE_NAME: ghcr.io/${{ github.repository }}/worker
+  MIGRATIONS_IMAGE_NAME: ghcr.io/${{ github.repository }}/migrations
 
 jobs:
   build-push-deploy:
@@ -47,6 +48,15 @@ jobs:
             type=raw,value=latest,enable={{is_default_branch}}
             type=sha,format=short
 
+      - name: Extract migrations image metadata
+        id: migrations-meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.MIGRATIONS_IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,format=short
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
@@ -71,6 +81,17 @@ jobs:
           labels: ${{ steps.worker-meta.outputs.labels }}
           cache-from: type=gha,scope=worker
           cache-to: type=gha,mode=max,scope=worker
+
+      - name: Build and push migrations image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ./Dockerfile.migrations
+          push: true
+          tags: ${{ steps.migrations-meta.outputs.tags }}
+          labels: ${{ steps.migrations-meta.outputs.labels }}
+          cache-from: type=gha,scope=migrations
+          cache-to: type=gha,mode=max,scope=migrations
 
       - name: Connect to Tailscale
         uses: tailscale/github-action@v4

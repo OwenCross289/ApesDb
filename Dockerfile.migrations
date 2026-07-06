@@ -1,0 +1,5 @@
+FROM flyway/flyway:11-alpine
+
+COPY db/migrations /flyway/sql
+
+CMD ["migrate"]

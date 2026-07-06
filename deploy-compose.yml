@@ -40,7 +40,7 @@ services:
       - postgres-data:/var/lib/postgresql
 
   flyway:
-    image: flyway/flyway:11-alpine
+    image: ghcr.io/owencross289/apesdb/migrations:latest
     command: migrate
     environment:
       FLYWAY_URL: jdbc:postgresql://postgres:5432/apesdb
@@ -50,10 +50,11 @@ services:
       FLYWAY_BASELINE_ON_MIGRATE: "true"
       FLYWAY_DEFAULT_SCHEMA: migrations
       FLYWAY_SCHEMAS: migrations,public
-    volumes:
-      - ./db/migrations:/flyway/sql:ro
     depends_on:
       - postgres
+    deploy:
+      mode: replicated-job
+      replicas: 1
 
   redis:
     image: redis:8
