@@ -88,7 +88,11 @@ function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton render={<Link to="/" />} isActive={pathname === "/"} tooltip="Home">
+                <SidebarMenuButton
+                  render={<Link to="/" />}
+                  isActive={pathname === "/"}
+                  tooltip="Home"
+                >
                   <Home />
                   <span>Home</span>
                 </SidebarMenuButton>
