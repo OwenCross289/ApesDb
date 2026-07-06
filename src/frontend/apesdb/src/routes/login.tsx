@@ -87,7 +87,7 @@ function LoginComponent() {
         <img
           alt={`${resolvedMode} mode preview`}
           className="absolute inset-0 h-full w-full object-cover"
-          src={`/${resolvedMode}.png`}
+          src={`/${resolvedMode}-login-banner.png`}
         />
       </section>
     </main>
