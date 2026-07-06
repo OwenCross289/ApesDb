@@ -1,10 +1,18 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { Button, ThemeModeSelector, useTheme } from "@apesdb/ui";
 import { appName } from "@apesdb/common";
 import { useAuth } from "../auth-context";
 
-export const Route = createFileRoute("/")({
-  component: IndexComponent,
+type LoginSearch = {
+  redirect?: string;
+};
+
+export const Route = createFileRoute("/login")({
+  validateSearch: (search: Record<string, unknown>): LoginSearch => ({
+    redirect: isLocalReturnUrl(search.redirect) ? search.redirect : undefined,
+  }),
+  component: LoginComponent,
 });
 
 function GoogleIcon() {
@@ -30,11 +38,19 @@ function GoogleIcon() {
   );
 }
 
-function IndexComponent() {
-  const { user, isAuthenticated, isLoading, login, logout } = useAuth();
+function LoginComponent() {
+  const { isAuthenticated, login } = useAuth();
   const { resolvedMode } = useTheme();
+  const router = useRouter();
+  const { redirect = "/" } = Route.useSearch();
 
-  if (isLoading) {
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.history.push(redirect);
+    }
+  }, [isAuthenticated, redirect, router.history]);
+
+  if (isAuthenticated) {
     return null;
   }
 
@@ -48,43 +64,23 @@ function IndexComponent() {
           <ThemeModeSelector />
         </header>
         <div className="mx-auto w-full max-w-sm space-y-6">
-          {isAuthenticated ? (
-            <div className="space-y-4 text-center">
-              <h1 className="text-3xl font-semibold tracking-tight">Welcome back</h1>
-              <p className="text-muted-foreground">
-                Logged in as <span className="font-medium text-foreground">{user?.email}</span>.
-              </p>
-              <Button
-                className="w-full"
-                onClick={() => logout()}
-                size="lg"
-                type="button"
-                variant="outline"
-              >
-                Log out
-              </Button>
-            </div>
-          ) : (
-            <>
-              <div className="space-y-2 text-center">
-                <h1 className="text-3xl font-semibold tracking-tight">Welcome</h1>
-                <p className="text-muted-foreground">Log in to {appName} to continue.</p>
-              </div>
-              <Button
-                className="w-full"
-                onClick={() => login({ connection: "google" })}
-                size="lg"
-                type="button"
-                variant="outline"
-              >
-                <GoogleIcon />
-                Continue with Google
-              </Button>
-              <p className="text-center text-xs text-muted-foreground">
-                By continuing, you agree to {appName}&apos;s Terms of Service and Privacy Policy.
-              </p>
-            </>
-          )}
+          <div className="space-y-2 text-center">
+            <h1 className="text-3xl font-semibold tracking-tight">Welcome</h1>
+            <p className="text-muted-foreground">Log in to {appName} to continue.</p>
+          </div>
+          <Button
+            className="w-full"
+            onClick={() => login({ connection: "google", returnUrl: redirect })}
+            size="lg"
+            type="button"
+            variant="outline"
+          >
+            <GoogleIcon />
+            Continue with Google
+          </Button>
+          <p className="text-center text-xs text-muted-foreground">
+            By continuing, you agree to {appName}&apos;s Terms of Service and Privacy Policy.
+          </p>
         </div>
       </section>
       <section className="relative hidden bg-muted lg:block">
@@ -95,5 +91,14 @@ function IndexComponent() {
         />
       </section>
     </main>
+  );
+}
+
+function isLocalReturnUrl(value: unknown): value is string {
+  return (
+    typeof value === "string" &&
+    value.startsWith("/") &&
+    !value.startsWith("//") &&
+    !value.startsWith("/\\")
   );
 }

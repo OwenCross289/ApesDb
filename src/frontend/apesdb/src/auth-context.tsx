@@ -11,7 +11,7 @@ type LoginOptions = {
   connection?: string;
 };
 
-type AuthContextValue = {
+export type AuthContextValue = {
   user: AuthUser | null;
   isLoading: boolean;
   isAuthenticated: boolean;

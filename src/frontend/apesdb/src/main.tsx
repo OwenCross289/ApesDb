@@ -2,11 +2,16 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { ThemeProvider } from "@apesdb/ui";
-import { AuthProvider } from "./auth-context";
+import { AuthProvider, useAuth } from "./auth-context";
 import { routeTree } from "./routeTree.gen";
 import "./styles.css";
 
-const router = createRouter({ routeTree });
+const router = createRouter({
+  routeTree,
+  context: {
+    auth: undefined!,
+  },
+});
 
 declare module "@tanstack/react-router" {
   interface Register {
@@ -18,8 +23,18 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider>
       <AuthProvider>
-        <RouterProvider router={router} />
+        <AppRouter />
       </AuthProvider>
     </ThemeProvider>
   </StrictMode>,
 );
+
+function AppRouter() {
+  const auth = useAuth();
+
+  if (auth.isLoading) {
+    return null;
+  }
+
+  return <RouterProvider router={router} context={{ auth }} />;
+}
