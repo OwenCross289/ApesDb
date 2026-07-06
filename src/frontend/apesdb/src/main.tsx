@@ -1,10 +1,13 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-import { ThemeProvider } from "@apesdb/ui";
+import { ThemeProvider, Toaster } from "@apesdb/ui";
 import { AuthProvider, useAuth } from "./auth-context";
+import { registerPwaUpdateListener } from "./register-pwa-update-listener";
 import { routeTree } from "./routeTree.gen";
 import "./styles.css";
+
+registerPwaUpdateListener();
 
 const router = createRouter({
   routeTree,
@@ -25,6 +28,7 @@ createRoot(document.getElementById("root")!).render(
       <AuthProvider>
         <AppRouter />
       </AuthProvider>
+      <Toaster />
     </ThemeProvider>
   </StrictMode>,
 );

@@ -13,6 +13,7 @@ export {
   SheetTrigger,
 } from "./lib/sheet";
 export { Skeleton } from "./lib/skeleton";
+export { Toaster } from "./lib/sonner";
 export {
   Sidebar,
   SidebarContent,
