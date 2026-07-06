@@ -9,3 +9,4 @@
 ## Frontend UI
 
 - When a needed shadcn component is not already available in `@apesdb/ui`, add it to the shared UI package and export it before using it in an app.
+- NEVER HANDROLL COMPONENTS UNLESS EXPLICITLY TOLD TO ALWAYS USE THE SHADCN COMMAND TO ADD IT.

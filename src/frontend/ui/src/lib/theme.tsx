@@ -2,6 +2,7 @@ import * as React from "react";
 import { Monitor, Moon, Sun, type LucideIcon } from "lucide-react";
 
 import { Button } from "./button";
+import { cn } from "./utils";
 
 export type ThemeMode = "light" | "dark" | "system";
 
@@ -137,17 +138,34 @@ export function useTheme() {
   return context;
 }
 
-export function ThemeModeSelector() {
+type ThemeModeSelectorProps = React.ComponentProps<"div"> & {
+  buttonClassName?: string;
+  buttonSize?: React.ComponentProps<typeof Button>["size"];
+};
+
+export function ThemeModeSelector({
+  buttonClassName,
+  buttonSize = "sm",
+  className,
+  ...props
+}: ThemeModeSelectorProps) {
   const { mode, setMode } = useTheme();
 
   return (
-    <div className="flex items-center gap-1 rounded-sm border border-border bg-muted p-1">
+    <div
+      className={cn(
+        "flex items-center gap-1 rounded-sm border border-border bg-muted p-1",
+        className,
+      )}
+      {...props}
+    >
       {themeOptions.map(({ value, label, Icon }) => (
         <Button
           aria-pressed={mode === value}
+          className={buttonClassName}
           key={value}
           onClick={() => setMode(value)}
-          size="sm"
+          size={buttonSize}
           type="button"
           variant={mode === value ? "default" : "ghost"}
         >

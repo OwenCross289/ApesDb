@@ -9,6 +9,14 @@ export {
   AvatarImage,
 } from "./lib/avatar";
 export { Input } from "./lib/input";
+export {
+  Popover,
+  PopoverContent,
+  PopoverDescription,
+  PopoverHeader,
+  PopoverTitle,
+  PopoverTrigger,
+} from "./lib/popover";
 export { Separator } from "./lib/separator";
 export {
   Sheet,
