@@ -1,6 +1,13 @@
 export { Button, buttonVariants, type ButtonProps } from "./lib/button";
 export { cn } from "./lib/utils";
-export { Avatar, AvatarFallback, AvatarImage } from "./lib/avatar";
+export {
+  Avatar,
+  AvatarBadge,
+  AvatarFallback,
+  AvatarGroup,
+  AvatarGroupCount,
+  AvatarImage,
+} from "./lib/avatar";
 export { Input } from "./lib/input";
 export { Separator } from "./lib/separator";
 export {
