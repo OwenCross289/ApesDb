@@ -10,12 +10,6 @@ import {
   PopoverHeader,
   PopoverTitle,
   PopoverTrigger,
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
   SidebarMenuButton,
   ThemeModeSelector,
   useSidebar,
@@ -35,33 +29,12 @@ export function AccountMenu({ user, onLogout }: AccountMenuProps) {
   const accountLabel = accountName || "Signed in";
   const accountEmail = user?.email.trim();
   const accountDescription = accountEmail || "Account preferences";
-
-  if (isMobile) {
-    return (
-      <Sheet>
-        <AccountMenuButton accountLabel={accountLabel} render={<SheetTrigger />} user={user} />
-        <SheetContent side="bottom" className="rounded-t-lg">
-          <SheetHeader className="sr-only">
-            <SheetTitle>{accountLabel}</SheetTitle>
-            <SheetDescription>{accountDescription}</SheetDescription>
-          </SheetHeader>
-          <div className="px-6 pt-6 pb-6">
-            <AccountMenuContent
-              accountDescription={accountDescription}
-              accountLabel={accountLabel}
-              onLogout={onLogout}
-              user={user}
-            />
-          </div>
-        </SheetContent>
-      </Sheet>
-    );
-  }
+  const popoverSide = isMobile ? "top" : "right";
 
   return (
     <Popover>
       <AccountMenuButton accountLabel={accountLabel} render={<PopoverTrigger />} user={user} />
-      <PopoverContent side="right" align="end" sideOffset={8}>
+      <PopoverContent side={popoverSide} align="end" sideOffset={8}>
         <PopoverHeader className="sr-only">
           <PopoverTitle>{accountLabel}</PopoverTitle>
           <PopoverDescription>{accountDescription}</PopoverDescription>
