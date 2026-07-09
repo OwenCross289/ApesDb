@@ -10,6 +10,7 @@
 **/*.user
 **/*.suo
 node_modules
+**/node_modules
 .nx
 dist
 coverage

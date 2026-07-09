@@ -6,6 +6,9 @@ COPY ["Directory.Build.props", "./"]
 COPY ["Directory.Packages.props", "./"]
 COPY ["global.json", "./"]
 COPY ["src/backend/ApesDb.Worker/ApesDb.Worker.csproj", "src/backend/ApesDb.Worker/"]
+COPY ["src/backend/ApesDb.Common/ApesDb.Common.csproj", "src/backend/ApesDb.Common/"]
+COPY ["src/backend/ApesDb.Domain/ApesDb.Domain.csproj", "src/backend/ApesDb.Domain/"]
+COPY ["src/backend/sdks/ApesDb.Igdb.Sdk/ApesDb.Igdb.Sdk.csproj", "src/backend/sdks/ApesDb.Igdb.Sdk/"]
 
 RUN dotnet restore "src/backend/ApesDb.Worker/ApesDb.Worker.csproj"
 

@@ -16,17 +16,29 @@ internal sealed class IgdbClient : IIgdbClient
         _httpClient = httpClient;
     }
 
+    public Task<IReadOnlyList<TResource>> QueryAsync<TResource>(
+        string endpoint,
+        string query,
+        CancellationToken cancellationToken
+    )
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(endpoint);
+        ArgumentException.ThrowIfNullOrWhiteSpace(query);
+
+        return PostAsync<IReadOnlyList<TResource>>(endpoint, query, cancellationToken);
+    }
+
     public Task<IReadOnlyList<IgdbPopularityPrimitive>> QueryPopularityPrimitivesAsync(
         string query,
         CancellationToken cancellationToken
     )
     {
-        return PostAsync<IReadOnlyList<IgdbPopularityPrimitive>>("popularity_primitives", query, cancellationToken);
+        return QueryAsync<IgdbPopularityPrimitive>("popularity_primitives", query, cancellationToken);
     }
 
     public Task<IReadOnlyList<IgdbGame>> QueryGamesAsync(string query, CancellationToken cancellationToken)
     {
-        return PostAsync<IReadOnlyList<IgdbGame>>("games", query, cancellationToken);
+        return QueryAsync<IgdbGame>("games", query, cancellationToken);
     }
 
     private async Task<TResponse> PostAsync<TResponse>(

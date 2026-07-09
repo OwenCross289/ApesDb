@@ -1,5 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <UserSecretsId>c18c2a51-7dc4-4e25-9257-2bf31fa9c532</UserSecretsId>
+  </PropertyGroup>
+
   <ItemGroup>
+    <PackageReference Include="EFCore.BulkExtensions" />
     <PackageReference Include="TickerQ" />
     <PackageReference Include="TickerQ.Dashboard" />
     <PackageReference Include="TickerQ.EntityFrameworkCore" />
@@ -8,5 +13,6 @@
   <ItemGroup>
     <ProjectReference Include="..\ApesDb.Common\ApesDb.Common.csproj" />
     <ProjectReference Include="..\ApesDb.Domain\ApesDb.Domain.csproj" />
+    <ProjectReference Include="..\sdks\ApesDb.Igdb.Sdk\ApesDb.Igdb.Sdk.csproj" />
   </ItemGroup>
 </Project>

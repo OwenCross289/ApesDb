@@ -67,11 +67,13 @@ dotnet user-secrets set "Auth0:ClientSecret" "<your-auth0-client-secret>" --proj
 
 ### Local IGDB configuration
 
-IGDB client credentials are also not committed. Set them via user secrets:
+IGDB client credentials are also not committed. Both the API and background worker register the IGDB SDK, so set them on both projects:
 
 ```bash
 dotnet user-secrets set "Igdb:ClientId" "<your-igdb-client-id>" --project src/backend/ApesDb.Api
 dotnet user-secrets set "Igdb:ClientSecret" "<your-igdb-client-secret>" --project src/backend/ApesDb.Api
+dotnet user-secrets set "Igdb:ClientId" "<your-igdb-client-id>" --project src/backend/ApesDb.Worker
+dotnet user-secrets set "Igdb:ClientSecret" "<your-igdb-client-secret>" --project src/backend/ApesDb.Worker
 ```
 
 ## Run the API
@@ -200,4 +202,4 @@ The production compose file expects the following environment variables:
 - `TICKERQ_DASHBOARD_USERNAME`
 - `TICKERQ_DASHBOARD_PASSWORD`
 
-The API and worker read database settings from `Database:ConnectionString`; the API also reads cache settings from `Cache:ConnectionString` and `Cache:Password`. The worker reads TickerQ dashboard settings from `TickerQ:Dashboard:*`. In Docker Compose, use the equivalent `Database__ConnectionString`, `Cache__ConnectionString`, `Cache__Password`, and `TickerQ__Dashboard__*` environment variable names. The deployment compose file fails fast when required secrets are missing.
+The API and worker read database settings and IGDB credentials from `Database:*` and `Igdb:*`; the API also reads cache settings from `Cache:*`, while the worker reads TickerQ dashboard settings from `TickerQ:Dashboard:*`. In Docker Compose, use the equivalent double-underscore environment variable names. The deployment compose file fails fast when required secrets are missing.
