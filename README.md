@@ -152,6 +152,7 @@ docker compose up -d
 ```
 
 Local Redis requires the password `apesdb`. The API's committed local defaults match this through `Cache:ConnectionString=localhost:6379` and `Cache:Password=apesdb`.
+The worker serves the TickerQ dashboard at `http://localhost:8081/tickerq/dashboard` with local development credentials `admin` / `apesdb`.
 
 Stop services:
 
@@ -177,7 +178,7 @@ db/migrations/V2__Add_profile_fields.sql
 
 Flyway tracks applied scripts in the `migrations.flyway_schema_history` table and only runs each migration once. `FLYWAY_BASELINE_ON_MIGRATE` is enabled in Compose so existing databases that were previously migrated by DbUp are adopted at version 1.
 
-Flyway uses `migrations` as its default schema and also manages `public`. App tables should be schema-qualified as `public` in migration scripts.
+Flyway uses `migrations` as its default schema and also manages `public` and `worker`. App tables should be schema-qualified as `public` in migration scripts, and worker-owned scheduler tables should be schema-qualified as `worker`.
 
 The local and deployment compose files run the `flyway` service against Postgres before the app and worker start. To run migrations manually:
 
@@ -196,5 +197,7 @@ The production compose file expects the following environment variables:
 - `IGDB_CLIENT_SECRET`
 - `POSTGRES_PASSWORD`
 - `REDIS_PASSWORD`
+- `TICKERQ_DASHBOARD_USERNAME`
+- `TICKERQ_DASHBOARD_PASSWORD`
 
-The API and worker read database settings from `Database:ConnectionString`; the API also reads cache settings from `Cache:ConnectionString` and `Cache:Password`. In Docker Compose, use the equivalent `Database__ConnectionString`, `Cache__ConnectionString`, and `Cache__Password` environment variable names. The deployment compose file fails fast when required secrets are missing.
+The API and worker read database settings from `Database:ConnectionString`; the API also reads cache settings from `Cache:ConnectionString` and `Cache:Password`. The worker reads TickerQ dashboard settings from `TickerQ:Dashboard:*`. In Docker Compose, use the equivalent `Database__ConnectionString`, `Cache__ConnectionString`, `Cache__Password`, and `TickerQ__Dashboard__*` environment variable names. The deployment compose file fails fast when required secrets are missing.

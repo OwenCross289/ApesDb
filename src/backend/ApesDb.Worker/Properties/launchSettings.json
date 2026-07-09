@@ -1,11 +1,14 @@
 ﻿{
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "ApesDb.Worker": {
+    "https": {
       "commandName": "Project",
       "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "tickerq/dashboard",
+      "applicationUrl": "https://localhost:7251",
       "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
   }
