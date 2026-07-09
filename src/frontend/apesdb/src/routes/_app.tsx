@@ -39,7 +39,7 @@ export const Route = createFileRoute("/_app")({
 function AppLayout() {
   return (
     <TooltipProvider>
-      <SidebarProvider>
+      <SidebarProvider className="min-h-[calc(100svh-3.5rem)]">
         <AppSidebar />
         <SidebarInset>
           <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
