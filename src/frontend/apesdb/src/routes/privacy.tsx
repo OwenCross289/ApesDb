@@ -14,7 +14,7 @@ export const Route = createFileRoute("/privacy")({
 
 function PrivacyPolicy() {
   return (
-    <main className="flex min-h-[calc(100svh-3.5rem)] flex-col bg-background px-6 py-12 text-foreground">
+    <main className="flex min-h-svh flex-col bg-background px-6 py-12 text-foreground">
       <div className="mx-auto w-full max-w-3xl space-y-8">
         <div className="space-y-2">
           <p className="text-sm font-medium uppercase tracking-wider text-muted-foreground">

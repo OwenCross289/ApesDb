@@ -55,7 +55,7 @@ function LoginComponent() {
   }
 
   return (
-    <main className="grid min-h-[calc(100svh-3.5rem)] lg:grid-cols-2">
+    <main className="grid min-h-screen lg:grid-cols-2">
       <section className="relative flex flex-col justify-center px-6 py-12 lg:px-16 xl:px-24">
         <header className="absolute top-0 left-0 flex w-full items-center justify-between p-6">
           <p className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
@@ -79,7 +79,7 @@ function LoginComponent() {
             Continue with Google
           </Button>
           <p className="text-center text-xs text-muted-foreground">
-            By continuing, you agree to {appName}&apos;s Terms of Service and{" "}
+            By continuing, you agree to {appName}&apos;s{" "}
             <Link
               to="/privacy"
               className="font-medium text-foreground underline-offset-4 hover:underline"
