@@ -5,11 +5,11 @@ namespace ApesDb.Api.Features.Games.TopGames;
 
 public sealed class TopGamesEndpoint : EndpointWithoutRequest
 {
-    private readonly IIgdbGameService _gameService;
+    private readonly IIgdbService _igdbService;
 
-    public TopGamesEndpoint(IIgdbGameService gameService)
+    public TopGamesEndpoint(IIgdbService igdbService)
     {
-        _gameService = gameService;
+        _igdbService = igdbService;
     }
 
     public override void Configure()
@@ -25,7 +25,7 @@ public sealed class TopGamesEndpoint : EndpointWithoutRequest
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var games = await _gameService.ListTopGamesAsync(10, ct);
+        var games = await _igdbService.ListTopGamesAsync(10, ct);
 
         await Send.OkAsync(games, ct);
     }

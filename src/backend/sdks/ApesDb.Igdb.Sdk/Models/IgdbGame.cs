@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace ApesDb.Igdb.Sdk.Models;
 
-public sealed record IgdbGame(
+internal sealed record IgdbGame(
     [property: JsonPropertyName("id")] long Id,
     [property: JsonPropertyName("name")] string Name,
     [property: JsonPropertyName("slug")] string? Slug,

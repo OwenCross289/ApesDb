@@ -9,7 +9,6 @@ using Polly;
 using Polly.RateLimiting;
 using Polly.Retry;
 using Polly.Timeout;
-using Refit;
 
 namespace ApesDb.Igdb.Sdk;
 
@@ -37,15 +36,15 @@ public static class IgdbSdkServiceCollectionExtensions
         services.AddHttpClient<IIgdbAccessTokenClient, IgdbAccessTokenClient>();
         services.AddSingleton<IIgdbAccessTokenProvider, IgdbAccessTokenProvider>();
         services.AddTransient<IgdbAuthenticationHandler>();
-        services.AddScoped<IIgdbGameService, IgdbGameService>();
+        services.AddScoped<IIgdbService, IgdbService>();
 
         services
-            .AddRefitClient<IIgdbApi>()
+            .AddHttpClient<IIgdbClient, IgdbClient>()
             .ConfigureHttpClient(
                 (serviceProvider, client) =>
                 {
                     var options = serviceProvider.GetRequiredService<IOptions<IgdbOptions>>().Value;
-                    client.BaseAddress = new Uri(options.BaseUrl);
+                    client.BaseAddress = new Uri($"{options.BaseUrl.TrimEnd('/')}/");
                 }
             )
             .AddHttpMessageHandler<IgdbAuthenticationHandler>()

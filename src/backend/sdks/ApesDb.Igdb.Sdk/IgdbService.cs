@@ -2,13 +2,13 @@ using ApesDb.Igdb.Sdk.Models;
 
 namespace ApesDb.Igdb.Sdk;
 
-public sealed class IgdbGameService : IIgdbGameService
+internal sealed class IgdbService : IIgdbService
 {
-    private readonly IIgdbApi _api;
+    private readonly IIgdbClient _client;
 
-    public IgdbGameService(IIgdbApi api)
+    public IgdbService(IIgdbClient client)
     {
-        _api = api;
+        _client = client;
     }
 
     public async Task<IReadOnlyList<TopIgdbGame>> ListTopGamesAsync(
@@ -24,7 +24,7 @@ public sealed class IgdbGameService : IIgdbGameService
         var popularityQuery =
             "fields game_id,value,popularity_type; " + $"sort value desc; limit {limit}; where popularity_type = 1;";
 
-        var popularity = await _api.QueryPopularityPrimitivesAsync(popularityQuery, cancellationToken);
+        var popularity = await _client.QueryPopularityPrimitivesAsync(popularityQuery, cancellationToken);
 
         if (popularity.Count == 0)
         {
@@ -35,7 +35,7 @@ public sealed class IgdbGameService : IIgdbGameService
         var gamesQuery =
             "fields id,name,slug,summary,total_rating,first_release_date,cover.image_id; "
             + $"where id = ({string.Join(",", gameIds)}); limit {gameIds.Length};";
-        var games = await _api.QueryGamesAsync(gamesQuery, cancellationToken);
+        var games = await _client.QueryGamesAsync(gamesQuery, cancellationToken);
         var gamesById = games.ToDictionary(game => game.Id);
 
         return popularity

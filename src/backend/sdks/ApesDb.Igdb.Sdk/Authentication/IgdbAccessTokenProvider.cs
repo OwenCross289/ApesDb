@@ -2,12 +2,12 @@ using ApesDb.Common;
 
 namespace ApesDb.Igdb.Sdk.Authentication;
 
-public interface IIgdbAccessTokenProvider
+internal interface IIgdbAccessTokenProvider
 {
     Task<string> GetAccessTokenAsync(CancellationToken cancellationToken);
 }
 
-public sealed class IgdbAccessTokenProvider : IIgdbAccessTokenProvider
+internal sealed class IgdbAccessTokenProvider : IIgdbAccessTokenProvider
 {
     private static readonly TimeSpan RefreshSkew = TimeSpan.FromMinutes(5);
     private readonly IIgdbAccessTokenClient _client;
