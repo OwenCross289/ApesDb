@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { Link, createFileRoute, useRouter } from "@tanstack/react-router";
 import { Button, ThemeModeSelector, useTheme } from "@apesdb/ui";
 import { appName } from "@apesdb/common";
 import { useAuth } from "../auth-context";
@@ -79,7 +79,14 @@ function LoginComponent() {
             Continue with Google
           </Button>
           <p className="text-center text-xs text-muted-foreground">
-            By continuing, you agree to {appName}&apos;s Terms of Service and Privacy Policy.
+            By continuing, you agree to {appName}&apos;s{" "}
+            <Link
+              to="/privacy"
+              className="font-medium text-foreground underline-offset-4 hover:underline"
+            >
+              Privacy Policy
+            </Link>
+            .
           </p>
         </div>
       </section>
