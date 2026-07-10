@@ -1,3 +1,4 @@
+using ApesDb.Api.Features.Games;
 using ApesDb.Api.Options;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -33,6 +34,11 @@ public static class ApesDbApiServiceCollectionExtensions
         });
 
         services.AddFusionCache().TryWithAutoSetup();
+        services
+            .AddFusionCache(GameLookupCache.CacheName)
+            .WithCacheKeyPrefix(GameLookupCache.CacheKeyPrefix)
+            .WithDefaultEntryOptions(options => options.SetDuration(GameLookupCache.Expiration))
+            .TryWithAutoSetup();
 
         return services;
     }

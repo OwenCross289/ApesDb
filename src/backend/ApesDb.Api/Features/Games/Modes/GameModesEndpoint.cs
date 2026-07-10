@@ -1,0 +1,44 @@
+using ApesDb.Domain;
+using FastEndpoints;
+using Microsoft.EntityFrameworkCore;
+using ZiggyCreatures.Caching.Fusion;
+
+namespace ApesDb.Api.Features.Games.Modes;
+
+public sealed class GameModesEndpoint : EndpointWithoutRequest<GameModeResponse[]>
+{
+    public const string CacheKey = "modes";
+
+    private readonly ApplicationDbContext _dbContext;
+    private readonly IFusionCache _cache;
+
+    public GameModesEndpoint(ApplicationDbContext dbContext, IFusionCacheProvider cacheProvider)
+    {
+        _dbContext = dbContext;
+        _cache = cacheProvider.GetCache(GameLookupCache.CacheName);
+    }
+
+    public override void Configure()
+    {
+        Get(ApiRoutes.Games.Modes);
+        Summary(summary => summary.Summary = "Lists all synchronized game modes.");
+    }
+
+    public override async Task HandleAsync(CancellationToken ct)
+    {
+        var response = await _cache.GetOrSetAsync(
+            CacheKey,
+            token =>
+                _dbContext
+                    .GameModes.AsNoTracking()
+                    .OrderBy(value => value.Name.ToLower())
+                    .ThenBy(value => value.Name)
+                    .ThenBy(value => value.IgdbId)
+                    .Select(value => new GameModeResponse(value.IgdbId, value.Name))
+                    .ToArrayAsync(token),
+            token: ct
+        );
+
+        await Send.OkAsync(response, ct);
+    }
+}

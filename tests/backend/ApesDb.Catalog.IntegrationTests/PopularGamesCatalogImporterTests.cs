@@ -1,7 +1,12 @@
 using System.Text.Json;
+using ApesDb.Api.Features.Games;
+using ApesDb.Api.Features.Games.Genres;
+using ApesDb.Api.Features.Games.ListGames;
+using ApesDb.Api.Features.Games.Statuses;
 using ApesDb.Api.Features.Games.TopGames;
 using ApesDb.Common;
 using ApesDb.Domain;
+using ApesDb.Domain.Entities;
 using ApesDb.Igdb.Sdk.Models;
 using ApesDb.Worker.Games;
 using DotNet.Testcontainers.Builders;
@@ -10,9 +15,11 @@ using DotNet.Testcontainers.Networks;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Testcontainers.PostgreSql;
 using Xunit;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace ApesDb.Catalog.IntegrationTests;
 
@@ -134,6 +141,178 @@ public sealed class PopularGamesCatalogImporterTests : IClassFixture<CatalogData
         Assert.Equal(400, game.Id);
         Assert.Equal("Database Ranked Game", game.Name);
         Assert.Equal("https://images.igdb.com/igdb/image/upload/t_cover_small_2x/cover400.jpg", game.CoverSmallUrl);
+    }
+
+    [Fact]
+    public async Task ListGamesEndpoint_FiltersJoinedValuesAndReturnsTheListProjection()
+    {
+        await _database.ResetAsync();
+        await using var dbContext = _database.CreateDbContext();
+        var synchronizedAt = new DateTime(2026, 7, 9, 15, 0, 0, DateTimeKind.Utc);
+        var importer = CreateImporter(dbContext, synchronizedAt);
+        await importer.ImportAsync(CreateCatalog(500, "Filterable Game", includeGraph: true));
+
+        var gameId = await dbContext.Games.Where(value => value.IgdbId == 500).Select(value => value.Id).SingleAsync();
+        var company = await dbContext.GameCompanies.SingleAsync();
+        company.Publisher = true;
+        var coopMode = new GameMode
+        {
+            IgdbId = 3,
+            Name = "Co-operative",
+            Slug = "co-operative",
+            CreatedAt = synchronizedAt,
+            UpdatedAt = synchronizedAt,
+            LastSyncedAt = synchronizedAt,
+        };
+        dbContext.GameModes.Add(coopMode);
+        dbContext.GameGameModes.Add(new GameGameMode { GameId = gameId, GameMode = coopMode });
+        await dbContext.SaveChangesAsync();
+
+        var httpContext = new DefaultHttpContext();
+        await using var responseBody = new MemoryStream();
+        httpContext.Response.Body = responseBody;
+        var endpoint = Factory.Create<ListGamesEndpoint>(httpContext, dbContext);
+        var request = new ListGamesRequest
+        {
+            GameTypeIds = [1],
+            GameStatusIds = [0],
+            GenreIds = [999, 10],
+            ThemeIds = [20],
+            GameModeIds = [3],
+            PlayerPerspectiveIds = [40],
+            PlatformIds = [50],
+            Developer = "VELOP",
+            Publisher = "velop",
+            Collection = "series",
+            Franchise = "franchise",
+            Search = "FILTERABLE",
+            IsCoop = true,
+            IsSteam = true,
+            GameKinds = ["main"],
+        };
+
+        await endpoint.HandleAsync(request, CancellationToken.None);
+
+        responseBody.Position = 0;
+        var response = await JsonSerializer.DeserializeAsync<ListGamesResponse>(
+            responseBody,
+            new JsonSerializerOptions(JsonSerializerDefaults.Web)
+        );
+        var game = Assert.Single(response!.Items);
+        Assert.Equal(500, game.Id);
+        Assert.Equal("Filterable Game", game.Name);
+        Assert.Equal(GameKind.Main, game.Kind);
+        Assert.True(game.IsCoop);
+        Assert.True(game.IsSteam);
+        Assert.Equal(["Developer"], game.Developers);
+        Assert.Equal(["Developer"], game.Publishers);
+        Assert.Equal(1, response.TotalCount);
+        Assert.Equal(1, response.Page);
+        Assert.Equal(50, response.PageSize);
+    }
+
+    [Fact]
+    public async Task ListGamesEndpoint_ClassifiesAChildFromTheIncomingRelation()
+    {
+        await _database.ResetAsync();
+        await using var dbContext = _database.CreateDbContext();
+        var importer = CreateImporter(dbContext, new DateTime(2026, 7, 9, 16, 0, 0, DateTimeKind.Utc));
+        await importer.ImportAsync(CreateCatalog(600, "Parent Game", includeGraph: true));
+
+        var httpContext = new DefaultHttpContext();
+        await using var responseBody = new MemoryStream();
+        httpContext.Response.Body = responseBody;
+        var endpoint = Factory.Create<ListGamesEndpoint>(httpContext, dbContext);
+
+        await endpoint.HandleAsync(new ListGamesRequest { GameKinds = ["dlc"], PageSize = 10 }, CancellationToken.None);
+
+        responseBody.Position = 0;
+        var response = await JsonSerializer.DeserializeAsync<ListGamesResponse>(
+            responseBody,
+            new JsonSerializerOptions(JsonSerializerDefaults.Web)
+        );
+        var game = Assert.Single(response!.Items);
+        Assert.Equal(601, game.Id);
+        Assert.Equal(GameKind.Dlc, game.Kind);
+    }
+
+    [Fact]
+    public async Task GameLookupEndpoints_CacheSortedResponsesUsingTheNamedCache()
+    {
+        await _database.ResetAsync();
+        await using var dbContext = _database.CreateDbContext();
+        var synchronizedAt = new DateTime(2026, 7, 9, 17, 0, 0, DateTimeKind.Utc);
+        var importer = CreateImporter(dbContext, synchronizedAt);
+        await importer.ImportAsync(CreateCatalog(700, "Lookup Game", includeGraph: true));
+
+        var services = new ServiceCollection();
+        services
+            .AddFusionCache(GameLookupCache.CacheName)
+            .WithCacheKeyPrefix(GameLookupCache.CacheKeyPrefix)
+            .WithDefaultEntryOptions(options => options.SetDuration(GameLookupCache.Expiration));
+        await using var serviceProvider = services.BuildServiceProvider();
+        var cacheProvider = serviceProvider.GetRequiredService<IFusionCacheProvider>();
+
+        var first = await ListGenresAsync();
+        Assert.Equal([new GenreResponse(10, "Adventure")], first);
+
+        dbContext.Genres.Add(
+            new Genre
+            {
+                IgdbId = 11,
+                Name = "Action",
+                Slug = "action",
+                CreatedAt = synchronizedAt,
+                UpdatedAt = synchronizedAt,
+                LastSyncedAt = synchronizedAt,
+            }
+        );
+        await dbContext.SaveChangesAsync();
+
+        var cached = await ListGenresAsync();
+        Assert.Equal(first, cached);
+
+        var cache = cacheProvider.GetCache(GameLookupCache.CacheName);
+        await cache.RemoveAsync(GameGenresEndpoint.CacheKey);
+        var refreshed = await ListGenresAsync();
+        Assert.Equal([new GenreResponse(11, "Action"), new GenreResponse(10, "Adventure")], refreshed);
+
+        var statuses = await ListStatusesAsync();
+        Assert.Contains(new GameStatusResponse(0, "Released"), statuses);
+
+        async Task<GenreResponse[]> ListGenresAsync()
+        {
+            var httpContext = new DefaultHttpContext();
+            await using var responseBody = new MemoryStream();
+            httpContext.Response.Body = responseBody;
+            var endpoint = Factory.Create<GameGenresEndpoint>(httpContext, dbContext, cacheProvider);
+            await endpoint.HandleAsync(CancellationToken.None);
+
+            responseBody.Position = 0;
+            return (
+                await JsonSerializer.DeserializeAsync<GenreResponse[]>(
+                    responseBody,
+                    new JsonSerializerOptions(JsonSerializerDefaults.Web)
+                )
+            )!;
+        }
+
+        async Task<GameStatusResponse[]> ListStatusesAsync()
+        {
+            var httpContext = new DefaultHttpContext();
+            await using var responseBody = new MemoryStream();
+            httpContext.Response.Body = responseBody;
+            var endpoint = Factory.Create<GameStatusesEndpoint>(httpContext, dbContext, cacheProvider);
+            await endpoint.HandleAsync(CancellationToken.None);
+
+            responseBody.Position = 0;
+            return (
+                await JsonSerializer.DeserializeAsync<GameStatusResponse[]>(
+                    responseBody,
+                    new JsonSerializerOptions(JsonSerializerDefaults.Web)
+                )
+            )!;
+        }
     }
 
     private static PopularGamesCatalogImporter CreateImporter(ApplicationDbContext dbContext, DateTime synchronizedAt)

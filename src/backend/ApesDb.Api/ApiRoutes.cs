@@ -14,7 +14,15 @@ public static class ApiRoutes
 
     public static class Games
     {
+        public const string List = "games";
         public const string Top = "games/top";
+        public const string Types = "games/types";
+        public const string Statuses = "games/statuses";
+        public const string Genres = "games/genres";
+        public const string Themes = "games/themes";
+        public const string Modes = "games/modes";
+        public const string PlayerPerspectives = "games/player-perspectives";
+        public const string Platforms = "games/platforms";
     }
 
     public static class Auth
