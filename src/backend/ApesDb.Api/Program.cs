@@ -66,21 +66,25 @@ app.UseSwaggerGen(uiConfig: ui =>
     ui.DocumentTitle = "ApesDb API";
     ui.CustomHeadContent += """
         <style>
-            .scheme-container .auth-wrapper .authorize { display: none; }
-            .apesdb-login-link {
-                display: inline-block;
-                padding: 4px 16px;
-                background: #007bff;
-                color: white;
-                text-decoration: none;
-                border-radius: 4px;
-                font-weight: bold;
-                font-family: sans-serif;
-                font-size: 14px;
-                line-height: 1.5;
-                border: 1px solid #007bff;
+            .swagger-ui .scheme-container .schemes .auth-wrapper .authorize { display: none !important; }
+            .swagger-ui .apesdb-login-link {
+                display: inline-block !important;
+                padding: 4px 16px !important;
+                background-color: #007bff !important;
+                color: #fff !important;
+                text-decoration: none !important;
+                border-radius: 4px !important;
+                font-weight: bold !important;
+                font-family: sans-serif !important;
+                font-size: 14px !important;
+                line-height: 1.5 !important;
+                border: 1px solid #007bff !important;
             }
-            .apesdb-login-link:hover { background: #0056b3; border-color: #0056b3; }
+            .swagger-ui .apesdb-login-link:hover {
+                background-color: #0056b3 !important;
+                border-color: #0056b3 !important;
+                color: #fff !important;
+            }
         </style>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
