@@ -52,11 +52,13 @@ var app = builder.Build();
 app.UseForwardedHeaders();
 app.UseRouting();
 
-app.Use((context, next) =>
-{
-    context.Request.Scheme = "https";
-    return next();
-});
+app.Use(
+    (context, next) =>
+    {
+        context.Request.Scheme = "https";
+        return next();
+    }
+);
 
 app.UseApesDbAuth();
 app.UseSwaggerGen(uiConfig: ui =>
@@ -88,7 +90,22 @@ app.UseEndpoints(_ => { });
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseSpaStaticFiles();
+    app.UseSpaStaticFiles(
+        new StaticFileOptions
+        {
+            OnPrepareResponse = context =>
+            {
+                if (!string.Equals(context.File.Name, "sw.js", StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+
+                context.Context.Response.Headers.CacheControl = "no-cache, no-store, must-revalidate";
+                context.Context.Response.Headers.Pragma = "no-cache";
+                context.Context.Response.Headers.Expires = "0";
+            },
+        }
+    );
 }
 
 app.UseSpa(spa =>

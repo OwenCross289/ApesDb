@@ -21,6 +21,8 @@ jobs:
           AUTH0_CLIENT_SECRET: dummy
           IGDB_CLIENT_ID: dummy
           IGDB_CLIENT_SECRET: dummy
+          TICKERQ_DASHBOARD_USERNAME: dummy
+          TICKERQ_DASHBOARD_PASSWORD: dummy
         run: |
           docker stack config -c deploy-compose.yml > /tmp/deploy-compose.rendered.yml
           docker stack config -c docker-compose.yml > /tmp/docker-compose.rendered.yml

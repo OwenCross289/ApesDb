@@ -16,18 +16,24 @@ services:
     ports:
       - "8080"
     depends_on:
-      - flyway
+      - migrations
       - redis
 
   worker:
     image: ghcr.io/owencross289/apesdb/worker:latest
     environment:
       DOTNET_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8081
       Database__ConnectionString: Host=postgres;Port=5432;Database=apesdb;Username=apesdb;Password=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
       Cache__ConnectionString: redis:6379
       Cache__Password: ${REDIS_PASSWORD:?REDIS_PASSWORD is required}
+      TickerQ__Dashboard__BasePath: /tickerq/dashboard
+      TickerQ__Dashboard__Username: ${TICKERQ_DASHBOARD_USERNAME:?TICKERQ_DASHBOARD_USERNAME is required}
+      TickerQ__Dashboard__Password: ${TICKERQ_DASHBOARD_PASSWORD:?TICKERQ_DASHBOARD_PASSWORD is required}
+    ports:
+      - "8081"
     depends_on:
-      - flyway
+      - migrations
       - redis
 
   postgres:
@@ -39,8 +45,8 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql
 
-  flyway:
-    image: flyway/flyway:11-alpine
+  migrations:
+    image: ghcr.io/owencross289/apesdb/migrations:latest
     command: migrate
     environment:
       FLYWAY_URL: jdbc:postgresql://postgres:5432/apesdb
@@ -49,11 +55,12 @@ services:
       FLYWAY_CONNECT_RETRIES: "60"
       FLYWAY_BASELINE_ON_MIGRATE: "true"
       FLYWAY_DEFAULT_SCHEMA: migrations
-      FLYWAY_SCHEMAS: migrations,public
-    volumes:
-      - ./db/migrations:/flyway/sql:ro
+      FLYWAY_SCHEMAS: migrations,public,worker
     depends_on:
       - postgres
+    deploy:
+      mode: replicated-job
+      replicas: 1
 
   redis:
     image: redis:8
