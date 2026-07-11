@@ -11,11 +11,18 @@
 // Import Routes
 
 import { Route as rootRoute } from "./routes/__root";
+import { Route as PrivacyImport } from "./routes/privacy";
 import { Route as LoginImport } from "./routes/login";
 import { Route as AppImport } from "./routes/_app";
 import { Route as AppIndexImport } from "./routes/_app.index";
 
 // Create/Update Routes
+
+const PrivacyRoute = PrivacyImport.update({
+  id: "/privacy",
+  path: "/privacy",
+  getParentRoute: () => rootRoute,
+} as any);
 
 const LoginRoute = LoginImport.update({
   id: "/login",
@@ -52,6 +59,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof LoginImport;
       parentRoute: typeof rootRoute;
     };
+    "/privacy": {
+      id: "/privacy";
+      path: "/privacy";
+      fullPath: "/privacy";
+      preLoaderRoute: typeof PrivacyImport;
+      parentRoute: typeof rootRoute;
+    };
     "/_app/": {
       id: "/_app/";
       path: "/";
@@ -77,11 +91,13 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren);
 export interface FileRoutesByFullPath {
   "": typeof AppRouteWithChildren;
   "/login": typeof LoginRoute;
+  "/privacy": typeof PrivacyRoute;
   "/": typeof AppIndexRoute;
 }
 
 export interface FileRoutesByTo {
   "/login": typeof LoginRoute;
+  "/privacy": typeof PrivacyRoute;
   "/": typeof AppIndexRoute;
 }
 
@@ -89,26 +105,29 @@ export interface FileRoutesById {
   __root__: typeof rootRoute;
   "/_app": typeof AppRouteWithChildren;
   "/login": typeof LoginRoute;
+  "/privacy": typeof PrivacyRoute;
   "/_app/": typeof AppIndexRoute;
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "" | "/login" | "/";
+  fullPaths: "" | "/login" | "/privacy" | "/";
   fileRoutesByTo: FileRoutesByTo;
-  to: "/login" | "/";
-  id: "__root__" | "/_app" | "/login" | "/_app/";
+  to: "/login" | "/privacy" | "/";
+  id: "__root__" | "/_app" | "/login" | "/privacy" | "/_app/";
   fileRoutesById: FileRoutesById;
 }
 
 export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren;
   LoginRoute: typeof LoginRoute;
+  PrivacyRoute: typeof PrivacyRoute;
 }
 
 const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
+  PrivacyRoute: PrivacyRoute,
 };
 
 export const routeTree = rootRoute
@@ -122,7 +141,8 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/_app",
-        "/login"
+        "/login",
+        "/privacy"
       ]
     },
     "/_app": {
@@ -133,6 +153,9 @@ export const routeTree = rootRoute
     },
     "/login": {
       "filePath": "login.tsx"
+    },
+    "/privacy": {
+      "filePath": "privacy.tsx"
     },
     "/_app/": {
       "filePath": "_app.index.tsx",

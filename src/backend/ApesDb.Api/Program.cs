@@ -4,7 +4,6 @@ using ApesDb.Common;
 using ApesDb.Domain;
 using ApesDb.Igdb.Sdk;
 using FastEndpoints;
-using FastEndpoints.Swagger;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +17,7 @@ builder.Services.AddApesDbAuth(builder.Configuration);
 builder.Services.AddIgdbSdk(builder.Configuration);
 
 builder.Services.AddFastEndpoints();
-builder.Services.SwaggerDocument();
+builder.Services.AddApesDbSwagger();
 builder.Services.AddSpaStaticFiles(options =>
 {
     options.RootPath = "wwwroot";
@@ -38,7 +37,7 @@ app.Use(
 );
 
 app.UseApesDbAuth();
-app.UseSwaggerGen();
+app.UseApesDbSwagger();
 app.UseFastEndpoints(config => config.Endpoints.RoutePrefix = ApiRoutes.Api.Prefix);
 app.UseEndpoints(_ => { });
 
