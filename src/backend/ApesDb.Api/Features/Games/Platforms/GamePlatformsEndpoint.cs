@@ -33,8 +33,8 @@ public sealed class GamePlatformsEndpoint : EndpointWithoutRequest<PlatformRespo
                     .Platforms.AsNoTracking()
                     .OrderBy(value => value.Name.ToLower())
                     .ThenBy(value => value.Name)
-                    .ThenBy(value => value.IgdbId)
-                    .Select(value => new PlatformResponse(value.IgdbId, value.Name))
+                    .ThenBy(value => value.Id)
+                    .Select(value => new PlatformResponse(value.Id, value.Name))
                     .ToArrayAsync(token),
             token: ct
         );

@@ -5,9 +5,7 @@ namespace ApesDb.Domain.Entities;
 
 public sealed class Game : IIgdbEntity
 {
-    public Guid Id { get; set; } = Guid.CreateVersion7();
-
-    public long IgdbId { get; set; }
+    public long Id { get; set; }
 
     public required string Name { get; set; }
 
@@ -25,11 +23,11 @@ public sealed class Game : IIgdbEntity
 
     public string? IgdbUrl { get; set; }
 
-    public Guid? GameTypeId { get; set; }
+    public long? GameTypeId { get; set; }
 
     public GameType? GameType { get; set; }
 
-    public Guid? GameStatusId { get; set; }
+    public long? GameStatusId { get; set; }
 
     public GameStatus? GameStatus { get; set; }
 
@@ -56,9 +54,7 @@ public sealed class Game : IIgdbEntity
 
 public sealed class GameType : IIgdbEntity
 {
-    public Guid Id { get; set; } = Guid.CreateVersion7();
-
-    public long IgdbId { get; set; }
+    public long Id { get; set; }
 
     public required string Name { get; set; }
 
@@ -75,9 +71,7 @@ public sealed class GameType : IIgdbEntity
 
 public sealed class GameStatus : IIgdbEntity
 {
-    public Guid Id { get; set; } = Guid.CreateVersion7();
-
-    public long IgdbId { get; set; }
+    public long Id { get; set; }
 
     public required string Name { get; set; }
 
@@ -92,9 +86,30 @@ public sealed class GameStatus : IIgdbEntity
     public DateTime LastSyncedAt { get; set; }
 }
 
+public sealed class PopularityType : IIgdbEntity
+{
+    public long Id { get; set; }
+
+    public required string Name { get; set; }
+
+    public long? ExternalPopularitySourceId { get; set; }
+
+    public Guid? Checksum { get; set; }
+
+    public DateTime? IgdbUpdatedAt { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public DateTime UpdatedAt { get; set; }
+
+    public DateTime LastSyncedAt { get; set; }
+}
+
 public sealed class PopularGame
 {
-    public Guid GameId { get; set; }
+    public long Id { get; set; }
+
+    public long GameId { get; set; }
 
     public Game Game { get; set; } = null!;
 
@@ -104,7 +119,9 @@ public sealed class PopularGame
 
     public decimal Score { get; set; }
 
-    public long IgdbPopularityTypeId { get; set; }
+    public long PopularityTypeId { get; set; }
+
+    public PopularityType PopularityType { get; set; } = null!;
 
     public DateTime CalculatedAt { get; set; }
 
@@ -124,11 +141,11 @@ public enum GameRelationType
 
 public sealed class GameRelation
 {
-    public Guid GameId { get; set; }
+    public long GameId { get; set; }
 
     public Game Game { get; set; } = null!;
 
-    public Guid RelatedGameId { get; set; }
+    public long RelatedGameId { get; set; }
 
     public Game RelatedGame { get; set; } = null!;
 
@@ -194,13 +211,27 @@ public sealed class GameStatusConfiguration : IEntityTypeConfiguration<GameStatu
     }
 }
 
+public sealed class PopularityTypeConfiguration : IEntityTypeConfiguration<PopularityType>
+{
+    public void Configure(EntityTypeBuilder<PopularityType> popularityType)
+    {
+        popularityType.ToTable("PopularityTypes");
+        popularityType.ConfigureIgdbEntity();
+        popularityType.HasIndex(value => value.ExternalPopularitySourceId);
+        popularityType.Property(value => value.Name).HasMaxLength(256);
+    }
+}
+
 public sealed class PopularGameConfiguration : IEntityTypeConfiguration<PopularGame>
 {
     public void Configure(EntityTypeBuilder<PopularGame> popularGame)
     {
         popularGame.ToTable("PopularGames");
-        popularGame.HasKey(value => value.GameId);
+        popularGame.HasKey(value => value.Id);
+        popularGame.Property(value => value.Id).ValueGeneratedNever();
+        popularGame.HasIndex(value => value.GameId).IsUnique();
         popularGame.HasIndex(value => value.Rank).IsUnique();
+        popularGame.HasIndex(value => value.PopularityTypeId);
         popularGame.Property(value => value.Score).HasPrecision(28, 18);
         popularGame.Property(value => value.SyncedAt).HasDefaultValueSql("now()");
         popularGame.ToTable(table =>
@@ -214,6 +245,11 @@ public sealed class PopularGameConfiguration : IEntityTypeConfiguration<PopularG
             .WithOne()
             .HasForeignKey<PopularGame>(value => value.GameId)
             .OnDelete(DeleteBehavior.Cascade);
+        popularGame
+            .HasOne(value => value.PopularityType)
+            .WithMany()
+            .HasForeignKey(value => value.PopularityTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
 

@@ -33,8 +33,8 @@ public sealed class GameTypesEndpoint : EndpointWithoutRequest<GameTypeResponse[
                     .GameTypes.AsNoTracking()
                     .OrderBy(value => value.Name.ToLower())
                     .ThenBy(value => value.Name)
-                    .ThenBy(value => value.IgdbId)
-                    .Select(value => new GameTypeResponse(value.IgdbId, value.Name))
+                    .ThenBy(value => value.Id)
+                    .Select(value => new GameTypeResponse(value.Id, value.Name))
                     .ToArrayAsync(token),
             token: ct
         );

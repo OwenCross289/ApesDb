@@ -35,7 +35,7 @@ public sealed class GameStatusesEndpoint : EndpointWithoutRequest<GameStatusResp
             {
                 var stored = await _dbContext
                     .GameStatuses.AsNoTracking()
-                    .Select(value => new GameStatusResponse(value.IgdbId, value.Name))
+                    .Select(value => new GameStatusResponse(value.Id, value.Name))
                     .ToArrayAsync(token);
                 var values = stored.Any(value => value.Id == ReleasedStatusId)
                     ? stored

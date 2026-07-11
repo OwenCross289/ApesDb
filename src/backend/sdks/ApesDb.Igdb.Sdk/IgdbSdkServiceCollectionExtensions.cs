@@ -62,22 +62,25 @@ public static class IgdbSdkServiceCollectionExtensions
                             ShouldHandle = static args => ValueTask.FromResult(ShouldRetry(args.Outcome)),
                         }
                     );
-                    builder.AddRateLimiter(
-                        new SlidingWindowRateLimiter(
-                            new SlidingWindowRateLimiterOptions
-                            {
-                                PermitLimit = 4,
-                                Window = TimeSpan.FromSeconds(1),
-                                SegmentsPerWindow = 4,
-                                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-                                QueueLimit = 0,
-                            }
-                        )
-                    );
+                    builder.AddRateLimiter(CreateRateLimiter());
                 }
             );
 
         return services;
+    }
+
+    internal static SlidingWindowRateLimiter CreateRateLimiter()
+    {
+        return new SlidingWindowRateLimiter(
+            new SlidingWindowRateLimiterOptions
+            {
+                PermitLimit = 4,
+                Window = TimeSpan.FromSeconds(1),
+                SegmentsPerWindow = 4,
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                QueueLimit = int.MaxValue,
+            }
+        );
     }
 
     private static bool ShouldRetry(Outcome<HttpResponseMessage> outcome)

@@ -8,7 +8,7 @@ namespace ApesDb.Api.Features.Games.ListGames;
 public sealed class ListGamesEndpoint : Endpoint<ListGamesRequest, ListGamesResponse>
 {
     private const string CoopGameModeSlug = "co-operative";
-    private const string SteamSourceName = "Steam";
+    private const long SteamSourceId = 1;
 
     private readonly ApplicationDbContext _dbContext;
 
@@ -38,19 +38,19 @@ public sealed class ListGamesEndpoint : Endpoint<ListGamesRequest, ListGamesResp
                 : await query
                     .OrderBy(game => game.Name.ToLower())
                     .ThenBy(game => game.Name)
-                    .ThenBy(game => game.IgdbId)
+                    .ThenBy(game => game.Id)
                     .Skip((int)skip)
                     .Take(request.PageSize)
                     .Select(game => new GameProjection(
                         game.Id,
-                        game.IgdbId,
+                        game.Id,
                         game.CoverSmallUrl,
                         game.Name,
                         _dbContext.GameGameModes.Any(link =>
                             link.GameId == game.Id && link.GameMode.Slug == CoopGameModeSlug
                         ),
-                        _dbContext.GameExternalIdentifiers.Any(identifier =>
-                            identifier.GameId == game.Id && identifier.ExternalGameSource.Name == SteamSourceName
+                        _dbContext.ExternalGames.Any(identifier =>
+                            identifier.GameId == game.Id && identifier.ExternalGameSourceId == SteamSourceId
                         ),
                         _dbContext.GameRelations.Any(relation =>
                             relation.RelatedGameId == game.Id
@@ -105,7 +105,7 @@ public sealed class ListGamesEndpoint : Endpoint<ListGamesRequest, ListGamesResp
     {
         if (NormalizeIds(request.GameTypeIds) is { Length: > 0 } gameTypeIds)
         {
-            query = query.Where(game => game.GameType != null && gameTypeIds.Contains(game.GameType.IgdbId));
+            query = query.Where(game => game.GameType != null && gameTypeIds.Contains(game.GameType.Id));
         }
 
         if (NormalizeIds(request.GameStatusIds) is { Length: > 0 } gameStatusIds)
@@ -113,30 +113,28 @@ public sealed class ListGamesEndpoint : Endpoint<ListGamesRequest, ListGamesResp
             var includesReleased = gameStatusIds.Contains(0);
             query = query.Where(game =>
                 (includesReleased && game.GameStatusId == null)
-                || (game.GameStatus != null && gameStatusIds.Contains(game.GameStatus.IgdbId))
+                || (game.GameStatus != null && gameStatusIds.Contains(game.GameStatus.Id))
             );
         }
 
         if (NormalizeIds(request.GenreIds) is { Length: > 0 } genreIds)
         {
             query = query.Where(game =>
-                _dbContext.GameGenres.Any(link => link.GameId == game.Id && genreIds.Contains(link.Genre.IgdbId))
+                _dbContext.GameGenres.Any(link => link.GameId == game.Id && genreIds.Contains(link.Genre.Id))
             );
         }
 
         if (NormalizeIds(request.ThemeIds) is { Length: > 0 } themeIds)
         {
             query = query.Where(game =>
-                _dbContext.GameThemes.Any(link => link.GameId == game.Id && themeIds.Contains(link.Theme.IgdbId))
+                _dbContext.GameThemes.Any(link => link.GameId == game.Id && themeIds.Contains(link.Theme.Id))
             );
         }
 
         if (NormalizeIds(request.GameModeIds) is { Length: > 0 } gameModeIds)
         {
             query = query.Where(game =>
-                _dbContext.GameGameModes.Any(link =>
-                    link.GameId == game.Id && gameModeIds.Contains(link.GameMode.IgdbId)
-                )
+                _dbContext.GameGameModes.Any(link => link.GameId == game.Id && gameModeIds.Contains(link.GameMode.Id))
             );
         }
 
@@ -144,7 +142,7 @@ public sealed class ListGamesEndpoint : Endpoint<ListGamesRequest, ListGamesResp
         {
             query = query.Where(game =>
                 _dbContext.GamePlayerPerspectives.Any(link =>
-                    link.GameId == game.Id && perspectiveIds.Contains(link.PlayerPerspective.IgdbId)
+                    link.GameId == game.Id && perspectiveIds.Contains(link.PlayerPerspective.Id)
                 )
             );
         }
@@ -152,9 +150,7 @@ public sealed class ListGamesEndpoint : Endpoint<ListGamesRequest, ListGamesResp
         if (NormalizeIds(request.PlatformIds) is { Length: > 0 } platformIds)
         {
             query = query.Where(game =>
-                _dbContext.GamePlatforms.Any(link =>
-                    link.GameId == game.Id && platformIds.Contains(link.Platform.IgdbId)
-                )
+                _dbContext.GamePlatforms.Any(link => link.GameId == game.Id && platformIds.Contains(link.Platform.Id))
             );
         }
 
@@ -214,8 +210,8 @@ public sealed class ListGamesEndpoint : Endpoint<ListGamesRequest, ListGamesResp
         if (request.IsSteam is { } isSteam)
         {
             query = query.Where(game =>
-                _dbContext.GameExternalIdentifiers.Any(identifier =>
-                    identifier.GameId == game.Id && identifier.ExternalGameSource.Name == SteamSourceName
+                _dbContext.ExternalGames.Any(identifier =>
+                    identifier.GameId == game.Id && identifier.ExternalGameSourceId == SteamSourceId
                 ) == isSteam
             );
         }
@@ -300,7 +296,7 @@ public sealed class ListGamesEndpoint : Endpoint<ListGamesRequest, ListGamesResp
 
     private static string[] ListCompanyNames(
         IEnumerable<GameCompanyProjection> companies,
-        Guid gameId,
+        long gameId,
         Func<GameCompanyProjection, bool> roleSelector
     )
     {
@@ -329,7 +325,7 @@ public sealed class ListGamesEndpoint : Endpoint<ListGamesRequest, ListGamesResp
     }
 
     private sealed record GameProjection(
-        Guid InternalId,
+        long InternalId,
         long Id,
         string? CoverSmallUrl,
         string Name,
@@ -340,5 +336,5 @@ public sealed class ListGamesEndpoint : Endpoint<ListGamesRequest, ListGamesResp
         bool IsDlc
     );
 
-    private sealed record GameCompanyProjection(Guid GameId, string Name, bool Developer, bool Publisher);
+    private sealed record GameCompanyProjection(long GameId, string Name, bool Developer, bool Publisher);
 }

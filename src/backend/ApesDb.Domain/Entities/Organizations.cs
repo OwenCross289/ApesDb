@@ -5,9 +5,7 @@ namespace ApesDb.Domain.Entities;
 
 public sealed class Company : IIgdbEntity
 {
-    public Guid Id { get; set; } = Guid.CreateVersion7();
-
-    public long IgdbId { get; set; }
+    public long Id { get; set; }
 
     public required string Name { get; set; }
 
@@ -38,15 +36,13 @@ public sealed class Company : IIgdbEntity
 
 public sealed class GameCompany : IIgdbEntity
 {
-    public Guid Id { get; set; } = Guid.CreateVersion7();
+    public long Id { get; set; }
 
-    public long IgdbId { get; set; }
-
-    public Guid GameId { get; set; }
+    public long GameId { get; set; }
 
     public Game Game { get; set; } = null!;
 
-    public Guid CompanyId { get; set; }
+    public long CompanyId { get; set; }
 
     public Company Company { get; set; } = null!;
 
@@ -71,9 +67,7 @@ public sealed class GameCompany : IIgdbEntity
 
 public sealed class Collection : IIgdbEntity
 {
-    public Guid Id { get; set; } = Guid.CreateVersion7();
-
-    public long IgdbId { get; set; }
+    public long Id { get; set; }
 
     public required string Name { get; set; }
 
@@ -94,20 +88,18 @@ public sealed class Collection : IIgdbEntity
 
 public sealed class GameCollection
 {
-    public Guid GameId { get; set; }
+    public long GameId { get; set; }
 
     public Game Game { get; set; } = null!;
 
-    public Guid CollectionId { get; set; }
+    public long CollectionId { get; set; }
 
     public Collection Collection { get; set; } = null!;
 }
 
 public sealed class Franchise : IIgdbEntity
 {
-    public Guid Id { get; set; } = Guid.CreateVersion7();
-
-    public long IgdbId { get; set; }
+    public long Id { get; set; }
 
     public required string Name { get; set; }
 
@@ -128,11 +120,11 @@ public sealed class Franchise : IIgdbEntity
 
 public sealed class GameFranchise
 {
-    public Guid GameId { get; set; }
+    public long GameId { get; set; }
 
     public Game Game { get; set; } = null!;
 
-    public Guid FranchiseId { get; set; }
+    public long FranchiseId { get; set; }
 
     public Franchise Franchise { get; set; } = null!;
 }

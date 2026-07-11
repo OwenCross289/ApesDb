@@ -1,301 +1,338 @@
 using ApesDb.Igdb.Sdk.Models;
-using Microsoft.Extensions.Logging;
 
 namespace ApesDb.Igdb.Sdk;
 
 internal sealed class IgdbService : IIgdbService
 {
-    private const int PopularityPageSize = 500;
-    private const int HydrationBatchSize = 200;
+    internal const int PageSize = 500;
+
+    private const string NamedResourceFields = "id,name,slug,url,checksum,updated_at";
+    private const string CoverFields = "cover.id,cover.image_id,cover.width,cover.height,cover.url,cover.checksum";
+    private const string CompanyLogoFields = "logo.id,logo.image_id,logo.width,logo.height,logo.url,logo.checksum";
+    private const string PlatformLogoFields =
+        "platform_logo.id,platform_logo.image_id,platform_logo.width,platform_logo.height,"
+        + "platform_logo.url,platform_logo.checksum";
     private const string GameFields =
         "id,name,slug,summary,storyline,total_rating,total_rating_count,first_release_date,url,"
-        + "game_type,game_status,cover.id,cover.image_id,cover.width,cover.height,cover.url,cover.checksum,"
-        + "dlcs,expansions,standalone_expansions,genres,themes,game_modes,player_perspectives,platforms,"
-        + "external_games,involved_companies,collections,franchise,franchises,checksum,updated_at";
-    private const string NamedResourceFields = "id,name,slug,url,checksum,updated_at";
+        + "game_type,game_status,"
+        + CoverFields
+        + ",dlcs,expansions,standalone_expansions,genres,themes,game_modes,player_perspectives,"
+        + "platforms,collections,franchise,franchises,checksum,updated_at";
 
     private readonly IIgdbClient _client;
-    private readonly ILogger<IgdbService> _logger;
 
-    public IgdbService(IIgdbClient client, ILogger<IgdbService> logger)
+    public IgdbService(IIgdbClient client)
     {
         _client = client;
-        _logger = logger;
     }
 
-    public async Task<IReadOnlyList<TopIgdbGame>> ListTopGamesAsync(
-        int limit = 10,
+    public Task<IReadOnlyList<IgdbGameType>> FetchGameTypesPageAsync(
+        long afterId,
+        IgdbSyncWindow? window = null,
         CancellationToken cancellationToken = default
     )
     {
-        if (limit <= 0)
-        {
-            return [];
-        }
-
-        var popularityQuery =
-            "fields game_id,value,popularity_type; " + $"sort value desc; limit {limit}; where popularity_type = 1;";
-
-        var popularity = await _client.QueryPopularityPrimitivesAsync(popularityQuery, cancellationToken);
-
-        if (popularity.Count == 0)
-        {
-            return [];
-        }
-
-        var gameIds = popularity.Select(game => game.GameId).Distinct().ToArray();
-        var gamesQuery =
-            "fields id,name,slug,summary,total_rating,first_release_date,cover.image_id; "
-            + $"where id = ({string.Join(",", gameIds)}); limit {gameIds.Length};";
-        var games = await _client.QueryGamesAsync(gamesQuery, cancellationToken);
-        var gamesById = games.Where(game => !string.IsNullOrWhiteSpace(game.Name)).ToDictionary(game => game.Id);
-
-        return popularity
-            .Select(
-                (entry, index) =>
-                    gamesById.TryGetValue(entry.GameId, out var game)
-                        ? new TopIgdbGame(
-                            index + 1,
-                            game.Id,
-                            game.Name!,
-                            game.Slug,
-                            game.Summary,
-                            game.TotalRating,
-                            ToDateTimeOffset(game.FirstReleaseDate),
-                            game.Cover?.ImageId,
-                            (double)entry.Value
-                        )
-                        : null
-            )
-            .OfType<TopIgdbGame>()
-            .ToArray();
-    }
-
-    public async Task<IgdbPopularCatalog> FetchPopularCatalogAsync(
-        int targetCount = 1000,
-        CancellationToken cancellationToken = default
-    )
-    {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(targetCount);
-
-        var popularityTypeResource = await ResolvePopularityTypeAsync(cancellationToken);
-        var mainGameTypeResource = await ResolveMainGameTypeAsync(cancellationToken);
-        var rankedGames = await FetchRankedMainGamesAsync(
-            popularityTypeResource.Id,
-            mainGameTypeResource.Id,
-            targetCount,
-            cancellationToken
-        );
-
-        var baseGameIds = rankedGames.Select(entry => entry.Primitive.GameId).ToArray();
-        var baseGames = await QueryByIdsAsync<IgdbGame>("games", GameFields, baseGameIds, cancellationToken);
-        ValidateBaseGames(baseGameIds, baseGames);
-
-        var proposedRelations = CreateRelations(baseGames);
-        var relatedGameIds = proposedRelations.Select(relation => relation.RelatedGameId).Except(baseGameIds).ToArray();
-        var relatedGames = await QueryByIdsAsync<IgdbGame>("games", GameFields, relatedGameIds, cancellationToken);
-        var validRelatedGames = relatedGames.Where(HasIdentity).ToArray();
-        var allGames = baseGames
-            .Concat(validRelatedGames)
-            .GroupBy(game => game.Id)
-            .Select(group => group.First())
-            .ToArray();
-        var gameIdSet = allGames.Select(game => game.Id).ToHashSet();
-        var relations = proposedRelations.Where(relation => gameIdSet.Contains(relation.RelatedGameId)).ToArray();
-
-        if (relations.Length != proposedRelations.Count)
-        {
-            _logger.LogWarning(
-                "IGDB omitted or returned invalid data for {SkippedRelationCount} related games; those relations were skipped.",
-                proposedRelations.Count - relations.Length
-            );
-        }
-
-        var externalResources = await QueryByIdsAsync<IgdbExternalGameResource>(
-            "external_games",
-            "id,game,external_game_source,platform,uid,name,url,year,checksum,updated_at",
-            CollectIds(allGames, game => game.ExternalGameIds),
-            cancellationToken
-        );
-
-        var platformIds = CollectIds(allGames, game => game.PlatformIds)
-            .Concat(
-                externalResources
-                    .Where(resource => resource.PlatformId.HasValue)
-                    .Select(resource => resource.PlatformId!.Value)
-            )
-            .Distinct()
-            .ToArray();
-        var platformResources = await QueryByIdsAsync<IgdbPlatformResource>(
-            "platforms",
-            "id,name,abbreviation,alternative_name,slug,platform_type,generation,summary,url,"
-                + "platform_logo.id,platform_logo.image_id,platform_logo.width,platform_logo.height,"
-                + "platform_logo.url,platform_logo.checksum,websites,checksum,updated_at",
-            platformIds,
-            cancellationToken
-        );
-        var validPlatformResources = platformResources.Where(resource => HasName(resource.Name)).ToArray();
-
-        var platformWebsiteResources = await QueryByIdsAsync<IgdbPlatformWebsiteResource>(
-            "platform_websites",
-            "id,type,url,trusted,checksum",
-            validPlatformResources.SelectMany(resource => resource.WebsiteIds ?? []),
-            cancellationToken
-        );
-        var websiteTypeResources = await QueryByIdsAsync<IgdbWebsiteTypeResource>(
-            "website_types",
-            "id,type,checksum,updated_at",
-            platformWebsiteResources.Select(resource => resource.WebsiteTypeId),
-            cancellationToken
-        );
-        var platformTypeResources = await QueryByIdsAsync<IgdbNamedResource>(
-            "platform_types",
-            "id,name,checksum,updated_at",
-            validPlatformResources
-                .Where(resource => resource.PlatformTypeId.HasValue)
-                .Select(resource => resource.PlatformTypeId!.Value),
-            cancellationToken
-        );
-
-        var genreResources = await QueryByIdsAsync<IgdbNamedResource>(
-            "genres",
-            NamedResourceFields,
-            CollectIds(allGames, game => game.GenreIds),
-            cancellationToken
-        );
-        var themeResources = await QueryByIdsAsync<IgdbNamedResource>(
-            "themes",
-            NamedResourceFields,
-            CollectIds(allGames, game => game.ThemeIds),
-            cancellationToken
-        );
-        var gameModeResources = await QueryByIdsAsync<IgdbNamedResource>(
-            "game_modes",
-            NamedResourceFields,
-            CollectIds(allGames, game => game.GameModeIds),
-            cancellationToken
-        );
-        var perspectiveResources = await QueryByIdsAsync<IgdbNamedResource>(
-            "player_perspectives",
-            NamedResourceFields,
-            CollectIds(allGames, game => game.PlayerPerspectiveIds),
-            cancellationToken
-        );
-
-        var gameTypeResources = await QueryByIdsAsync<IgdbGameTypeResource>(
+        return FetchPageAsync<IgdbGameTypeResource, IgdbGameType>(
             "game_types",
             "id,type,checksum,updated_at",
-            allGames.Where(game => game.GameTypeId.HasValue).Select(game => game.GameTypeId!.Value),
+            afterId,
+            window,
+            resource => new IgdbGameType(
+                resource.Id,
+                resource.Name,
+                resource.Checksum,
+                ToDateTimeOffset(resource.UpdatedAt)
+            ),
             cancellationToken
         );
-        var gameStatusResources = await QueryByIdsAsync<IgdbGameStatusResource>(
+    }
+
+    public Task<IReadOnlyList<IgdbGameStatus>> FetchGameStatusesPageAsync(
+        long afterId,
+        IgdbSyncWindow? window = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return FetchPageAsync<IgdbGameStatusResource, IgdbGameStatus>(
             "game_statuses",
             "id,status,checksum,updated_at",
-            allGames.Where(game => game.GameStatusId.HasValue).Select(game => game.GameStatusId!.Value),
+            afterId,
+            window,
+            resource => new IgdbGameStatus(
+                resource.Id,
+                resource.Name,
+                resource.Checksum,
+                ToDateTimeOffset(resource.UpdatedAt)
+            ),
             cancellationToken
         );
+    }
 
-        var externalSourceResources = await QueryByIdsAsync<IgdbExternalGameSourceResource>(
+    public Task<IReadOnlyList<IgdbGenre>> FetchGenresPageAsync(
+        long afterId,
+        IgdbSyncWindow? window = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return FetchPageAsync<IgdbNamedResource, IgdbGenre>(
+            "genres",
+            NamedResourceFields,
+            afterId,
+            window,
+            resource => new IgdbGenre(
+                resource.Id,
+                resource.Name,
+                resource.Slug,
+                resource.Url,
+                resource.Checksum,
+                ToDateTimeOffset(resource.UpdatedAt)
+            ),
+            cancellationToken
+        );
+    }
+
+    public Task<IReadOnlyList<IgdbTheme>> FetchThemesPageAsync(
+        long afterId,
+        IgdbSyncWindow? window = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return FetchPageAsync<IgdbNamedResource, IgdbTheme>(
+            "themes",
+            NamedResourceFields,
+            afterId,
+            window,
+            resource => new IgdbTheme(
+                resource.Id,
+                resource.Name,
+                resource.Slug,
+                resource.Url,
+                resource.Checksum,
+                ToDateTimeOffset(resource.UpdatedAt)
+            ),
+            cancellationToken
+        );
+    }
+
+    public Task<IReadOnlyList<IgdbGameMode>> FetchGameModesPageAsync(
+        long afterId,
+        IgdbSyncWindow? window = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return FetchPageAsync<IgdbNamedResource, IgdbGameMode>(
+            "game_modes",
+            NamedResourceFields,
+            afterId,
+            window,
+            resource => new IgdbGameMode(
+                resource.Id,
+                resource.Name,
+                resource.Slug,
+                resource.Url,
+                resource.Checksum,
+                ToDateTimeOffset(resource.UpdatedAt)
+            ),
+            cancellationToken
+        );
+    }
+
+    public Task<IReadOnlyList<IgdbPlayerPerspective>> FetchPlayerPerspectivesPageAsync(
+        long afterId,
+        IgdbSyncWindow? window = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return FetchPageAsync<IgdbNamedResource, IgdbPlayerPerspective>(
+            "player_perspectives",
+            NamedResourceFields,
+            afterId,
+            window,
+            resource => new IgdbPlayerPerspective(
+                resource.Id,
+                resource.Name,
+                resource.Slug,
+                resource.Url,
+                resource.Checksum,
+                ToDateTimeOffset(resource.UpdatedAt)
+            ),
+            cancellationToken
+        );
+    }
+
+    public Task<IReadOnlyList<IgdbPlatformType>> FetchPlatformTypesPageAsync(
+        long afterId,
+        IgdbSyncWindow? window = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return FetchPageAsync<IgdbNamedResource, IgdbPlatformType>(
+            "platform_types",
+            "id,name,checksum,updated_at",
+            afterId,
+            window,
+            resource => new IgdbPlatformType(
+                resource.Id,
+                resource.Name,
+                resource.Checksum,
+                ToDateTimeOffset(resource.UpdatedAt)
+            ),
+            cancellationToken
+        );
+    }
+
+    public Task<IReadOnlyList<IgdbWebsiteType>> FetchWebsiteTypesPageAsync(
+        long afterId,
+        IgdbSyncWindow? window = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return FetchPageAsync<IgdbWebsiteTypeResource, IgdbWebsiteType>(
+            "website_types",
+            "id,type,checksum,updated_at",
+            afterId,
+            window,
+            resource => new IgdbWebsiteType(
+                resource.Id,
+                resource.Name,
+                resource.Checksum,
+                ToDateTimeOffset(resource.UpdatedAt)
+            ),
+            cancellationToken
+        );
+    }
+
+    public Task<IReadOnlyList<IgdbPopularityType>> FetchPopularityTypesPageAsync(
+        long afterId,
+        IgdbSyncWindow? window = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return FetchPageAsync<IgdbPopularityTypeResource, IgdbPopularityType>(
+            "popularity_types",
+            "id,name,external_popularity_source,checksum,updated_at",
+            afterId,
+            window,
+            resource => new IgdbPopularityType(
+                resource.Id,
+                resource.Name,
+                resource.ExternalPopularitySourceId,
+                resource.Checksum,
+                ToDateTimeOffset(resource.UpdatedAt)
+            ),
+            cancellationToken
+        );
+    }
+
+    public Task<IReadOnlyList<IgdbExternalGameSource>> FetchExternalGameSourcesPageAsync(
+        long afterId,
+        IgdbSyncWindow? window = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return FetchPageAsync<IgdbExternalGameSourceResource, IgdbExternalGameSource>(
             "external_game_sources",
             "id,name,checksum,updated_at",
-            externalResources.Select(resource => resource.SourceId),
+            afterId,
+            window,
+            resource => new IgdbExternalGameSource(
+                resource.Id,
+                resource.Name,
+                resource.Checksum,
+                ToDateTimeOffset(resource.UpdatedAt)
+            ),
             cancellationToken
         );
+    }
 
-        var involvedCompanyResources = await QueryByIdsAsync<IgdbInvolvedCompanyResource>(
-            "involved_companies",
-            "id,game,company,developer,publisher,porting,supporting,checksum,updated_at",
-            CollectIds(allGames, game => game.InvolvedCompanyIds),
-            cancellationToken
-        );
-        var companyResources = await QueryByIdsAsync<IgdbCompanyResource>(
+    public Task<IReadOnlyList<IgdbCompany>> FetchCompaniesPageAsync(
+        long afterId,
+        IgdbSyncWindow? window = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return FetchPageAsync<IgdbCompanyResource, IgdbCompany>(
             "companies",
-            "id,name,slug,description,country,url,logo.id,logo.image_id,logo.width,logo.height,logo.url,logo.checksum,checksum,updated_at",
-            involvedCompanyResources.Select(resource => resource.CompanyId),
+            "id,name,slug,description,country,url," + CompanyLogoFields + ",checksum,updated_at",
+            afterId,
+            window,
+            resource => new IgdbCompany(
+                resource.Id,
+                resource.Name,
+                resource.Slug,
+                resource.Description,
+                resource.CountryCode,
+                resource.Url,
+                MapImage(resource.Logo),
+                resource.Checksum,
+                ToDateTimeOffset(resource.UpdatedAt)
+            ),
             cancellationToken
         );
-        var collectionResources = await QueryByIdsAsync<IgdbNamedResource>(
+    }
+
+    public Task<IReadOnlyList<IgdbCollection>> FetchCollectionsPageAsync(
+        long afterId,
+        IgdbSyncWindow? window = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return FetchPageAsync<IgdbNamedResource, IgdbCollection>(
             "collections",
             NamedResourceFields,
-            CollectIds(allGames, game => game.CollectionIds),
+            afterId,
+            window,
+            resource => new IgdbCollection(
+                resource.Id,
+                resource.Name,
+                resource.Slug,
+                resource.Url,
+                resource.Checksum,
+                ToDateTimeOffset(resource.UpdatedAt)
+            ),
             cancellationToken
         );
-        var franchiseResources = await QueryByIdsAsync<IgdbNamedResource>(
+    }
+
+    public Task<IReadOnlyList<IgdbFranchise>> FetchFranchisesPageAsync(
+        long afterId,
+        IgdbSyncWindow? window = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return FetchPageAsync<IgdbNamedResource, IgdbFranchise>(
             "franchises",
             NamedResourceFields,
-            CollectFranchiseIds(allGames),
+            afterId,
+            window,
+            resource => new IgdbFranchise(
+                resource.Id,
+                resource.Name,
+                resource.Slug,
+                resource.Url,
+                resource.Checksum,
+                ToDateTimeOffset(resource.UpdatedAt)
+            ),
             cancellationToken
         );
+    }
 
-        var popularityType = Map(popularityTypeResource);
-        var mainGameType = Map(mainGameTypeResource);
-        var gameTypes = gameTypeResources
-            .Append(mainGameTypeResource)
-            .Where(resource => HasName(resource.Name))
-            .GroupBy(resource => resource.Id)
-            .Select(group => Map(group.First()))
-            .OrderBy(resource => resource.Id)
-            .ToArray();
-        var gameStatuses = gameStatusResources
-            .Where(resource => HasName(resource.Name))
-            .Select(Map)
-            .OrderBy(resource => resource.Id)
-            .ToArray();
-        var games = allGames.Select(Map).OrderBy(game => game.Id).ToArray();
-
-        var genres = genreResources
-            .Where(resource => HasName(resource.Name))
-            .Select(resource => new IgdbGenre(
+    public Task<IReadOnlyList<IgdbPlatform>> FetchPlatformsPageAsync(
+        long afterId,
+        IgdbSyncWindow? window = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return FetchPageAsync<IgdbPlatformResource, IgdbPlatform>(
+            "platforms",
+            "id,name,abbreviation,alternative_name,slug,platform_type,generation,summary,url,"
+                + PlatformLogoFields
+                + ",websites,checksum,updated_at",
+            afterId,
+            window,
+            resource => new IgdbPlatform(
                 resource.Id,
-                resource.Name!,
-                resource.Slug,
-                resource.Url,
-                resource.Checksum,
-                ToDateTimeOffset(resource.UpdatedAt)
-            ))
-            .OrderBy(resource => resource.Id)
-            .ToArray();
-        var themes = themeResources
-            .Where(resource => HasName(resource.Name))
-            .Select(resource => new IgdbTheme(
-                resource.Id,
-                resource.Name!,
-                resource.Slug,
-                resource.Url,
-                resource.Checksum,
-                ToDateTimeOffset(resource.UpdatedAt)
-            ))
-            .OrderBy(resource => resource.Id)
-            .ToArray();
-        var gameModes = gameModeResources
-            .Where(resource => HasName(resource.Name))
-            .Select(resource => new IgdbGameMode(
-                resource.Id,
-                resource.Name!,
-                resource.Slug,
-                resource.Url,
-                resource.Checksum,
-                ToDateTimeOffset(resource.UpdatedAt)
-            ))
-            .OrderBy(resource => resource.Id)
-            .ToArray();
-        var playerPerspectives = perspectiveResources
-            .Where(resource => HasName(resource.Name))
-            .Select(resource => new IgdbPlayerPerspective(
-                resource.Id,
-                resource.Name!,
-                resource.Slug,
-                resource.Url,
-                resource.Checksum,
-                ToDateTimeOffset(resource.UpdatedAt)
-            ))
-            .OrderBy(resource => resource.Id)
-            .ToArray();
-
-        var platforms = validPlatformResources
-            .Select(resource => new IgdbPlatform(
-                resource.Id,
-                resource.Name!,
+                resource.Name,
                 resource.Abbreviation,
                 resource.AlternativeName,
                 resource.Slug,
@@ -304,509 +341,204 @@ internal sealed class IgdbService : IIgdbService
                 resource.Summary,
                 resource.Url,
                 MapImage(resource.Logo),
+                NormalizeIds(resource.WebsiteIds),
                 resource.Checksum,
                 ToDateTimeOffset(resource.UpdatedAt)
-            ))
-            .OrderBy(resource => resource.Id)
-            .ToArray();
-        var platformTypes = platformTypeResources
-            .Where(resource => HasName(resource.Name))
-            .Select(resource => new IgdbPlatformType(
-                resource.Id,
-                resource.Name!,
-                resource.Checksum,
-                ToDateTimeOffset(resource.UpdatedAt)
-            ))
-            .OrderBy(resource => resource.Id)
-            .ToArray();
-        var websiteTypes = websiteTypeResources
-            .Where(resource => HasName(resource.Name))
-            .Select(resource => new IgdbWebsiteType(
-                resource.Id,
-                resource.Name!,
-                resource.Checksum,
-                ToDateTimeOffset(resource.UpdatedAt)
-            ))
-            .OrderBy(resource => resource.Id)
-            .ToArray();
-
-        var externalSources = externalSourceResources
-            .Where(resource => HasName(resource.Name))
-            .Select(resource => new IgdbExternalGameSource(
-                resource.Id,
-                resource.Name!,
-                resource.Checksum,
-                ToDateTimeOffset(resource.UpdatedAt)
-            ))
-            .OrderBy(resource => resource.Id)
-            .ToArray();
-        var companies = companyResources
-            .Where(resource => HasName(resource.Name))
-            .Select(resource => new IgdbCompany(
-                resource.Id,
-                resource.Name!,
-                resource.Slug,
-                resource.Description,
-                resource.CountryCode,
-                resource.Url,
-                MapImage(resource.Logo),
-                resource.Checksum,
-                ToDateTimeOffset(resource.UpdatedAt)
-            ))
-            .OrderBy(resource => resource.Id)
-            .ToArray();
-        var collections = collectionResources
-            .Where(resource => HasName(resource.Name))
-            .Select(resource => new IgdbCollection(
-                resource.Id,
-                resource.Name!,
-                resource.Slug,
-                resource.Url,
-                resource.Checksum,
-                ToDateTimeOffset(resource.UpdatedAt)
-            ))
-            .OrderBy(resource => resource.Id)
-            .ToArray();
-        var franchises = franchiseResources
-            .Where(resource => HasName(resource.Name))
-            .Select(resource => new IgdbFranchise(
-                resource.Id,
-                resource.Name!,
-                resource.Slug,
-                resource.Url,
-                resource.Checksum,
-                ToDateTimeOffset(resource.UpdatedAt)
-            ))
-            .OrderBy(resource => resource.Id)
-            .ToArray();
-
-        var platformIdSet = platforms.Select(resource => resource.Id).ToHashSet();
-        var websiteTypeIdSet = websiteTypes.Select(resource => resource.Id).ToHashSet();
-        var externalSourceIdSet = externalSources.Select(resource => resource.Id).ToHashSet();
-        var companyIdSet = companies.Select(resource => resource.Id).ToHashSet();
-        var genreIdSet = genres.Select(resource => resource.Id).ToHashSet();
-        var themeIdSet = themes.Select(resource => resource.Id).ToHashSet();
-        var gameModeIdSet = gameModes.Select(resource => resource.Id).ToHashSet();
-        var perspectiveIdSet = playerPerspectives.Select(resource => resource.Id).ToHashSet();
-        var collectionIdSet = collections.Select(resource => resource.Id).ToHashSet();
-        var franchiseIdSet = franchises.Select(resource => resource.Id).ToHashSet();
-
-        return new IgdbPopularCatalog(
-            popularityType,
-            mainGameType,
-            rankedGames
-                .Select(
-                    (entry, index) =>
-                        new IgdbPopularGame(
-                            entry.Primitive.Id,
-                            index + 1,
-                            entry.SourceRank,
-                            entry.Primitive.GameId,
-                            entry.Primitive.Value,
-                            ToDateTimeOffset(entry.Primitive.CalculatedAt),
-                            entry.Primitive.Checksum,
-                            ToDateTimeOffset(entry.Primitive.UpdatedAt)
-                        )
-                )
-                .ToArray(),
-            games,
-            gameTypes,
-            gameStatuses,
-            relations,
-            genres,
-            CreateJoins(
-                allGames,
-                game => game.GenreIds,
-                genreIdSet,
-                (gameId, valueId) => new IgdbGameGenre(gameId, valueId)
             ),
-            themes,
-            CreateJoins(
-                allGames,
-                game => game.ThemeIds,
-                themeIdSet,
-                (gameId, valueId) => new IgdbGameTheme(gameId, valueId)
-            ),
-            gameModes,
-            CreateJoins(
-                allGames,
-                game => game.GameModeIds,
-                gameModeIdSet,
-                (gameId, valueId) => new IgdbGameGameMode(gameId, valueId)
-            ),
-            playerPerspectives,
-            CreateJoins(
-                allGames,
-                game => game.PlayerPerspectiveIds,
-                perspectiveIdSet,
-                (gameId, valueId) => new IgdbGamePlayerPerspective(gameId, valueId)
-            ),
-            platforms,
-            platformTypes,
-            CreateJoins(
-                allGames,
-                game => game.PlatformIds,
-                platformIdSet,
-                (gameId, valueId) => new IgdbGamePlatform(gameId, valueId)
-            ),
-            CreatePlatformLinks(validPlatformResources, platformWebsiteResources, websiteTypeIdSet),
-            websiteTypes,
-            externalSources,
-            externalResources
-                .Where(resource =>
-                    gameIdSet.Contains(resource.GameId)
-                    && externalSourceIdSet.Contains(resource.SourceId)
-                    && !string.IsNullOrWhiteSpace(resource.ExternalId)
-                )
-                .Select(resource => new IgdbExternalGameIdentifier(
-                    resource.Id,
-                    resource.GameId,
-                    resource.SourceId,
-                    resource.PlatformId is { } platformId && platformIdSet.Contains(platformId) ? platformId : null,
-                    resource.ExternalId!,
-                    resource.Name,
-                    resource.Url,
-                    resource.Year,
-                    resource.Checksum,
-                    ToDateTimeOffset(resource.UpdatedAt)
-                ))
-                .OrderBy(resource => resource.Id)
-                .ToArray(),
-            companies,
-            involvedCompanyResources
-                .Where(resource => gameIdSet.Contains(resource.GameId) && companyIdSet.Contains(resource.CompanyId))
-                .Select(resource => new IgdbGameCompany(
-                    resource.Id,
-                    resource.GameId,
-                    resource.CompanyId,
-                    resource.Developer,
-                    resource.Publisher,
-                    resource.Porting,
-                    resource.Supporting,
-                    resource.Checksum,
-                    ToDateTimeOffset(resource.UpdatedAt)
-                ))
-                .OrderBy(resource => resource.Id)
-                .ToArray(),
-            collections,
-            CreateJoins(
-                allGames,
-                game => game.CollectionIds,
-                collectionIdSet,
-                (gameId, valueId) => new IgdbGameCollection(gameId, valueId)
-            ),
-            franchises,
-            CreateFranchiseJoins(allGames, franchiseIdSet)
+            cancellationToken
         );
     }
 
-    private async Task<IgdbPopularityTypeResource> ResolvePopularityTypeAsync(CancellationToken cancellationToken)
+    public Task<IReadOnlyList<IgdbPlatformWebsite>> FetchPlatformWebsitesPageAsync(
+        long afterId,
+        CancellationToken cancellationToken = default
+    )
     {
-        const string query =
-            "fields id,name,external_popularity_source,checksum,updated_at; where name = \"Visits\"; limit 10;";
-        var resources = await _client.QueryAsync<IgdbPopularityTypeResource>(
-            "popularity_types",
+        return FetchPageAsync<IgdbPlatformWebsiteResource, IgdbPlatformWebsite>(
+            "platform_websites",
+            "id,type,url,trusted,checksum",
+            afterId,
+            null,
+            resource => new IgdbPlatformWebsite(
+                resource.Id,
+                resource.WebsiteTypeId,
+                resource.Url,
+                resource.Trusted,
+                resource.Checksum
+            ),
+            cancellationToken
+        );
+    }
+
+    public Task<IReadOnlyList<IgdbGame>> FetchGamesPageAsync(
+        long afterId,
+        IgdbSyncWindow? window = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return FetchPageAsync<IgdbGameResource, IgdbGame>(
+            "games",
+            GameFields,
+            afterId,
+            window,
+            MapGame,
+            cancellationToken
+        );
+    }
+
+    public Task<IReadOnlyList<IgdbInvolvedCompany>> FetchInvolvedCompaniesPageAsync(
+        long afterId,
+        IgdbSyncWindow? window = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return FetchPageAsync<IgdbInvolvedCompanyResource, IgdbInvolvedCompany>(
+            "involved_companies",
+            "id,game,company,developer,publisher,porting,supporting,checksum,updated_at",
+            afterId,
+            window,
+            resource => new IgdbInvolvedCompany(
+                resource.Id,
+                resource.GameId,
+                resource.CompanyId,
+                resource.Developer,
+                resource.Publisher,
+                resource.Porting,
+                resource.Supporting,
+                resource.Checksum,
+                ToDateTimeOffset(resource.UpdatedAt)
+            ),
+            cancellationToken
+        );
+    }
+
+    public Task<IReadOnlyList<IgdbExternalGame>> FetchExternalGamesPageAsync(
+        long afterId,
+        IgdbSyncWindow? window = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return FetchPageAsync<IgdbExternalGameResource, IgdbExternalGame>(
+            "external_games",
+            "id,game,external_game_source,platform,uid,name,url,year,checksum,updated_at",
+            afterId,
+            window,
+            resource => new IgdbExternalGame(
+                resource.Id,
+                resource.GameId,
+                resource.SourceId,
+                resource.PlatformId,
+                resource.ExternalId,
+                resource.Name,
+                resource.Url,
+                resource.Year,
+                resource.Checksum,
+                ToDateTimeOffset(resource.UpdatedAt)
+            ),
+            cancellationToken
+        );
+    }
+
+    public async Task<IReadOnlyList<IgdbPopularityPrimitive>> FetchPopularityPrimitivesPageAsync(
+        long popularityTypeId,
+        int offset = 0,
+        CancellationToken cancellationToken = default
+    )
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(popularityTypeId);
+        ArgumentOutOfRangeException.ThrowIfNegative(offset);
+
+        var query =
+            "fields id,game_id,value,popularity_type,external_popularity_source,calculated_at,checksum,updated_at; "
+            + $"where popularity_type = {popularityTypeId}; sort value desc; limit {PageSize}; offset {offset};";
+        var resources = await _client.QueryAsync<IgdbPopularityPrimitiveResource>(
+            "popularity_primitives",
             query,
             cancellationToken
         );
-        var matches = resources
-            .Where(resource => string.Equals(resource.Name, "Visits", StringComparison.Ordinal))
+
+        return resources
+            .Select(resource => new IgdbPopularityPrimitive(
+                resource.Id,
+                resource.GameId,
+                resource.Value,
+                resource.PopularityTypeId,
+                resource.ExternalPopularitySourceId,
+                ToDateTimeOffset(resource.CalculatedAt),
+                resource.Checksum,
+                ToDateTimeOffset(resource.UpdatedAt)
+            ))
             .ToArray();
-
-        return matches.Length == 1
-            ? matches[0]
-            : throw new InvalidOperationException(
-                $"Expected exactly one IGDB popularity type named 'Visits', but found {matches.Length}."
-            );
     }
 
-    private async Task<IgdbGameTypeResource> ResolveMainGameTypeAsync(CancellationToken cancellationToken)
-    {
-        const string query = "fields id,type,checksum,updated_at; where type = \"Main Game\"; limit 10;";
-        var resources = await _client.QueryAsync<IgdbGameTypeResource>("game_types", query, cancellationToken);
-        var matches = resources
-            .Where(resource => string.Equals(resource.Name, "Main Game", StringComparison.Ordinal))
-            .ToArray();
-
-        return matches.Length == 1
-            ? matches[0]
-            : throw new InvalidOperationException(
-                $"Expected exactly one IGDB game type named 'Main Game', but found {matches.Length}."
-            );
-    }
-
-    private async Task<IReadOnlyList<RankedPopularityPrimitive>> FetchRankedMainGamesAsync(
-        long popularityTypeId,
-        long mainGameTypeId,
-        int targetCount,
-        CancellationToken cancellationToken
-    )
-    {
-        var accepted = new List<RankedPopularityPrimitive>(targetCount);
-        var seenGameIds = new HashSet<long>();
-        var offset = 0;
-
-        while (accepted.Count < targetCount)
-        {
-            var query =
-                "fields id,game_id,value,popularity_type,calculated_at,checksum,updated_at; "
-                + $"where popularity_type = {popularityTypeId}; sort value desc; limit {PopularityPageSize}; offset {offset};";
-            var page = await _client.QueryPopularityPrimitivesAsync(query, cancellationToken);
-            if (page.Count == 0)
-            {
-                break;
-            }
-
-            var candidates = page.Select(
-                    (primitive, index) => new RankedPopularityPrimitive(primitive, offset + index + 1)
-                )
-                .Where(entry => entry.Primitive.GameId > 0 && seenGameIds.Add(entry.Primitive.GameId))
-                .ToArray();
-            var mainGameIds = await FilterMainGameIdsAsync(candidates, mainGameTypeId, cancellationToken);
-
-            foreach (var candidate in candidates)
-            {
-                if (mainGameIds.Contains(candidate.Primitive.GameId))
-                {
-                    accepted.Add(candidate);
-                    if (accepted.Count == targetCount)
-                    {
-                        break;
-                    }
-                }
-            }
-
-            if (page.Count < PopularityPageSize)
-            {
-                break;
-            }
-
-            offset += PopularityPageSize;
-        }
-
-        if (accepted.Count != targetCount)
-        {
-            throw new InvalidOperationException(
-                $"IGDB returned only {accepted.Count} unique Main Game records for the requested top {targetCount} catalog."
-            );
-        }
-
-        return accepted;
-    }
-
-    private async Task<HashSet<long>> FilterMainGameIdsAsync(
-        IReadOnlyList<RankedPopularityPrimitive> candidates,
-        long mainGameTypeId,
-        CancellationToken cancellationToken
-    )
-    {
-        var result = new HashSet<long>();
-
-        foreach (var batch in candidates.Select(entry => entry.Primitive.GameId).Chunk(HydrationBatchSize))
-        {
-            var query =
-                "fields id,game_type; "
-                + $"where id = ({string.Join(",", batch)}) & game_type = {mainGameTypeId}; limit {batch.Length};";
-            var games = await _client.QueryGamesAsync(query, cancellationToken);
-            result.UnionWith(games.Where(game => game.GameTypeId == mainGameTypeId).Select(game => game.Id));
-        }
-
-        return result;
-    }
-
-    private async Task<IReadOnlyList<TResource>> QueryByIdsAsync<TResource>(
+    private async Task<IReadOnlyList<TResult>> FetchPageAsync<TResource, TResult>(
         string endpoint,
         string fields,
-        IEnumerable<long> ids,
+        long afterId,
+        IgdbSyncWindow? window,
+        Func<TResource, TResult> map,
         CancellationToken cancellationToken
     )
     {
-        var distinctIds = ids.Where(id => id > 0).Distinct().Order().ToArray();
-        if (distinctIds.Length == 0)
-        {
-            return [];
-        }
-
-        var resources = new List<TResource>(distinctIds.Length);
-        foreach (var batch in distinctIds.Chunk(HydrationBatchSize))
-        {
-            var query = $"fields {fields}; where id = ({string.Join(",", batch)}); limit {batch.Length};";
-            resources.AddRange(await _client.QueryAsync<TResource>(endpoint, query, cancellationToken));
-        }
-
-        return resources;
+        var query = BuildPageQuery(fields, afterId, window);
+        var resources = await _client.QueryAsync<TResource>(endpoint, query, cancellationToken);
+        return resources.Select(map).ToArray();
     }
 
-    private static void ValidateBaseGames(IReadOnlyList<long> baseGameIds, IReadOnlyList<IgdbGame> games)
+    private static string BuildPageQuery(string fields, long afterId, IgdbSyncWindow? window)
     {
-        var gamesById = games.GroupBy(game => game.Id).ToDictionary(group => group.Key, group => group.First());
-        var invalidIds = baseGameIds
-            .Where(id => !gamesById.TryGetValue(id, out var game) || !HasIdentity(game))
-            .ToArray();
-
-        if (invalidIds.Length > 0)
+        if (afterId < -1)
         {
-            throw new InvalidOperationException(
-                $"IGDB failed to hydrate {invalidIds.Length} ranked games with required IDs and names."
-            );
-        }
-    }
-
-    private static List<IgdbGameRelation> CreateRelations(IEnumerable<IgdbGame> games)
-    {
-        var relations = new List<IgdbGameRelation>();
-
-        foreach (var game in games)
-        {
-            AddRelations(relations, game.Id, game.DlcIds, IgdbGameRelationType.Dlc);
-            AddRelations(relations, game.Id, game.ExpansionIds, IgdbGameRelationType.Expansion);
-            AddRelations(relations, game.Id, game.StandaloneExpansionIds, IgdbGameRelationType.StandaloneExpansion);
+            throw new ArgumentOutOfRangeException(nameof(afterId), afterId, "The IGDB page cursor cannot be below -1.");
         }
 
-        return relations
-            .Distinct()
-            .OrderBy(relation => relation.GameId)
-            .ThenBy(relation => relation.RelatedGameId)
-            .ToList();
-    }
-
-    private static void AddRelations(
-        ICollection<IgdbGameRelation> relations,
-        long gameId,
-        IEnumerable<long>? relatedGameIds,
-        IgdbGameRelationType relationType
-    )
-    {
-        foreach (var relatedGameId in relatedGameIds ?? [])
+        var where = $"id > {afterId}";
+        if (window is not null)
         {
-            if (relatedGameId > 0)
+            if (window.UpdatedAfter > window.UpdatedThrough)
             {
-                relations.Add(new IgdbGameRelation(gameId, relatedGameId, relationType));
+                throw new ArgumentException(
+                    "The incremental synchronization boundary must not end before it starts.",
+                    nameof(window)
+                );
             }
+
+            where +=
+                $" & updated_at > {window.UpdatedAfter.ToUnixTimeSeconds()}"
+                + $" & updated_at <= {window.UpdatedThrough.ToUnixTimeSeconds()}";
         }
+
+        return $"fields {fields}; where {where}; sort id asc; limit {PageSize};";
     }
 
-    private static long[] CollectIds(IEnumerable<IgdbGame> games, Func<IgdbGame, IReadOnlyList<long>?> selector)
+    private static IgdbGame MapGame(IgdbGameResource resource)
     {
-        return games.SelectMany(game => selector(game) ?? []).Where(id => id > 0).Distinct().ToArray();
-    }
-
-    private static IReadOnlyList<TJoin> CreateJoins<TJoin>(
-        IEnumerable<IgdbGame> games,
-        Func<IgdbGame, IReadOnlyList<long>?> selector,
-        IReadOnlySet<long> validValueIds,
-        Func<long, long, TJoin> factory
-    )
-    {
-        return games
-            .SelectMany(game =>
-                (selector(game) ?? [])
-                    .Where(validValueIds.Contains)
-                    .Distinct()
-                    .Select(valueId => factory(game.Id, valueId))
-            )
-            .ToArray();
-    }
-
-    private static long[] CollectFranchiseIds(IEnumerable<IgdbGame> games)
-    {
-        return games
-            .SelectMany(game =>
-                (game.FranchiseIds ?? []).Concat(game.FranchiseId is { } franchiseId ? [franchiseId] : [])
-            )
-            .Where(id => id > 0)
-            .Distinct()
-            .ToArray();
-    }
-
-    private static IReadOnlyList<IgdbGameFranchise> CreateFranchiseJoins(
-        IEnumerable<IgdbGame> games,
-        IReadOnlySet<long> validFranchiseIds
-    )
-    {
-        return games
-            .SelectMany(game =>
-                (game.FranchiseIds ?? [])
-                    .Concat(game.FranchiseId is { } franchiseId ? [franchiseId] : [])
-                    .Where(validFranchiseIds.Contains)
-                    .Distinct()
-                    .Select(franchiseId => new IgdbGameFranchise(game.Id, franchiseId))
-            )
-            .ToArray();
-    }
-
-    private static IReadOnlyList<IgdbPlatformLink> CreatePlatformLinks(
-        IEnumerable<IgdbPlatformResource> platforms,
-        IEnumerable<IgdbPlatformWebsiteResource> websites,
-        IReadOnlySet<long> validWebsiteTypeIds
-    )
-    {
-        var websitesById = websites
-            .Where(website => validWebsiteTypeIds.Contains(website.WebsiteTypeId))
-            .GroupBy(website => website.Id)
-            .ToDictionary(group => group.Key, group => group.First());
-
-        return platforms
-            .SelectMany(platform =>
-                (platform.WebsiteIds ?? [])
-                    .Distinct()
-                    .Where(websitesById.ContainsKey)
-                    .Select(websiteId =>
-                    {
-                        var website = websitesById[websiteId];
-                        return new IgdbPlatformLink(
-                            website.Id,
-                            platform.Id,
-                            website.WebsiteTypeId,
-                            website.Url,
-                            website.Trusted,
-                            website.Checksum
-                        );
-                    })
-            )
-            .OrderBy(link => link.PlatformId)
-            .ThenBy(link => link.Id)
-            .ToArray();
-    }
-
-    private static IgdbPopularityType Map(IgdbPopularityTypeResource resource)
-    {
-        return new IgdbPopularityType(
+        return new IgdbGame(
             resource.Id,
-            resource.Name!,
-            resource.ExternalPopularitySourceId,
+            resource.Name,
+            resource.Slug,
+            resource.Summary,
+            resource.Storyline,
+            resource.TotalRating,
+            resource.TotalRatingCount,
+            ToDateTimeOffset(resource.FirstReleaseDate),
+            resource.Url,
+            resource.GameTypeId,
+            resource.GameStatusId,
+            MapImage(resource.Cover),
+            NormalizeIds(resource.DlcIds),
+            NormalizeIds(resource.ExpansionIds),
+            NormalizeIds(resource.StandaloneExpansionIds),
+            NormalizeIds(resource.GenreIds),
+            NormalizeIds(resource.ThemeIds),
+            NormalizeIds(resource.GameModeIds),
+            NormalizeIds(resource.PlayerPerspectiveIds),
+            NormalizeIds(resource.PlatformIds),
+            NormalizeIds(resource.CollectionIds),
+            resource.FranchiseId,
+            NormalizeIds(resource.FranchiseIds),
             resource.Checksum,
             ToDateTimeOffset(resource.UpdatedAt)
-        );
-    }
-
-    private static IgdbGameType Map(IgdbGameTypeResource resource)
-    {
-        return new IgdbGameType(resource.Id, resource.Name!, resource.Checksum, ToDateTimeOffset(resource.UpdatedAt));
-    }
-
-    private static IgdbGameStatus Map(IgdbGameStatusResource resource)
-    {
-        return new IgdbGameStatus(resource.Id, resource.Name!, resource.Checksum, ToDateTimeOffset(resource.UpdatedAt));
-    }
-
-    private static IgdbCatalogGame Map(IgdbGame game)
-    {
-        return new IgdbCatalogGame(
-            game.Id,
-            game.Name!,
-            game.Slug,
-            game.Summary,
-            game.Storyline,
-            ToDateTimeOffset(game.FirstReleaseDate),
-            game.TotalRating,
-            game.TotalRatingCount,
-            game.Url,
-            game.GameTypeId,
-            game.GameStatusId,
-            MapImage(game.Cover),
-            game.Checksum,
-            ToDateTimeOffset(game.UpdatedAt)
         );
     }
 
@@ -830,6 +562,11 @@ internal sealed class IgdbService : IIgdbService
         );
     }
 
+    private static IReadOnlyList<long> NormalizeIds(IReadOnlyList<long>? ids)
+    {
+        return (ids ?? []).Where(id => id > 0).Distinct().ToArray();
+    }
+
     private static string? BuildImageUrl(string? imageId, string size)
     {
         return imageId is null ? null : $"https://images.igdb.com/igdb/image/upload/t_{size}/{imageId}.jpg";
@@ -840,20 +577,8 @@ internal sealed class IgdbService : IIgdbService
         return url?.StartsWith("//", StringComparison.Ordinal) == true ? $"https:{url}" : url;
     }
 
-    private static bool HasIdentity(IgdbGame game)
-    {
-        return game.Id > 0 && HasName(game.Name);
-    }
-
-    private static bool HasName(string? value)
-    {
-        return !string.IsNullOrWhiteSpace(value);
-    }
-
     private static DateTimeOffset? ToDateTimeOffset(long? unixSeconds)
     {
         return unixSeconds.HasValue ? DateTimeOffset.FromUnixTimeSeconds(unixSeconds.Value) : null;
     }
-
-    private sealed record RankedPopularityPrimitive(IgdbPopularityPrimitive Primitive, int SourceRank);
 }

@@ -33,8 +33,8 @@ public sealed class GameGenresEndpoint : EndpointWithoutRequest<GenreResponse[]>
                     .Genres.AsNoTracking()
                     .OrderBy(value => value.Name.ToLower())
                     .ThenBy(value => value.Name)
-                    .ThenBy(value => value.IgdbId)
-                    .Select(value => new GenreResponse(value.IgdbId, value.Name))
+                    .ThenBy(value => value.Id)
+                    .Select(value => new GenreResponse(value.Id, value.Name))
                     .ToArrayAsync(token),
             token: ct
         );

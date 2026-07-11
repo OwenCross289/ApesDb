@@ -5,9 +5,7 @@ namespace ApesDb.Domain.Entities;
 
 public sealed class Genre : IIgdbEntity
 {
-    public Guid Id { get; set; } = Guid.CreateVersion7();
-
-    public long IgdbId { get; set; }
+    public long Id { get; set; }
 
     public required string Name { get; set; }
 
@@ -28,9 +26,7 @@ public sealed class Genre : IIgdbEntity
 
 public sealed class Theme : IIgdbEntity
 {
-    public Guid Id { get; set; } = Guid.CreateVersion7();
-
-    public long IgdbId { get; set; }
+    public long Id { get; set; }
 
     public required string Name { get; set; }
 
@@ -51,9 +47,7 @@ public sealed class Theme : IIgdbEntity
 
 public sealed class GameMode : IIgdbEntity
 {
-    public Guid Id { get; set; } = Guid.CreateVersion7();
-
-    public long IgdbId { get; set; }
+    public long Id { get; set; }
 
     public required string Name { get; set; }
 
@@ -74,9 +68,7 @@ public sealed class GameMode : IIgdbEntity
 
 public sealed class PlayerPerspective : IIgdbEntity
 {
-    public Guid Id { get; set; } = Guid.CreateVersion7();
-
-    public long IgdbId { get; set; }
+    public long Id { get; set; }
 
     public required string Name { get; set; }
 
@@ -97,44 +89,44 @@ public sealed class PlayerPerspective : IIgdbEntity
 
 public sealed class GameGenre
 {
-    public Guid GameId { get; set; }
+    public long GameId { get; set; }
 
     public Game Game { get; set; } = null!;
 
-    public Guid GenreId { get; set; }
+    public long GenreId { get; set; }
 
     public Genre Genre { get; set; } = null!;
 }
 
 public sealed class GameTheme
 {
-    public Guid GameId { get; set; }
+    public long GameId { get; set; }
 
     public Game Game { get; set; } = null!;
 
-    public Guid ThemeId { get; set; }
+    public long ThemeId { get; set; }
 
     public Theme Theme { get; set; } = null!;
 }
 
 public sealed class GameGameMode
 {
-    public Guid GameId { get; set; }
+    public long GameId { get; set; }
 
     public Game Game { get; set; } = null!;
 
-    public Guid GameModeId { get; set; }
+    public long GameModeId { get; set; }
 
     public GameMode GameMode { get; set; } = null!;
 }
 
 public sealed class GamePlayerPerspective
 {
-    public Guid GameId { get; set; }
+    public long GameId { get; set; }
 
     public Game Game { get; set; } = null!;
 
-    public Guid PlayerPerspectiveId { get; set; }
+    public long PlayerPerspectiveId { get; set; }
 
     public PlayerPerspective PlayerPerspective { get; set; } = null!;
 }

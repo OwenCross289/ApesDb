@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace ApesDb.Igdb.Sdk.Models;
 
-internal sealed record IgdbGame(
+internal sealed record IgdbGameResource(
     [property: JsonPropertyName("id")] long Id,
     [property: JsonPropertyName("name")] string? Name,
     [property: JsonPropertyName("slug")] string? Slug,
@@ -23,8 +23,6 @@ internal sealed record IgdbGame(
     [property: JsonPropertyName("game_modes")] IReadOnlyList<long>? GameModeIds,
     [property: JsonPropertyName("player_perspectives")] IReadOnlyList<long>? PlayerPerspectiveIds,
     [property: JsonPropertyName("platforms")] IReadOnlyList<long>? PlatformIds,
-    [property: JsonPropertyName("external_games")] IReadOnlyList<long>? ExternalGameIds,
-    [property: JsonPropertyName("involved_companies")] IReadOnlyList<long>? InvolvedCompanyIds,
     [property: JsonPropertyName("collections")] IReadOnlyList<long>? CollectionIds,
     [property: JsonPropertyName("franchise")] long? FranchiseId,
     [property: JsonPropertyName("franchises")] IReadOnlyList<long>? FranchiseIds,

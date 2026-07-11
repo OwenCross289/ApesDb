@@ -33,8 +33,8 @@ public sealed class GameThemesEndpoint : EndpointWithoutRequest<ThemeResponse[]>
                     .Themes.AsNoTracking()
                     .OrderBy(value => value.Name.ToLower())
                     .ThenBy(value => value.Name)
-                    .ThenBy(value => value.IgdbId)
-                    .Select(value => new ThemeResponse(value.IgdbId, value.Name))
+                    .ThenBy(value => value.Id)
+                    .Select(value => new ThemeResponse(value.Id, value.Name))
                     .ToArrayAsync(token),
             token: ct
         );

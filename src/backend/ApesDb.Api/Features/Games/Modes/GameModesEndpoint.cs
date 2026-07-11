@@ -33,8 +33,8 @@ public sealed class GameModesEndpoint : EndpointWithoutRequest<GameModeResponse[
                     .GameModes.AsNoTracking()
                     .OrderBy(value => value.Name.ToLower())
                     .ThenBy(value => value.Name)
-                    .ThenBy(value => value.IgdbId)
-                    .Select(value => new GameModeResponse(value.IgdbId, value.Name))
+                    .ThenBy(value => value.Id)
+                    .Select(value => new GameModeResponse(value.Id, value.Name))
                     .ToArrayAsync(token),
             token: ct
         );

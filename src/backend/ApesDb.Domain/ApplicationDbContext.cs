@@ -16,6 +16,8 @@ public sealed class ApplicationDbContext : DbContext
 
     public DbSet<GameStatus> GameStatuses => Set<GameStatus>();
 
+    public DbSet<PopularityType> PopularityTypes => Set<PopularityType>();
+
     public DbSet<PopularGame> PopularGames => Set<PopularGame>();
 
     public DbSet<GameRelation> GameRelations => Set<GameRelation>();
@@ -36,6 +38,10 @@ public sealed class ApplicationDbContext : DbContext
 
     public DbSet<GamePlayerPerspective> GamePlayerPerspectives => Set<GamePlayerPerspective>();
 
+    public DbSet<PlatformType> PlatformTypes => Set<PlatformType>();
+
+    public DbSet<WebsiteType> WebsiteTypes => Set<WebsiteType>();
+
     public DbSet<Platform> Platforms => Set<Platform>();
 
     public DbSet<GamePlatform> GamePlatforms => Set<GamePlatform>();
@@ -44,7 +50,7 @@ public sealed class ApplicationDbContext : DbContext
 
     public DbSet<ExternalGameSource> ExternalGameSources => Set<ExternalGameSource>();
 
-    public DbSet<GameExternalIdentifier> GameExternalIdentifiers => Set<GameExternalIdentifier>();
+    public DbSet<ExternalGame> ExternalGames => Set<ExternalGame>();
 
     public DbSet<Company> Companies => Set<Company>();
 
@@ -57,6 +63,14 @@ public sealed class ApplicationDbContext : DbContext
     public DbSet<Franchise> Franchises => Set<Franchise>();
 
     public DbSet<GameFranchise> GameFranchises => Set<GameFranchise>();
+
+    public DbSet<IgdbSyncRun> IgdbSyncRuns => Set<IgdbSyncRun>();
+
+    public DbSet<IgdbSyncStage> IgdbSyncStages => Set<IgdbSyncStage>();
+
+    public DbSet<IgdbSyncTouchedRelationParent> IgdbSyncTouchedRelationParents => Set<IgdbSyncTouchedRelationParent>();
+
+    public DbSet<IgdbSyncPendingGameRelation> IgdbSyncPendingGameRelations => Set<IgdbSyncPendingGameRelation>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

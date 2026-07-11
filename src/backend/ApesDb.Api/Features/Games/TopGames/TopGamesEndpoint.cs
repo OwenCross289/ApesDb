@@ -34,7 +34,7 @@ public sealed class TopGamesEndpoint : EndpointWithoutRequest
             .Take(ResultCount)
             .Select(popularGame => new TopGameProjection(
                 popularGame.Rank,
-                popularGame.Game.IgdbId,
+                popularGame.Game.Id,
                 popularGame.Game.Name,
                 popularGame.Game.Slug,
                 popularGame.Game.Summary,

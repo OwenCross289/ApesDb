@@ -3,7 +3,6 @@ using System.Net.Http.Json;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
-using ApesDb.Igdb.Sdk.Models;
 
 namespace ApesDb.Igdb.Sdk;
 
@@ -26,19 +25,6 @@ internal sealed class IgdbClient : IIgdbClient
         ArgumentException.ThrowIfNullOrWhiteSpace(query);
 
         return PostAsync<IReadOnlyList<TResource>>(endpoint, query, cancellationToken);
-    }
-
-    public Task<IReadOnlyList<IgdbPopularityPrimitive>> QueryPopularityPrimitivesAsync(
-        string query,
-        CancellationToken cancellationToken
-    )
-    {
-        return QueryAsync<IgdbPopularityPrimitive>("popularity_primitives", query, cancellationToken);
-    }
-
-    public Task<IReadOnlyList<IgdbGame>> QueryGamesAsync(string query, CancellationToken cancellationToken)
-    {
-        return QueryAsync<IgdbGame>("games", query, cancellationToken);
     }
 
     private async Task<TResponse> PostAsync<TResponse>(

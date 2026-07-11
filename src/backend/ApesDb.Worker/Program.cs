@@ -24,7 +24,9 @@ var dashboardOptions =
 builder.Services.AddApesDbCommon();
 builder.Services.AddApesDbDomain(builder.Configuration);
 builder.Services.AddIgdbSdk(builder.Configuration);
-builder.Services.AddScoped<IPopularGamesCatalogImporter, PopularGamesCatalogImporter>();
+builder.Services.AddScoped<ICatalogSyncOrchestrator, CatalogSyncOrchestrator>();
+builder.Services.AddScoped<ICatalogStageRunner, CatalogStageRunner>();
+builder.Services.AddScoped<IPopularitySynchronizer, PopularitySynchronizer>();
 
 builder
     .Services.AddOptions<TickerQDashboardOptions>()
@@ -52,7 +54,7 @@ builder.Services.AddTickerQ(options =>
         dashboard.WithBasicAuth(dashboardOptions.Username, dashboardOptions.Password);
     });
 });
-builder.Services.AddHostedService<InitialPopularGamesSyncScheduler>();
+builder.Services.AddHostedService<InitialCatalogSyncScheduler>();
 
 var app = builder.Build();
 
