@@ -66,12 +66,10 @@ app.UseSwaggerGen(uiConfig: ui =>
     ui.DocumentTitle = "ApesDb API";
     ui.CustomHeadContent += """
         <style>
+            .scheme-container .auth-wrapper .authorize { display: none; }
             .apesdb-login-link {
-                position: absolute;
-                top: 20px;
-                right: 20px;
-                z-index: 1000;
-                padding: 8px 16px;
+                display: inline-block;
+                padding: 4px 16px;
                 background: #007bff;
                 color: white;
                 text-decoration: none;
@@ -79,10 +77,36 @@ app.UseSwaggerGen(uiConfig: ui =>
                 font-weight: bold;
                 font-family: sans-serif;
                 font-size: 14px;
+                line-height: 1.5;
+                border: 1px solid #007bff;
             }
-            .apesdb-login-link:hover { background: #0056b3; }
+            .apesdb-login-link:hover { background: #0056b3; border-color: #0056b3; }
         </style>
-        <a class="apesdb-login-link" href="/api/auth/login?connection=google&returnUrl=/swagger">Login with Google</a>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                function setupLoginButton() {
+                    var authWrapper = document.querySelector('.scheme-container .auth-wrapper');
+                    if (!authWrapper) {
+                        setTimeout(setupLoginButton, 100);
+                        return;
+                    }
+
+                    var existing = document.querySelector('.apesdb-login-link');
+                    if (existing) {
+                        existing.remove();
+                    }
+
+                    var link = document.createElement('a');
+                    link.href = '/api/auth/login?connection=google&returnUrl=/swagger';
+                    link.className = 'apesdb-login-link';
+                    link.textContent = 'Login with Google';
+
+                    authWrapper.appendChild(link);
+                }
+
+                setupLoginButton();
+            });
+        </script>
         """;
 });
 app.UseFastEndpoints(config => config.Endpoints.RoutePrefix = ApiRoutes.Api.Prefix);
