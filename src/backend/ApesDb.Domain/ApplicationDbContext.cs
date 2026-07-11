@@ -68,6 +68,8 @@ public sealed class ApplicationDbContext : DbContext
 
     public DbSet<IgdbSyncStage> IgdbSyncStages => Set<IgdbSyncStage>();
 
+    public DbSet<IgdbSyncSkippedRow> IgdbSyncSkippedRows => Set<IgdbSyncSkippedRow>();
+
     public DbSet<IgdbSyncTouchedRelationParent> IgdbSyncTouchedRelationParents => Set<IgdbSyncTouchedRelationParent>();
 
     public DbSet<IgdbSyncPendingGameRelation> IgdbSyncPendingGameRelations => Set<IgdbSyncPendingGameRelation>();

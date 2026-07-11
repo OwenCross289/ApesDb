@@ -407,8 +407,6 @@ CREATE TABLE IF NOT EXISTS "public"."GameCompanies" (
 
 CREATE INDEX IF NOT EXISTS "IX_GameCompanies_GameId" ON "public"."GameCompanies" ("GameId");
 CREATE INDEX IF NOT EXISTS "IX_GameCompanies_CompanyId" ON "public"."GameCompanies" ("CompanyId");
-CREATE UNIQUE INDEX IF NOT EXISTS "IX_GameCompanies_GameId_CompanyId"
-    ON "public"."GameCompanies" ("GameId", "CompanyId");
 
 CREATE TABLE IF NOT EXISTS "public"."ExternalGames" (
     "Id" bigint NOT NULL,
@@ -450,6 +448,7 @@ CREATE TABLE IF NOT EXISTS "public"."IgdbSyncRuns" (
     "From" timestamp with time zone,
     "Through" timestamp with time zone NOT NULL,
     "RowsProcessed" bigint NOT NULL DEFAULT 0,
+    "RowsSkipped" bigint NOT NULL DEFAULT 0,
     "Error" text,
     "CreatedAt" timestamp with time zone NOT NULL DEFAULT now(),
     "StartedAt" timestamp with time zone,
@@ -464,6 +463,7 @@ CREATE TABLE IF NOT EXISTS "public"."IgdbSyncRuns" (
         OR ("Mode" = 'Incremental' AND "From" IS NOT NULL AND "From" < "Through")
     ),
     CONSTRAINT "CK_IgdbSyncRuns_RowsProcessed" CHECK ("RowsProcessed" >= 0),
+    CONSTRAINT "CK_IgdbSyncRuns_RowsSkipped" CHECK ("RowsSkipped" >= 0),
     CONSTRAINT "CK_IgdbSyncRuns_Completion"
         CHECK (("Status" = 'Succeeded' AND "CompletedAt" IS NOT NULL) OR "Status" <> 'Succeeded')
 );
@@ -485,6 +485,7 @@ CREATE TABLE IF NOT EXISTS "public"."IgdbSyncStages" (
     "PageCursor" bigint NOT NULL DEFAULT -1,
     "PagesProcessed" integer NOT NULL DEFAULT 0,
     "RowsProcessed" bigint NOT NULL DEFAULT 0,
+    "RowsSkipped" bigint NOT NULL DEFAULT 0,
     "Error" text,
     "CreatedAt" timestamp with time zone NOT NULL DEFAULT now(),
     "StartedAt" timestamp with time zone,
@@ -498,6 +499,7 @@ CREATE TABLE IF NOT EXISTS "public"."IgdbSyncStages" (
     CONSTRAINT "CK_IgdbSyncStages_PageCursor" CHECK ("PageCursor" >= -1),
     CONSTRAINT "CK_IgdbSyncStages_PagesProcessed" CHECK ("PagesProcessed" >= 0),
     CONSTRAINT "CK_IgdbSyncStages_RowsProcessed" CHECK ("RowsProcessed" >= 0),
+    CONSTRAINT "CK_IgdbSyncStages_RowsSkipped" CHECK ("RowsSkipped" >= 0),
     CONSTRAINT "CK_IgdbSyncStages_Completion"
         CHECK (("Status" = 'Succeeded' AND "CompletedAt" IS NOT NULL) OR "Status" <> 'Succeeded')
 );
@@ -507,6 +509,23 @@ CREATE UNIQUE INDEX IF NOT EXISTS "IX_IgdbSyncStages_RunId_Kind"
 CREATE UNIQUE INDEX IF NOT EXISTS "IX_IgdbSyncStages_RunId_Order"
     ON "public"."IgdbSyncStages" ("RunId", "Order");
 CREATE INDEX IF NOT EXISTS "IX_IgdbSyncStages_Status" ON "public"."IgdbSyncStages" ("Status");
+
+CREATE TABLE IF NOT EXISTS "public"."IgdbSyncSkippedRows" (
+    "StageId" uuid NOT NULL,
+    "EntityId" bigint NOT NULL,
+    "Reason" character varying(64) NOT NULL,
+    "MissingDependencyId" bigint NOT NULL,
+    "CreatedAt" timestamp with time zone NOT NULL DEFAULT now(),
+    CONSTRAINT "PK_IgdbSyncSkippedRows"
+        PRIMARY KEY ("StageId", "EntityId", "Reason", "MissingDependencyId"),
+    CONSTRAINT "FK_IgdbSyncSkippedRows_IgdbSyncStages_StageId"
+        FOREIGN KEY ("StageId") REFERENCES "public"."IgdbSyncStages" ("Id") ON DELETE CASCADE,
+    CONSTRAINT "CK_IgdbSyncSkippedRows_Reason"
+        CHECK ("Reason" IN ('MissingGame', 'MissingCompany', 'MissingExternalGameSource', 'MissingPlatform'))
+);
+
+CREATE INDEX IF NOT EXISTS "IX_IgdbSyncSkippedRows_EntityId"
+    ON "public"."IgdbSyncSkippedRows" ("EntityId");
 
 -- Relation staging is run-scoped and deliberately has no game FK: related games may
 -- not exist until a later committed page of the same catalog scan.

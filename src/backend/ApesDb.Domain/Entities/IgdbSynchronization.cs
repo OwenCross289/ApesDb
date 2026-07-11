@@ -50,6 +50,14 @@ public enum IgdbSyncStageStatus
     Succeeded,
 }
 
+public enum IgdbSyncSkipReason
+{
+    MissingGame,
+    MissingCompany,
+    MissingExternalGameSource,
+    MissingPlatform,
+}
+
 public sealed class IgdbSyncRun
 {
     public Guid Id { get; set; } = Guid.CreateVersion7();
@@ -63,6 +71,8 @@ public sealed class IgdbSyncRun
     public DateTime Through { get; set; }
 
     public long RowsProcessed { get; set; }
+
+    public long RowsSkipped { get; set; }
 
     public string? Error { get; set; }
 
@@ -94,6 +104,8 @@ public sealed class IgdbSyncStage
     public int PagesProcessed { get; set; }
 
     public long RowsProcessed { get; set; }
+
+    public long RowsSkipped { get; set; }
 
     public string? Error { get; set; }
 
@@ -130,6 +142,19 @@ public sealed class IgdbSyncPendingGameRelation
     public GameRelationType RelationType { get; set; }
 }
 
+public sealed class IgdbSyncSkippedRow
+{
+    public Guid StageId { get; set; }
+
+    public long EntityId { get; set; }
+
+    public IgdbSyncSkipReason Reason { get; set; }
+
+    public long MissingDependencyId { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+}
+
 public sealed class IgdbSyncRunConfiguration : IEntityTypeConfiguration<IgdbSyncRun>
 {
     public void Configure(EntityTypeBuilder<IgdbSyncRun> run)
@@ -139,6 +164,7 @@ public sealed class IgdbSyncRunConfiguration : IEntityTypeConfiguration<IgdbSync
         run.Property(value => value.Id).HasDefaultValueSql("uuidv7()").ValueGeneratedOnAdd();
         run.Property(value => value.Mode).HasConversion<string>().HasMaxLength(32);
         run.Property(value => value.Status).HasConversion<string>().HasMaxLength(32);
+        run.Property(value => value.RowsSkipped).HasDefaultValue(0L);
         run.Property(value => value.CreatedAt).HasDefaultValueSql("now()").ValueGeneratedOnAdd();
         run.Property(value => value.UpdatedAt).HasDefaultValueSql("now()");
         run.Property<int>("CatalogLock").HasDefaultValue(1).ValueGeneratedOnAdd();
@@ -161,6 +187,7 @@ public sealed class IgdbSyncRunConfiguration : IEntityTypeConfiguration<IgdbSync
                     + "(\"Mode\" = 'Incremental' AND \"From\" IS NOT NULL AND \"From\" < \"Through\")"
             );
             table.HasCheckConstraint("CK_IgdbSyncRuns_RowsProcessed", "\"RowsProcessed\" >= 0");
+            table.HasCheckConstraint("CK_IgdbSyncRuns_RowsSkipped", "\"RowsSkipped\" >= 0");
             table.HasCheckConstraint(
                 "CK_IgdbSyncRuns_Completion",
                 "(\"Status\" = 'Succeeded' AND \"CompletedAt\" IS NOT NULL) OR \"Status\" <> 'Succeeded'"
@@ -179,6 +206,7 @@ public sealed class IgdbSyncStageConfiguration : IEntityTypeConfiguration<IgdbSy
         stage.Property(value => value.Kind).HasConversion<string>().HasMaxLength(64);
         stage.Property(value => value.Status).HasConversion<string>().HasMaxLength(32);
         stage.Property(value => value.PageCursor).HasDefaultValue(-1L);
+        stage.Property(value => value.RowsSkipped).HasDefaultValue(0L);
         stage.Property(value => value.CreatedAt).HasDefaultValueSql("now()").ValueGeneratedOnAdd();
         stage.Property(value => value.UpdatedAt).HasDefaultValueSql("now()");
         stage.HasIndex(value => new { value.RunId, value.Kind }).IsUnique();
@@ -194,6 +222,7 @@ public sealed class IgdbSyncStageConfiguration : IEntityTypeConfiguration<IgdbSy
             table.HasCheckConstraint("CK_IgdbSyncStages_PageCursor", "\"PageCursor\" >= -1");
             table.HasCheckConstraint("CK_IgdbSyncStages_PagesProcessed", "\"PagesProcessed\" >= 0");
             table.HasCheckConstraint("CK_IgdbSyncStages_RowsProcessed", "\"RowsProcessed\" >= 0");
+            table.HasCheckConstraint("CK_IgdbSyncStages_RowsSkipped", "\"RowsSkipped\" >= 0");
             table.HasCheckConstraint(
                 "CK_IgdbSyncStages_Completion",
                 "(\"Status\" = 'Succeeded' AND \"CompletedAt\" IS NOT NULL) OR \"Status\" <> 'Succeeded'"
@@ -203,6 +232,36 @@ public sealed class IgdbSyncStageConfiguration : IEntityTypeConfiguration<IgdbSy
             .HasOne(value => value.Run)
             .WithMany()
             .HasForeignKey(value => value.RunId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
+}
+
+public sealed class IgdbSyncSkippedRowConfiguration : IEntityTypeConfiguration<IgdbSyncSkippedRow>
+{
+    public void Configure(EntityTypeBuilder<IgdbSyncSkippedRow> skippedRow)
+    {
+        skippedRow.ToTable("IgdbSyncSkippedRows");
+        skippedRow.HasKey(value => new
+        {
+            value.StageId,
+            value.EntityId,
+            value.Reason,
+            value.MissingDependencyId,
+        });
+        skippedRow.Property(value => value.Reason).HasConversion<string>().HasMaxLength(64);
+        skippedRow.Property(value => value.CreatedAt).HasDefaultValueSql("now()").ValueGeneratedOnAdd();
+        skippedRow.HasIndex(value => value.EntityId);
+        skippedRow.ToTable(table =>
+        {
+            table.HasCheckConstraint(
+                "CK_IgdbSyncSkippedRows_Reason",
+                "\"Reason\" IN ('MissingGame', 'MissingCompany', 'MissingExternalGameSource', 'MissingPlatform')"
+            );
+        });
+        skippedRow
+            .HasOne<IgdbSyncStage>()
+            .WithMany()
+            .HasForeignKey(value => value.StageId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

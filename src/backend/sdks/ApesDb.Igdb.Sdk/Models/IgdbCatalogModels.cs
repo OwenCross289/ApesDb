@@ -1,6 +1,6 @@
 namespace ApesDb.Igdb.Sdk.Models;
 
-public sealed record IgdbSyncWindow(DateTimeOffset UpdatedAfter, DateTimeOffset UpdatedThrough);
+public sealed record IgdbSyncWindow(DateTimeOffset? UpdatedAfter, DateTimeOffset UpdatedThrough);
 
 public sealed record IgdbGameType(long Id, string? Name, Guid? Checksum, DateTimeOffset? UpdatedAt);
 

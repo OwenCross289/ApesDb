@@ -14,6 +14,7 @@ public sealed class CatalogSyncOrchestrator : ICatalogSyncOrchestrator
 {
     private const string UnfinishedRunIndex = "UX_IgdbSyncRuns_Unfinished";
 
+    private static readonly TimeSpan CatalogConsistencyLag = TimeSpan.FromMinutes(5);
     private static readonly int[] RetryIntervals = [30, 120, 600];
 
     private static readonly IgdbSyncStageKind[] BootstrapStages =
@@ -221,11 +222,13 @@ public sealed class CatalogSyncOrchestrator : ICatalogSyncOrchestrator
 
         await _dbContext.SaveChangesAsync(cancellationToken);
         _logger.LogInformation(
-            "Completed {Mode} IGDB catalog run {RunId} through {Through} with {RowsProcessed} processed rows.",
+            "Completed {Mode} IGDB catalog run {RunId} through {Through} with {RowsProcessed} processed rows and "
+                + "{RowsSkipped} skipped rows.",
             run.Mode,
             run.Id,
             run.Through,
-            run.RowsProcessed
+            run.RowsProcessed,
+            run.RowsSkipped
         );
 
         if (run.Mode == IgdbSyncRunMode.Bootstrap)
@@ -545,9 +548,8 @@ public sealed class CatalogSyncOrchestrator : ICatalogSyncOrchestrator
 
     private DateTime CaptureRunThrough()
     {
-        var now = _dateTimeProvider.UtcNow;
-        var wholeSecond = new DateTime(now.Ticks - (now.Ticks % TimeSpan.TicksPerSecond), DateTimeKind.Utc);
-        return wholeSecond.AddSeconds(-1);
+        var laggedNow = _dateTimeProvider.UtcNow - CatalogConsistencyLag;
+        return new DateTime(laggedNow.Ticks - (laggedNow.Ticks % TimeSpan.TicksPerSecond), DateTimeKind.Utc);
     }
 
     private static bool IsActive(TickerStatus status)

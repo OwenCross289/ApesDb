@@ -18,6 +18,11 @@ public sealed class CatalogStageRunner : ICatalogStageRunner
         PropertiesToExcludeOnUpdate = [nameof(IIgdbEntity.CreatedAt)],
     };
 
+    private static readonly BulkConfig SkippedRowUpsertConfig = new()
+    {
+        PropertiesToExcludeOnUpdate = [nameof(IgdbSyncSkippedRow.CreatedAt)],
+    };
+
     private readonly ApplicationDbContext _dbContext;
     private readonly IIgdbService _igdbService;
     private readonly IPopularitySynchronizer _popularitySynchronizer;
@@ -426,54 +431,23 @@ public sealed class CatalogStageRunner : ICatalogStageRunner
                 await SyncGameRelationsAsync(run, stage, cancellationToken);
                 break;
             case IgdbSyncStageKind.InvolvedCompanies:
-                await SyncEntitiesAsync(
+                await SyncDependentEntitiesAsync(
                     run,
                     stage,
                     _igdbService.FetchInvolvedCompaniesPageAsync,
                     value => value.Id,
-                    (value, now) =>
-                        new GameCompany
-                        {
-                            Id = value.Id,
-                            GameId = value.GameId,
-                            CompanyId = value.CompanyId,
-                            Developer = value.Developer,
-                            Publisher = value.Publisher,
-                            Porting = value.Porting,
-                            Supporting = value.Supporting,
-                            Checksum = value.Checksum,
-                            IgdbUpdatedAt = ToUtcDateTime(value.UpdatedAt),
-                            CreatedAt = now,
-                            UpdatedAt = now,
-                            LastSyncedAt = now,
-                        },
+                    PrepareInvolvedCompaniesPageAsync,
                     window,
                     cancellationToken
                 );
                 break;
             case IgdbSyncStageKind.ExternalGames:
-                await SyncEntitiesAsync(
+                await SyncDependentEntitiesAsync(
                     run,
                     stage,
                     _igdbService.FetchExternalGamesPageAsync,
                     value => value.Id,
-                    (value, now) =>
-                        new ExternalGame
-                        {
-                            Id = value.Id,
-                            GameId = value.GameId,
-                            ExternalGameSourceId = value.SourceId,
-                            PlatformId = value.PlatformId,
-                            ExternalId = value.Uid,
-                            Name = value.Name,
-                            Url = value.Url,
-                            Year = value.Year,
-                            Checksum = value.Checksum,
-                            IgdbUpdatedAt = ToUtcDateTime(value.UpdatedAt),
-                            CreatedAt = now,
-                            UpdatedAt = now,
-                            LastSyncedAt = now,
-                        },
+                    PrepareExternalGamesPageAsync,
                     window,
                     cancellationToken
                 );
@@ -532,6 +506,274 @@ public sealed class CatalogStageRunner : ICatalogStageRunner
         }
 
         await MarkStageSucceededAsync(run, stage, cancellationToken);
+    }
+
+    private async Task SyncDependentEntitiesAsync<TSource, TEntity>(
+        IgdbSyncRun run,
+        IgdbSyncStage stage,
+        Func<long, IgdbSyncWindow?, CancellationToken, Task<IReadOnlyList<TSource>>> fetchPage,
+        Func<TSource, long> idSelector,
+        Func<
+            Guid,
+            IReadOnlyList<TSource>,
+            DateTime,
+            CancellationToken,
+            Task<ValidatedDependentPage<TEntity>>
+        > preparePage,
+        IgdbSyncWindow? window,
+        CancellationToken cancellationToken
+    )
+        where TEntity : class, IIgdbEntity
+    {
+        var cursor = stage.PageCursor;
+        while (true)
+        {
+            var page = await fetchPage(cursor, window, cancellationToken);
+            if (page.Count == 0)
+            {
+                break;
+            }
+
+            var nextCursor = page.Max(idSelector);
+            ValidatePageCursor(cursor, nextCursor, stage.Kind);
+            var now = _dateTimeProvider.UtcNow;
+            var distinctPage = page.DistinctBy(idSelector).ToArray();
+            var preparedPage = await preparePage(stage.Id, distinctPage, now, cancellationToken);
+
+            await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+            if (preparedPage.SkippedRows.Count > 0)
+            {
+                await _dbContext.BulkInsertOrUpdateAsync(
+                    preparedPage.SkippedRows,
+                    SkippedRowUpsertConfig,
+                    cancellationToken: cancellationToken
+                );
+            }
+
+            if (preparedPage.Entities.Count > 0)
+            {
+                await _dbContext.BulkInsertOrUpdateAsync(
+                    preparedPage.Entities,
+                    UpsertConfig,
+                    cancellationToken: cancellationToken
+                );
+            }
+
+            UpdatePageProgress(run, stage, nextCursor, page.Count, now);
+            UpdateSkippedProgress(run, stage, preparedPage.SkippedEntityCount);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+
+            LogSkippedRows(run.Id, stage.Kind, preparedPage);
+            cursor = nextCursor;
+            if (page.Count < PageSize)
+            {
+                break;
+            }
+        }
+
+        await MarkStageSucceededAsync(run, stage, cancellationToken);
+    }
+
+    private async Task<ValidatedDependentPage<GameCompany>> PrepareInvolvedCompaniesPageAsync(
+        Guid stageId,
+        IReadOnlyList<IgdbInvolvedCompany> page,
+        DateTime now,
+        CancellationToken cancellationToken
+    )
+    {
+        var requestedGameIds = page.Select(value => value.GameId).Distinct().ToArray();
+        var requestedCompanyIds = page.Select(value => value.CompanyId).Distinct().ToArray();
+        var storedGameIds = await _dbContext
+            .Games.AsNoTracking()
+            .Where(value => requestedGameIds.Contains(value.Id))
+            .Select(value => value.Id)
+            .ToHashSetAsync(cancellationToken);
+        var storedCompanyIds = await _dbContext
+            .Companies.AsNoTracking()
+            .Where(value => requestedCompanyIds.Contains(value.Id))
+            .Select(value => value.Id)
+            .ToHashSetAsync(cancellationToken);
+        var entities = new List<GameCompany>(page.Count);
+        var skippedRows = new List<IgdbSyncSkippedRow>();
+        var skippedEntityCount = 0;
+
+        foreach (var value in page)
+        {
+            var isSkipped = false;
+            if (!storedGameIds.Contains(value.GameId))
+            {
+                skippedRows.Add(CreateSkippedRow(stageId, value.Id, IgdbSyncSkipReason.MissingGame, value.GameId, now));
+                isSkipped = true;
+            }
+
+            if (!storedCompanyIds.Contains(value.CompanyId))
+            {
+                skippedRows.Add(
+                    CreateSkippedRow(stageId, value.Id, IgdbSyncSkipReason.MissingCompany, value.CompanyId, now)
+                );
+                isSkipped = true;
+            }
+
+            if (isSkipped)
+            {
+                skippedEntityCount++;
+                continue;
+            }
+
+            entities.Add(
+                new GameCompany
+                {
+                    Id = value.Id,
+                    GameId = value.GameId,
+                    CompanyId = value.CompanyId,
+                    Developer = value.Developer,
+                    Publisher = value.Publisher,
+                    Porting = value.Porting,
+                    Supporting = value.Supporting,
+                    Checksum = value.Checksum,
+                    IgdbUpdatedAt = ToUtcDateTime(value.UpdatedAt),
+                    CreatedAt = now,
+                    UpdatedAt = now,
+                    LastSyncedAt = now,
+                }
+            );
+        }
+
+        return new ValidatedDependentPage<GameCompany>(entities, skippedRows, skippedEntityCount);
+    }
+
+    private async Task<ValidatedDependentPage<ExternalGame>> PrepareExternalGamesPageAsync(
+        Guid stageId,
+        IReadOnlyList<IgdbExternalGame> page,
+        DateTime now,
+        CancellationToken cancellationToken
+    )
+    {
+        var requestedGameIds = page.Select(value => value.GameId).Distinct().ToArray();
+        var requestedSourceIds = page.Select(value => value.SourceId).Distinct().ToArray();
+        var requestedPlatformIds = page.Where(value => value.PlatformId.HasValue)
+            .Select(value => value.PlatformId!.Value)
+            .Distinct()
+            .ToArray();
+        var storedGameIds = await _dbContext
+            .Games.AsNoTracking()
+            .Where(value => requestedGameIds.Contains(value.Id))
+            .Select(value => value.Id)
+            .ToHashSetAsync(cancellationToken);
+        var storedSourceIds = await _dbContext
+            .ExternalGameSources.AsNoTracking()
+            .Where(value => requestedSourceIds.Contains(value.Id))
+            .Select(value => value.Id)
+            .ToHashSetAsync(cancellationToken);
+        var storedPlatformIds = await _dbContext
+            .Platforms.AsNoTracking()
+            .Where(value => requestedPlatformIds.Contains(value.Id))
+            .Select(value => value.Id)
+            .ToHashSetAsync(cancellationToken);
+        var entities = new List<ExternalGame>(page.Count);
+        var skippedRows = new List<IgdbSyncSkippedRow>();
+        var skippedEntityCount = 0;
+
+        foreach (var value in page)
+        {
+            var isSkipped = false;
+            if (!storedGameIds.Contains(value.GameId))
+            {
+                skippedRows.Add(CreateSkippedRow(stageId, value.Id, IgdbSyncSkipReason.MissingGame, value.GameId, now));
+                isSkipped = true;
+            }
+
+            if (!storedSourceIds.Contains(value.SourceId))
+            {
+                skippedRows.Add(
+                    CreateSkippedRow(
+                        stageId,
+                        value.Id,
+                        IgdbSyncSkipReason.MissingExternalGameSource,
+                        value.SourceId,
+                        now
+                    )
+                );
+                isSkipped = true;
+            }
+
+            if (value.PlatformId is { } platformId && !storedPlatformIds.Contains(platformId))
+            {
+                skippedRows.Add(
+                    CreateSkippedRow(stageId, value.Id, IgdbSyncSkipReason.MissingPlatform, platformId, now)
+                );
+                isSkipped = true;
+            }
+
+            if (isSkipped)
+            {
+                skippedEntityCount++;
+                continue;
+            }
+
+            entities.Add(
+                new ExternalGame
+                {
+                    Id = value.Id,
+                    GameId = value.GameId,
+                    ExternalGameSourceId = value.SourceId,
+                    PlatformId = value.PlatformId,
+                    ExternalId = value.Uid,
+                    Name = value.Name,
+                    Url = value.Url,
+                    Year = value.Year,
+                    Checksum = value.Checksum,
+                    IgdbUpdatedAt = ToUtcDateTime(value.UpdatedAt),
+                    CreatedAt = now,
+                    UpdatedAt = now,
+                    LastSyncedAt = now,
+                }
+            );
+        }
+
+        return new ValidatedDependentPage<ExternalGame>(entities, skippedRows, skippedEntityCount);
+    }
+
+    private static IgdbSyncSkippedRow CreateSkippedRow(
+        Guid stageId,
+        long entityId,
+        IgdbSyncSkipReason reason,
+        long missingDependencyId,
+        DateTime now
+    )
+    {
+        return new IgdbSyncSkippedRow
+        {
+            StageId = stageId,
+            EntityId = entityId,
+            Reason = reason,
+            MissingDependencyId = missingDependencyId,
+            CreatedAt = now,
+        };
+    }
+
+    private void LogSkippedRows<TEntity>(Guid runId, IgdbSyncStageKind stageKind, ValidatedDependentPage<TEntity> page)
+        where TEntity : class
+    {
+        if (page.SkippedEntityCount == 0)
+        {
+            return;
+        }
+
+        var samples = string.Join(
+            ", ",
+            page.SkippedRows.Take(10).Select(value => $"{value.EntityId}:{value.Reason}:{value.MissingDependencyId}")
+        );
+        _logger.LogWarning(
+            "Skipped {SkippedRows} IGDB rows containing {MissingDependencies} missing dependencies in stage {Stage} "
+                + "for run {RunId}. Samples: {Samples}",
+            page.SkippedEntityCount,
+            page.SkippedRows.Count,
+            stageKind,
+            runId,
+            samples
+        );
     }
 
     private async Task SyncPlatformLinksAsync(IgdbSyncRun run, IgdbSyncStage stage, CancellationToken cancellationToken)
@@ -853,11 +1095,12 @@ public sealed class CatalogStageRunner : ICatalogStageRunner
         }
 
         _logger.LogInformation(
-            "Completed IGDB stage {Stage} for run {RunId}: {Pages} pages and {Rows} rows.",
+            "Completed IGDB stage {Stage} for run {RunId}: {Pages} pages, {Rows} rows, and {RowsSkipped} skipped rows.",
             stage.Kind,
             run.Id,
             stage.PagesProcessed,
-            stage.RowsProcessed
+            stage.RowsProcessed,
+            stage.RowsSkipped
         );
     }
 
@@ -958,14 +1201,9 @@ public sealed class CatalogStageRunner : ICatalogStageRunner
             .Where(value => value.GameId != value.RelatedGameId);
     }
 
-    private static IgdbSyncWindow? CreateWindow(IgdbSyncRun run)
+    private static IgdbSyncWindow CreateWindow(IgdbSyncRun run)
     {
-        if (!run.From.HasValue)
-        {
-            return null;
-        }
-
-        return new IgdbSyncWindow(ToUtcOffset(run.From.Value), ToUtcOffset(run.Through));
+        return new IgdbSyncWindow(run.From.HasValue ? ToUtcOffset(run.From.Value) : null, ToUtcOffset(run.Through));
     }
 
     private static DateTimeOffset ToUtcOffset(DateTime value)
@@ -1010,4 +1248,16 @@ public sealed class CatalogStageRunner : ICatalogStageRunner
         run.RowsProcessed += rowsProcessed;
         run.UpdatedAt = now;
     }
+
+    private static void UpdateSkippedProgress(IgdbSyncRun run, IgdbSyncStage stage, int rowsSkipped)
+    {
+        stage.RowsSkipped += rowsSkipped;
+        run.RowsSkipped += rowsSkipped;
+    }
+
+    private sealed record ValidatedDependentPage<TEntity>(
+        IReadOnlyList<TEntity> Entities,
+        IReadOnlyList<IgdbSyncSkippedRow> SkippedRows,
+        int SkippedEntityCount
+    );
 }

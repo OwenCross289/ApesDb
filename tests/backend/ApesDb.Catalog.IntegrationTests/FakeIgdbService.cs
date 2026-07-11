@@ -45,6 +45,12 @@ internal sealed class FakeIgdbService : IIgdbService
 
     public IReadOnlyList<IgdbPopularityPrimitive> PopularityPrimitives { get; set; } = [];
 
+    public Dictionary<long, DateTimeOffset?> GameCreatedAt { get; } = [];
+
+    public Dictionary<long, DateTimeOffset?> InvolvedCompanyCreatedAt { get; } = [];
+
+    public Dictionary<long, DateTimeOffset?> ExternalGameCreatedAt { get; } = [];
+
     public Func<
         long,
         IgdbSyncWindow?,
@@ -55,6 +61,12 @@ internal sealed class FakeIgdbService : IIgdbService
     public List<PageRequest> GenreRequests { get; } = [];
 
     public List<PageRequest> PlatformRequests { get; } = [];
+
+    public List<PageRequest> GameRequests { get; } = [];
+
+    public List<PageRequest> InvolvedCompanyRequests { get; } = [];
+
+    public List<PageRequest> ExternalGameRequests { get; } = [];
 
     public Task<IReadOnlyList<IgdbGameType>> FetchGameTypesPageAsync(
         long afterId,
@@ -159,19 +171,55 @@ internal sealed class FakeIgdbService : IIgdbService
         long afterId,
         IgdbSyncWindow? window = null,
         CancellationToken cancellationToken = default
-    ) => PageAsync(Games, afterId, value => value.Id, cancellationToken);
+    )
+    {
+        GameRequests.Add(new PageRequest(afterId, window));
+        return WindowedPageAsync(
+            Games,
+            afterId,
+            value => value.Id,
+            value => value.UpdatedAt,
+            value => GetCreatedAt(GameCreatedAt, value.Id, value.UpdatedAt),
+            window,
+            cancellationToken
+        );
+    }
 
     public Task<IReadOnlyList<IgdbInvolvedCompany>> FetchInvolvedCompaniesPageAsync(
         long afterId,
         IgdbSyncWindow? window = null,
         CancellationToken cancellationToken = default
-    ) => PageAsync(InvolvedCompanies, afterId, value => value.Id, cancellationToken);
+    )
+    {
+        InvolvedCompanyRequests.Add(new PageRequest(afterId, window));
+        return WindowedPageAsync(
+            InvolvedCompanies,
+            afterId,
+            value => value.Id,
+            value => value.UpdatedAt,
+            value => GetCreatedAt(InvolvedCompanyCreatedAt, value.Id, value.UpdatedAt),
+            window,
+            cancellationToken
+        );
+    }
 
     public Task<IReadOnlyList<IgdbExternalGame>> FetchExternalGamesPageAsync(
         long afterId,
         IgdbSyncWindow? window = null,
         CancellationToken cancellationToken = default
-    ) => PageAsync(ExternalGames, afterId, value => value.Id, cancellationToken);
+    )
+    {
+        ExternalGameRequests.Add(new PageRequest(afterId, window));
+        return WindowedPageAsync(
+            ExternalGames,
+            afterId,
+            value => value.Id,
+            value => value.UpdatedAt,
+            value => GetCreatedAt(ExternalGameCreatedAt, value.Id, value.UpdatedAt),
+            window,
+            cancellationToken
+        );
+    }
 
     public Task<IReadOnlyList<IgdbPopularityPrimitive>> FetchPopularityPrimitivesPageAsync(
         long popularityTypeId,
@@ -202,6 +250,49 @@ internal sealed class FakeIgdbService : IIgdbService
             .Take(PageSize)
             .ToArray();
         return Task.FromResult(page);
+    }
+
+    private static Task<IReadOnlyList<T>> WindowedPageAsync<T>(
+        IReadOnlyList<T> values,
+        long afterId,
+        Func<T, long> idSelector,
+        Func<T, DateTimeOffset?> updatedAtSelector,
+        Func<T, DateTimeOffset?> createdAtSelector,
+        IgdbSyncWindow? window,
+        CancellationToken cancellationToken
+    )
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        IReadOnlyList<T> page = values
+            .Where(value => idSelector(value) > afterId)
+            .Where(value => IsWithinWindow(updatedAtSelector(value), createdAtSelector(value), window))
+            .OrderBy(idSelector)
+            .Take(PageSize)
+            .ToArray();
+        return Task.FromResult(page);
+    }
+
+    private static DateTimeOffset? GetCreatedAt(
+        IReadOnlyDictionary<long, DateTimeOffset?> createdAtById,
+        long id,
+        DateTimeOffset? updatedAt
+    ) => createdAtById.TryGetValue(id, out var createdAt) ? createdAt : updatedAt;
+
+    private static bool IsWithinWindow(DateTimeOffset? updatedAt, DateTimeOffset? createdAt, IgdbSyncWindow? window)
+    {
+        if (window is null)
+        {
+            return true;
+        }
+
+        if (window.UpdatedAfter is { } lowerBoundary)
+        {
+            return updatedAt is { } updatedValue
+                && updatedValue > lowerBoundary
+                && updatedValue <= window.UpdatedThrough;
+        }
+
+        return createdAt is { } createdValue && createdValue <= window.UpdatedThrough;
     }
 
     public sealed record PageRequest(long AfterId, IgdbSyncWindow? Window);

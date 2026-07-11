@@ -21,7 +21,7 @@ public sealed class IgdbServiceTests
     }
 
     [Fact]
-    public async Task FetchGamesPageAsync_UsesBootstrapKeysetAndMapsACompleteShortPage()
+    public async Task FetchGamesPageAsync_UsesUnwindowedKeysetAndMapsACompleteShortPage()
     {
         var checksum = Guid.NewGuid();
         var client = new RecordingIgdbClient(
@@ -109,8 +109,26 @@ public sealed class IgdbServiceTests
         Assert.DoesNotContain("external_games", query.Query, StringComparison.Ordinal);
         Assert.DoesNotContain("involved_companies", query.Query, StringComparison.Ordinal);
         Assert.Contains("where id > 1200; sort id asc; limit 500;", query.Query, StringComparison.Ordinal);
-        Assert.DoesNotContain("updated_at >", query.Query, StringComparison.Ordinal);
+        Assert.DoesNotContain("& updated_at", query.Query, StringComparison.Ordinal);
         Assert.DoesNotContain("game_type =", query.Query, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task FetchGamesPageAsync_UsesCreatedAtUpperBoundForBootstrapWindow()
+    {
+        var client = new RecordingIgdbClient();
+        var service = new IgdbService(client);
+        var window = new IgdbSyncWindow(null, DateTimeOffset.FromUnixTimeSeconds(2_000));
+
+        await service.FetchGamesPageAsync(42, window);
+
+        var query = Assert.Single(client.Queries);
+        Assert.Contains(
+            "where id > 42 & created_at <= 2000; sort id asc; limit 500;",
+            query.Query,
+            StringComparison.Ordinal
+        );
+        Assert.DoesNotContain("& updated_at", query.Query, StringComparison.Ordinal);
     }
 
     [Fact]

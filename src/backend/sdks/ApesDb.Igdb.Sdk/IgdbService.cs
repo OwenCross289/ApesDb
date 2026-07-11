@@ -495,7 +495,7 @@ internal sealed class IgdbService : IIgdbService
         var where = $"id > {afterId}";
         if (window is not null)
         {
-            if (window.UpdatedAfter > window.UpdatedThrough)
+            if (window.UpdatedAfter is { } updatedAfter && updatedAfter > window.UpdatedThrough)
             {
                 throw new ArgumentException(
                     "The incremental synchronization boundary must not end before it starts.",
@@ -503,9 +503,15 @@ internal sealed class IgdbService : IIgdbService
                 );
             }
 
-            where +=
-                $" & updated_at > {window.UpdatedAfter.ToUnixTimeSeconds()}"
-                + $" & updated_at <= {window.UpdatedThrough.ToUnixTimeSeconds()}";
+            if (window.UpdatedAfter is { } lowerBoundary)
+            {
+                where += $" & updated_at > {lowerBoundary.ToUnixTimeSeconds()}";
+                where += $" & updated_at <= {window.UpdatedThrough.ToUnixTimeSeconds()}";
+            }
+            else
+            {
+                where += $" & created_at <= {window.UpdatedThrough.ToUnixTimeSeconds()}";
+            }
         }
 
         return $"fields {fields}; where {where}; sort id asc; limit {PageSize};";

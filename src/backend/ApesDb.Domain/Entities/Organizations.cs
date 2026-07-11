@@ -155,7 +155,6 @@ public sealed class GameCompanyConfiguration : IEntityTypeConfiguration<GameComp
         gameCompany.ConfigureIgdbEntity();
         gameCompany.HasIndex(value => value.GameId);
         gameCompany.HasIndex(value => value.CompanyId);
-        gameCompany.HasIndex(value => new { value.GameId, value.CompanyId }).IsUnique();
         gameCompany.ToTable(table =>
             table.HasCheckConstraint(
                 "CK_GameCompanies_Role",

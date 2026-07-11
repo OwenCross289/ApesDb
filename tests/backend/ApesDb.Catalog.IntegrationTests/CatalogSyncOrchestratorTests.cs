@@ -35,7 +35,7 @@ public sealed class CatalogSyncOrchestratorTests : IClassFixture<CatalogDatabase
         var bootstrap = await dbContext.IgdbSyncRuns.AsNoTracking().SingleAsync();
         Assert.Equal(IgdbSyncRunMode.Bootstrap, bootstrap.Mode);
         Assert.Null(bootstrap.From);
-        Assert.Equal(CaptureExpectedThrough(clock.UtcNow), bootstrap.Through);
+        Assert.Equal(new DateTime(2026, 7, 9, 11, 55, 0, DateTimeKind.Utc), bootstrap.Through);
         Assert.Equal(21, await dbContext.IgdbSyncStages.CountAsync(value => value.RunId == bootstrap.Id));
         Assert.Single(manager.Added);
 
@@ -398,8 +398,8 @@ public sealed class CatalogSyncOrchestratorTests : IClassFixture<CatalogDatabase
 
     private static DateTime CaptureExpectedThrough(DateTime now)
     {
-        var wholeSecond = new DateTime(now.Ticks - (now.Ticks % TimeSpan.TicksPerSecond), DateTimeKind.Utc);
-        return wholeSecond.AddSeconds(-1);
+        var laggedNow = now.AddMinutes(-5);
+        return new DateTime(laggedNow.Ticks - (laggedNow.Ticks % TimeSpan.TicksPerSecond), DateTimeKind.Utc);
     }
 
     private sealed class MutableDateTimeProvider : IDateTimeProvider

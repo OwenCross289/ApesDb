@@ -19,7 +19,7 @@ using ZiggyCreatures.Caching.Fusion;
 
 namespace ApesDb.Catalog.IntegrationTests;
 
-public sealed class CatalogStageRunnerTests : IClassFixture<CatalogDatabaseFixture>
+public sealed partial class CatalogStageRunnerTests : IClassFixture<CatalogDatabaseFixture>
 {
     private static readonly DateTime SynchronizedAt = new(2026, 7, 9, 12, 0, 0, DateTimeKind.Utc);
     private static readonly DateTimeOffset IgdbUpdatedAt = new(2026, 7, 9, 10, 0, 0, TimeSpan.Zero);
@@ -96,7 +96,7 @@ public sealed class CatalogStageRunnerTests : IClassFixture<CatalogDatabaseFixtu
             await dbContext.PopularityTypes.Select(value => value.ExternalPopularitySourceId).SingleAsync()
         );
         Assert.Equal(
-            new long[] { 1, 5, 14 },
+            new long[] { 1, 31, 36 },
             await dbContext.ExternalGameSources.OrderBy(value => value.Id).Select(value => value.Id).ToArrayAsync()
         );
         Assert.Equal(new long[] { 90 }, await dbContext.Companies.Select(value => value.Id).ToArrayAsync());
@@ -183,7 +183,7 @@ public sealed class CatalogStageRunnerTests : IClassFixture<CatalogDatabaseFixtu
             value =>
             {
                 Assert.Equal(81, value.Id);
-                Assert.Equal(5, value.ExternalGameSourceId);
+                Assert.Equal(36, value.ExternalGameSourceId);
                 Assert.Null(value.PlatformId);
                 Assert.Null(value.ExternalId);
                 Assert.Equal("https://store.playstation.com/product/PPSA500", value.Url);
@@ -191,7 +191,7 @@ public sealed class CatalogStageRunnerTests : IClassFixture<CatalogDatabaseFixtu
             value =>
             {
                 Assert.Equal(82, value.Id);
-                Assert.Equal(14, value.ExternalGameSourceId);
+                Assert.Equal(31, value.ExternalGameSourceId);
                 Assert.Equal("XBOX500", value.ExternalId);
                 Assert.Equal("https://www.xbox.com/games/store/catalog-game/XBOX500", value.Url);
             }
@@ -200,6 +200,101 @@ public sealed class CatalogStageRunnerTests : IClassFixture<CatalogDatabaseFixtu
         var stages = await dbContext.IgdbSyncStages.AsNoTracking().Where(value => value.RunId == runId).ToArrayAsync();
         Assert.Equal(GraphStages.Length, stages.Length);
         Assert.All(stages, stage => Assert.Equal(IgdbSyncStageStatus.Succeeded, stage.Status));
+    }
+
+    [Fact]
+    public async Task InvolvedCompaniesStage_PreservesDistinctIgdbRowsAndUpsertsRolesIndependently()
+    {
+        await _database.ResetAsync();
+        await using var dbContext = _database.CreateDbContext();
+        const long gameId = 5_000_000_500;
+        const long companyId = 90;
+        dbContext.AddRange(
+            CreateStoredGame(gameId, "Shared Company Game"),
+            Stamp(new Company { Id = companyId, Name = "Shared Company" })
+        );
+        await dbContext.SaveChangesAsync();
+
+        var service = new FakeIgdbService
+        {
+            InvolvedCompanies =
+            [
+                new IgdbInvolvedCompany(91, gameId, companyId, true, false, false, false, null, IgdbUpdatedAt),
+                new IgdbInvolvedCompany(92, gameId, companyId, false, true, false, false, null, IgdbUpdatedAt),
+            ],
+        };
+        var runner = CreateRunner(dbContext, service);
+        var firstRunId = await CreateRunAsync(
+            dbContext,
+            IgdbSyncRunMode.Bootstrap,
+            null,
+            SynchronizedAt,
+            [IgdbSyncStageKind.InvolvedCompanies]
+        );
+
+        await runner.RunAsync(firstRunId, IgdbSyncStageKind.InvolvedCompanies, retryCount: 1);
+
+        dbContext.ChangeTracker.Clear();
+        var firstRows = await dbContext.GameCompanies.AsNoTracking().OrderBy(value => value.Id).ToArrayAsync();
+        Assert.Collection(
+            firstRows,
+            value =>
+            {
+                Assert.Equal(91, value.Id);
+                Assert.Equal(gameId, value.GameId);
+                Assert.Equal(companyId, value.CompanyId);
+                Assert.True(value.Developer);
+                Assert.False(value.Publisher);
+            },
+            value =>
+            {
+                Assert.Equal(92, value.Id);
+                Assert.Equal(gameId, value.GameId);
+                Assert.Equal(companyId, value.CompanyId);
+                Assert.False(value.Developer);
+                Assert.True(value.Publisher);
+            }
+        );
+        await CompleteRunAsync(dbContext, firstRunId);
+
+        service.InvolvedCompanies =
+        [
+            new IgdbInvolvedCompany(91, gameId, companyId, true, true, false, false, null, IgdbUpdatedAt),
+            new IgdbInvolvedCompany(92, gameId, companyId, true, true, false, false, null, IgdbUpdatedAt),
+        ];
+        var secondRunId = await CreateRunAsync(
+            dbContext,
+            IgdbSyncRunMode.Incremental,
+            SynchronizedAt.AddDays(-1),
+            SynchronizedAt,
+            [IgdbSyncStageKind.InvolvedCompanies]
+        );
+
+        await runner.RunAsync(secondRunId, IgdbSyncStageKind.InvolvedCompanies, retryCount: 1);
+
+        dbContext.ChangeTracker.Clear();
+        var updatedRows = await dbContext.GameCompanies.AsNoTracking().OrderBy(value => value.Id).ToArrayAsync();
+        Assert.Equal([91L, 92L], updatedRows.Select(value => value.Id).ToArray());
+        Assert.All(updatedRows, value => Assert.True(value.Developer));
+        Assert.All(updatedRows, value => Assert.True(value.Publisher));
+        await CompleteRunAsync(dbContext, secondRunId);
+
+        var repeatedRunId = await CreateRunAsync(
+            dbContext,
+            IgdbSyncRunMode.Incremental,
+            SynchronizedAt.AddDays(-1),
+            SynchronizedAt,
+            [IgdbSyncStageKind.InvolvedCompanies]
+        );
+
+        await runner.RunAsync(repeatedRunId, IgdbSyncStageKind.InvolvedCompanies, retryCount: 1);
+
+        dbContext.ChangeTracker.Clear();
+        Assert.Equal(2, await dbContext.GameCompanies.CountAsync());
+        var response = await InvokeListGamesAsync(dbContext, new ListGamesRequest());
+        var item = Assert.Single(response.Items);
+        Assert.Equal(["Shared Company"], item.Developers);
+        Assert.Equal(["Shared Company"], item.Publishers);
     }
 
     [Fact]
@@ -631,6 +726,16 @@ public sealed class CatalogStageRunnerTests : IClassFixture<CatalogDatabaseFixtu
         return run.Id;
     }
 
+    private static async Task CompleteRunAsync(ApplicationDbContext dbContext, Guid runId)
+    {
+        var run = await dbContext.IgdbSyncRuns.SingleAsync(value => value.Id == runId);
+        run.Status = IgdbSyncRunStatus.Succeeded;
+        run.CompletedAt = SynchronizedAt;
+        run.UpdatedAt = SynchronizedAt;
+        await dbContext.SaveChangesAsync();
+        dbContext.ChangeTracker.Clear();
+    }
+
     private static FakeIgdbService CreateGraphService()
     {
         const long gameId = 5_000_000_500;
@@ -655,8 +760,8 @@ public sealed class CatalogStageRunnerTests : IClassFixture<CatalogDatabaseFixtu
             ExternalGameSources =
             [
                 new IgdbExternalGameSource(1, "Steam", null, IgdbUpdatedAt),
-                new IgdbExternalGameSource(5, "PlayStation Store", null, IgdbUpdatedAt),
-                new IgdbExternalGameSource(14, "Xbox Marketplace", null, IgdbUpdatedAt),
+                new IgdbExternalGameSource(31, "Xbox Marketplace", null, IgdbUpdatedAt),
+                new IgdbExternalGameSource(36, "Playstation Store US", null, IgdbUpdatedAt),
             ],
             Companies =
             [
@@ -732,7 +837,7 @@ public sealed class CatalogStageRunnerTests : IClassFixture<CatalogDatabaseFixtu
                 new IgdbExternalGame(
                     81,
                     gameId,
-                    5,
+                    36,
                     null,
                     null,
                     "Catalog Game",
@@ -744,7 +849,7 @@ public sealed class CatalogStageRunnerTests : IClassFixture<CatalogDatabaseFixtu
                 new IgdbExternalGame(
                     82,
                     gameId,
-                    14,
+                    31,
                     null,
                     "XBOX500",
                     "Catalog Game",
