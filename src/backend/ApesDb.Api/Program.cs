@@ -2,7 +2,6 @@ using ApesDb.Api;
 using ApesDb.Auth;
 using ApesDb.Common;
 using ApesDb.Domain;
-using ApesDb.Igdb.Sdk;
 using FastEndpoints;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,8 +12,6 @@ builder.Services.AddApesDbCache(builder.Configuration);
 builder.Services.AddApesDbDataProtection();
 builder.Services.AddApesDbDomain(builder.Configuration);
 builder.Services.AddApesDbAuth(builder.Configuration);
-
-builder.Services.AddIgdbSdk(builder.Configuration);
 
 builder.Services.AddFastEndpoints();
 builder.Services.AddApesDbSwagger();

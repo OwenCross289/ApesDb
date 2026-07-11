@@ -11,8 +11,6 @@ services:
       Auth0__ClientSecret: ${AUTH0_CLIENT_SECRET:?AUTH0_CLIENT_SECRET is required}
       Auth0__CallbackPath: /api/auth/callback
       Auth0__PostLogoutRedirectUri: /
-      Igdb__ClientId: ${IGDB_CLIENT_ID:?IGDB_CLIENT_ID is required}
-      Igdb__ClientSecret: ${IGDB_CLIENT_SECRET:?IGDB_CLIENT_SECRET is required}
     ports:
       - "8080"
     depends_on:
