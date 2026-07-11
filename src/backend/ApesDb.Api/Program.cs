@@ -37,7 +37,7 @@ builder.Services.SwaggerDocument(o =>
                 Name = "apesdb.session",
                 Description =
                     "Stateful session cookie issued after Auth0/Google login. "
-                    + "[Login with Google](/api/auth/login?connection=google&returnUrl=/swagger)"
+                    + "[Login with Google](/api/auth/login?connection=google&returnUrl=/swagger)",
             }
         );
     };
