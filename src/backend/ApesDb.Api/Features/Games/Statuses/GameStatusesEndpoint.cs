@@ -37,9 +37,11 @@ public sealed class GameStatusesEndpoint : EndpointWithoutRequest<GameStatusResp
                     .GameStatuses.AsNoTracking()
                     .Select(value => new GameStatusResponse(value.Id, value.Name))
                     .ToArrayAsync(token);
-                var values = stored.Any(value => value.Id == ReleasedStatusId)
-                    ? stored
-                    : [.. stored, new GameStatusResponse(ReleasedStatusId, ReleasedStatusName)];
+                var values = stored;
+                if (!stored.Any(value => value.Id == ReleasedStatusId))
+                {
+                    values = [.. stored, new GameStatusResponse(ReleasedStatusId, ReleasedStatusName)];
+                }
 
                 return values
                     .OrderBy(value => value.Name, StringComparer.OrdinalIgnoreCase)

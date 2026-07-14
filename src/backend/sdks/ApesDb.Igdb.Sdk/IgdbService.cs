@@ -555,7 +555,11 @@ internal sealed class IgdbService : IIgdbService
             return null;
         }
 
-        var imageId = string.IsNullOrWhiteSpace(image.ImageId) ? null : image.ImageId;
+        var imageId = image.ImageId;
+        if (string.IsNullOrWhiteSpace(imageId))
+        {
+            imageId = null;
+        }
         return new IgdbImage(
             image.Id,
             imageId,
@@ -575,16 +579,31 @@ internal sealed class IgdbService : IIgdbService
 
     private static string? BuildImageUrl(string? imageId, string size)
     {
-        return imageId is null ? null : $"https://images.igdb.com/igdb/image/upload/t_{size}/{imageId}.jpg";
+        if (imageId is null)
+        {
+            return null;
+        }
+
+        return $"https://images.igdb.com/igdb/image/upload/t_{size}/{imageId}.jpg";
     }
 
     private static string? NormalizeUrl(string? url)
     {
-        return url?.StartsWith("//", StringComparison.Ordinal) == true ? $"https:{url}" : url;
+        if (url?.StartsWith("//", StringComparison.Ordinal) == true)
+        {
+            return $"https:{url}";
+        }
+
+        return url;
     }
 
     private static DateTimeOffset? ToDateTimeOffset(long? unixSeconds)
     {
-        return unixSeconds.HasValue ? DateTimeOffset.FromUnixTimeSeconds(unixSeconds.Value) : null;
+        if (!unixSeconds.HasValue)
+        {
+            return null;
+        }
+
+        return DateTimeOffset.FromUnixTimeSeconds(unixSeconds.Value);
     }
 }

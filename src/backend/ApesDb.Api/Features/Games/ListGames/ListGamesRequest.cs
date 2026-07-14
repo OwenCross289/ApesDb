@@ -2,37 +2,35 @@ namespace ApesDb.Api.Features.Games.ListGames;
 
 public sealed class ListGamesRequest
 {
-    public long[]? GameTypeIds { get; set; }
+    public long[]? GameTypeIds { get; init; }
 
-    public long[]? GameStatusIds { get; set; }
+    public long[]? GameStatusIds { get; init; }
 
-    public long[]? GenreIds { get; set; }
+    public long[]? GenreIds { get; init; }
 
-    public long[]? ThemeIds { get; set; }
+    public long[]? ThemeIds { get; init; }
 
-    public long[]? GameModeIds { get; set; }
+    public long[]? GameModeIds { get; init; }
 
-    public long[]? PlayerPerspectiveIds { get; set; }
+    public long[]? PlayerPerspectiveIds { get; init; }
 
-    public long[]? PlatformIds { get; set; }
+    public long[]? PlatformIds { get; init; }
 
-    public string? Developer { get; set; }
+    public string? Developer { get; init; }
 
-    public string? Publisher { get; set; }
+    public string? Publisher { get; init; }
 
-    public string? Collection { get; set; }
+    public string? Collection { get; init; }
 
-    public string? Franchise { get; set; }
+    public string? Franchise { get; init; }
 
-    public string? Search { get; set; }
+    public string? Search { get; init; }
 
-    public bool? IsCoop { get; set; }
+    public bool? IsCoop { get; init; }
 
-    public bool? IsSteam { get; set; }
+    public bool? IsSteam { get; init; }
 
-    public string[]? GameKinds { get; set; }
+    public int Page { get; init; } = 1;
 
-    public int Page { get; set; } = 1;
-
-    public int PageSize { get; set; } = 50;
+    public int PageSize { get; init; } = 50;
 }

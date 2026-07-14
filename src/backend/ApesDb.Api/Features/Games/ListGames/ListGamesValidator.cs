@@ -25,9 +25,5 @@ public sealed class ListGamesValidator : Validator<ListGamesRequest>
         RuleFor(request => request.Collection).MaximumLength(MaximumFilterLength);
         RuleFor(request => request.Franchise).MaximumLength(MaximumFilterLength);
         RuleFor(request => request.Search).MaximumLength(MaximumFilterLength);
-
-        RuleForEach(request => request.GameKinds)
-            .Must(value => Enum.TryParse<GameKind>(value, true, out _))
-            .WithMessage("'{PropertyValue}' is not a supported game kind.");
     }
 }

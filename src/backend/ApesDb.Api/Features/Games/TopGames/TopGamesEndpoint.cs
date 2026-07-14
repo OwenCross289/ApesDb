@@ -1,3 +1,5 @@
+using System.ComponentModel;
+using ApesDb.Common;
 using ApesDb.Domain;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +32,7 @@ public sealed class TopGamesEndpoint : EndpointWithoutRequest
     {
         var games = await _dbContext
             .PopularGames.AsNoTracking()
-            .OrderBy(popularGame => popularGame.Rank)
+            .SortBy(ListSortDirection.Ascending, popularGame => popularGame.Rank)
             .Take(ResultCount)
             .Select(popularGame => new TopGameProjection(
                 popularGame.Rank,
@@ -48,19 +50,28 @@ public sealed class TopGamesEndpoint : EndpointWithoutRequest
             .ToArrayAsync(ct);
 
         var response = games
-            .Select(game => new TopGameResponse(
-                game.Rank,
-                game.Id,
-                game.Name,
-                game.Slug,
-                game.Summary,
-                game.TotalRating.HasValue ? decimal.ToDouble(game.TotalRating.Value) : null,
-                ToDateTimeOffset(game.FirstReleaseDate),
-                game.CoverImageId,
-                game.CoverSmallUrl,
-                game.CoverLargeUrl,
-                decimal.ToDouble(game.Popularity)
-            ))
+            .Select(game =>
+            {
+                double? totalRating = null;
+                if (game.TotalRating.HasValue)
+                {
+                    totalRating = decimal.ToDouble(game.TotalRating.Value);
+                }
+
+                return new TopGameResponse(
+                    game.Rank,
+                    game.Id,
+                    game.Name,
+                    game.Slug,
+                    game.Summary,
+                    totalRating,
+                    ToDateTimeOffset(game.FirstReleaseDate),
+                    game.CoverImageId,
+                    game.CoverSmallUrl,
+                    game.CoverLargeUrl,
+                    decimal.ToDouble(game.Popularity)
+                );
+            })
             .ToArray();
 
         await Send.OkAsync(response, ct);
@@ -68,7 +79,12 @@ public sealed class TopGamesEndpoint : EndpointWithoutRequest
 
     private static DateTimeOffset? ToDateTimeOffset(DateTime? value)
     {
-        return value.HasValue ? new DateTimeOffset(DateTime.SpecifyKind(value.Value, DateTimeKind.Utc)) : null;
+        if (!value.HasValue)
+        {
+            return null;
+        }
+
+        return new DateTimeOffset(DateTime.SpecifyKind(value.Value, DateTimeKind.Utc));
     }
 
     private sealed record TopGameProjection(

@@ -1,3 +1,5 @@
+using System.ComponentModel;
+using ApesDb.Common;
 using ApesDb.Domain;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
@@ -31,9 +33,12 @@ public sealed class GameTypesEndpoint : EndpointWithoutRequest<GameTypeResponse[
             token =>
                 _dbContext
                     .GameTypes.AsNoTracking()
-                    .OrderBy(value => value.Name.ToLower())
-                    .ThenBy(value => value.Name)
-                    .ThenBy(value => value.Id)
+                    .SortBy(
+                        ListSortDirection.Ascending,
+                        value => value.Name.ToLower(),
+                        value => value.Name,
+                        value => value.Id
+                    )
                     .Select(value => new GameTypeResponse(value.Id, value.Name))
                     .ToArrayAsync(token),
             token: ct

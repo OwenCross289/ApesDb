@@ -939,11 +939,17 @@ public sealed class CatalogStageRunner : ICatalogStageRunner
                 .DistinctBy(value => (value.GameId, value.CollectionId))
                 .ToList();
             var gameFranchises = page.SelectMany(value =>
-                    value
-                        .FranchiseIds.Concat(value.FranchiseId is { } franchiseId ? [franchiseId] : [])
+                {
+                    IEnumerable<long> franchiseIds = value.FranchiseIds;
+                    if (value.FranchiseId is { } franchiseId)
+                    {
+                        franchiseIds = franchiseIds.Append(franchiseId);
+                    }
+
+                    return franchiseIds
                         .Distinct()
-                        .Select(id => new GameFranchise { GameId = value.Id, FranchiseId = id })
-                )
+                        .Select(id => new GameFranchise { GameId = value.Id, FranchiseId = id });
+                })
                 .DistinctBy(value => (value.GameId, value.FranchiseId))
                 .ToList();
             var touchedRelations = page.SelectMany(value =>
@@ -1071,9 +1077,12 @@ public sealed class CatalogStageRunner : ICatalogStageRunner
     private Task BulkInsertAsync<TEntity>(IList<TEntity> entities, CancellationToken cancellationToken)
         where TEntity : class
     {
-        return entities.Count == 0
-            ? Task.CompletedTask
-            : _dbContext.BulkInsertAsync(entities, cancellationToken: cancellationToken);
+        if (entities.Count == 0)
+        {
+            return Task.CompletedTask;
+        }
+
+        return _dbContext.BulkInsertAsync(entities, cancellationToken: cancellationToken);
     }
 
     private async Task MarkStageSucceededAsync(
@@ -1144,6 +1153,12 @@ public sealed class CatalogStageRunner : ICatalogStageRunner
 
     private static Game MapGame(IgdbGame value, DateTime now)
     {
+        decimal? totalRating = null;
+        if (value.TotalRating.HasValue)
+        {
+            totalRating = Convert.ToDecimal(value.TotalRating.Value);
+        }
+
         return new Game
         {
             Id = value.Id,
@@ -1152,7 +1167,7 @@ public sealed class CatalogStageRunner : ICatalogStageRunner
             Summary = value.Summary,
             Storyline = value.Storyline,
             FirstReleaseDate = ToUtcDateTime(value.FirstReleaseDate),
-            TotalRating = value.TotalRating.HasValue ? Convert.ToDecimal(value.TotalRating.Value) : null,
+            TotalRating = totalRating,
             TotalRatingCount = value.TotalRatingCount,
             IgdbUrl = value.Url,
             GameTypeId = value.GameTypeId,
@@ -1203,7 +1218,13 @@ public sealed class CatalogStageRunner : ICatalogStageRunner
 
     private static IgdbSyncWindow CreateWindow(IgdbSyncRun run)
     {
-        return new IgdbSyncWindow(run.From.HasValue ? ToUtcOffset(run.From.Value) : null, ToUtcOffset(run.Through));
+        DateTimeOffset? from = null;
+        if (run.From.HasValue)
+        {
+            from = ToUtcOffset(run.From.Value);
+        }
+
+        return new IgdbSyncWindow(from, ToUtcOffset(run.Through));
     }
 
     private static DateTimeOffset ToUtcOffset(DateTime value)
@@ -1218,9 +1239,12 @@ public sealed class CatalogStageRunner : ICatalogStageRunner
 
     private static string Required(string? value, string resourceName, long id)
     {
-        return !string.IsNullOrWhiteSpace(value)
-            ? value
-            : throw new InvalidDataException($"{resourceName} {id} has a missing required name.");
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            throw new InvalidDataException($"{resourceName} {id} has a missing required name.");
+        }
+
+        return value;
     }
 
     private static void ValidatePageCursor(long currentCursor, long nextCursor, IgdbSyncStageKind stageKind)

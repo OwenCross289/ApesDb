@@ -499,7 +499,12 @@ public sealed class CatalogSyncOrchestrator : ICatalogSyncOrchestrator
         CancellationToken cancellationToken
     )
     {
-        var function = acquire ? "pg_advisory_lock" : "pg_advisory_unlock";
+        var function = "pg_advisory_unlock";
+        if (acquire)
+        {
+            function = "pg_advisory_lock";
+        }
+
         await using var command = new NpgsqlCommand($"SELECT {function}(hashtextextended(@stage_id, 0));", connection);
         command.Parameters.AddWithValue("stage_id", stageId.ToString("D"));
         await command.ExecuteScalarAsync(cancellationToken);

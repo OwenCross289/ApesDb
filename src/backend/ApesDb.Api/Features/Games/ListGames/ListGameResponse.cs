@@ -1,6 +1,6 @@
-namespace ApesDb.Api.Features.Games.ListGames;
+using ApesDb.Api.Features.Games.Types;
 
-public sealed record ListGamesResponse(IReadOnlyList<ListGameResponse> Items, int Page, int PageSize, int TotalCount);
+namespace ApesDb.Api.Features.Games.ListGames;
 
 public sealed record ListGameResponse(
     long Id,
@@ -10,5 +10,5 @@ public sealed record ListGameResponse(
     IReadOnlyList<string> Publishers,
     bool IsCoop,
     bool IsSteam,
-    GameKind Kind
+    GameTypeResponse? GameType
 );
