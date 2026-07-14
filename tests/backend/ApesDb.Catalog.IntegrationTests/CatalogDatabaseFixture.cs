@@ -4,6 +4,7 @@ using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.PostgreSql;
 using TickerQ.EntityFrameworkCore;
@@ -74,11 +75,17 @@ public sealed class CatalogDatabaseFixture : IAsyncLifetime
         await _tickerServices.DisposeAsync();
     }
 
-    public ApplicationDbContext CreateDbContext()
+    public ApplicationDbContext CreateDbContext(params IInterceptor[] interceptors)
     {
-        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseNpgsql(_postgres.GetConnectionString())
-            .Options;
+        var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>().UseNpgsql(
+            _postgres.GetConnectionString()
+        );
+        if (interceptors.Length > 0)
+        {
+            optionsBuilder.AddInterceptors(interceptors);
+        }
+
+        var options = optionsBuilder.Options;
         return new ApplicationDbContext(options);
     }
 

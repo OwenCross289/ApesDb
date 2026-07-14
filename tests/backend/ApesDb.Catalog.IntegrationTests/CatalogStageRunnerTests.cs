@@ -4,6 +4,7 @@ using ApesDb.Api.Features.Games.Genres;
 using ApesDb.Api.Features.Games.ListGames;
 using ApesDb.Api.Features.Games.Statuses;
 using ApesDb.Api.Features.Games.TopGames;
+using ApesDb.Api.Features.Games.Types;
 using ApesDb.Common;
 using ApesDb.Domain;
 using ApesDb.Domain.Entities;
@@ -597,8 +598,10 @@ public sealed partial class CatalogStageRunnerTests : IClassFixture<CatalogDatab
         );
         await dbContext.SaveChangesAsync();
 
+        var commandInterceptor = new CountingDbCommandInterceptor();
+        await using var endpointDbContext = _database.CreateDbContext(commandInterceptor);
         var response = await InvokeListGamesAsync(
-            dbContext,
+            endpointDbContext,
             new ListGamesRequest
             {
                 GameTypeIds = [1],
@@ -615,7 +618,6 @@ public sealed partial class CatalogStageRunnerTests : IClassFixture<CatalogDatab
                 Search = "FILTERABLE",
                 IsCoop = true,
                 IsSteam = true,
-                GameKinds = ["main"],
             }
         );
 
@@ -626,15 +628,67 @@ public sealed partial class CatalogStageRunnerTests : IClassFixture<CatalogDatab
         Assert.Equal(["Developer Publisher"], item.Publishers);
         Assert.True(item.IsCoop);
         Assert.True(item.IsSteam);
-        Assert.Equal(GameKind.Main, item.Kind);
-        Assert.Equal(1, response.TotalCount);
+        Assert.Equal(new GameTypeResponse(gameType.Id, gameType.Name), item.GameType);
+        Assert.Equal(2, response.Total);
+        Assert.Equal(1, response.FilteredTotal);
         Assert.Equal(1, response.Page);
         Assert.Equal(50, response.PageSize);
+        Assert.Equal(3, commandInterceptor.CommandCount);
+
+        var pageCommandInterceptor = new CountingDbCommandInterceptor();
+        await using var pageDbContext = _database.CreateDbContext(pageCommandInterceptor);
+        var pageResponse = await InvokeListGamesAsync(pageDbContext, new ListGamesRequest { Page = 2, PageSize = 1 });
+        var pageItem = Assert.Single(pageResponse.Items);
+        Assert.Equal(nameOnlySteamGameId, pageItem.Id);
+        Assert.Empty(pageItem.Developers);
+        Assert.Empty(pageItem.Publishers);
+        Assert.Equal(new GameTypeResponse(gameType.Id, gameType.Name), pageItem.GameType);
+        Assert.Equal(2, pageResponse.Total);
+        Assert.Equal(2, pageResponse.FilteredTotal);
+        Assert.Equal(3, pageCommandInterceptor.CommandCount);
 
         var steamByStableId = await InvokeListGamesAsync(dbContext, new ListGamesRequest { IsSteam = true });
         Assert.Equal([gameId], steamByStableId.Items.Select(value => value.Id).ToArray());
         var notSteamByStableId = await InvokeListGamesAsync(dbContext, new ListGamesRequest { IsSteam = false });
         Assert.Equal([nameOnlySteamGameId], notSteamByStableId.Items.Select(value => value.Id).ToArray());
+    }
+
+    [Fact]
+    public async Task ListGamesEndpoint_TreatsTextAsLiteralSubstringAndEmptyIdListsAsAbsent()
+    {
+        await _database.ResetAsync();
+        await using var dbContext = _database.CreateDbContext();
+        var gameStatus = Stamp(new GameStatus { Id = 9, Name = "Early Access" });
+        var literalGame = CreateStoredGame(5_000_000_600, @"Literal %_\* Match");
+        var statusGame = CreateStoredGame(5_000_000_601, "Other Game");
+        statusGame.GameStatusId = gameStatus.Id;
+        dbContext.AddRange(gameStatus, literalGame, statusGame);
+        await dbContext.SaveChangesAsync();
+
+        var literalResponse = await InvokeListGamesAsync(
+            dbContext,
+            new ListGamesRequest
+            {
+                GameTypeIds = [],
+                GameStatusIds = [],
+                GenreIds = [],
+                ThemeIds = [],
+                GameModeIds = [],
+                PlayerPerspectiveIds = [],
+                PlatformIds = [],
+                Search = @"%_\*",
+            }
+        );
+
+        var literalItem = Assert.Single(literalResponse.Items);
+        Assert.Equal(literalGame.Id, literalItem.Id);
+        Assert.Null(literalItem.GameType);
+        Assert.Equal(2, literalResponse.Total);
+        Assert.Equal(1, literalResponse.FilteredTotal);
+
+        var releasedResponse = await InvokeListGamesAsync(dbContext, new ListGamesRequest { GameStatusIds = [0] });
+        Assert.Equal(literalGame.Id, Assert.Single(releasedResponse.Items).Id);
+        Assert.Equal(1, releasedResponse.FilteredTotal);
     }
 
     [Fact]
@@ -934,7 +988,7 @@ public sealed partial class CatalogStageRunnerTests : IClassFixture<CatalogDatab
         return entity;
     }
 
-    private static async Task<ListGamesResponse> InvokeListGamesAsync(
+    private static async Task<Pagable<ListGameResponse>> InvokeListGamesAsync(
         ApplicationDbContext dbContext,
         ListGamesRequest request
     )
@@ -946,7 +1000,7 @@ public sealed partial class CatalogStageRunnerTests : IClassFixture<CatalogDatab
         await endpoint.HandleAsync(request, CancellationToken.None);
         responseBody.Position = 0;
         return (
-            await JsonSerializer.DeserializeAsync<ListGamesResponse>(
+            await JsonSerializer.DeserializeAsync<Pagable<ListGameResponse>>(
                 responseBody,
                 new JsonSerializerOptions(JsonSerializerDefaults.Web)
             )

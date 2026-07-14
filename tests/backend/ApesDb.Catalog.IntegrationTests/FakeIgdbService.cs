@@ -87,9 +87,12 @@ internal sealed class FakeIgdbService : IIgdbService
     )
     {
         GenreRequests.Add(new PageRequest(afterId, window));
-        return GenresPageHandler is null
-            ? PageAsync(Genres, afterId, value => value.Id, cancellationToken)
-            : GenresPageHandler(afterId, window, cancellationToken);
+        if (GenresPageHandler is null)
+        {
+            return PageAsync(Genres, afterId, value => value.Id, cancellationToken);
+        }
+
+        return GenresPageHandler(afterId, window, cancellationToken);
     }
 
     public Task<IReadOnlyList<IgdbTheme>> FetchThemesPageAsync(
@@ -276,7 +279,15 @@ internal sealed class FakeIgdbService : IIgdbService
         IReadOnlyDictionary<long, DateTimeOffset?> createdAtById,
         long id,
         DateTimeOffset? updatedAt
-    ) => createdAtById.TryGetValue(id, out var createdAt) ? createdAt : updatedAt;
+    )
+    {
+        if (createdAtById.TryGetValue(id, out var createdAt))
+        {
+            return createdAt;
+        }
+
+        return updatedAt;
+    }
 
     private static bool IsWithinWindow(DateTimeOffset? updatedAt, DateTimeOffset? createdAt, IgdbSyncWindow? window)
     {

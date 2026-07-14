@@ -170,8 +170,15 @@ public sealed partial class CatalogStageRunnerTests
         var firstPage = Enumerable
             .Range(1, 500)
             .Select(id =>
-                ExternalGame(id, id == 1 ? 32501 : gameId, 1, null, null, $"https://store.steampowered.com/app/{id}")
-            )
+            {
+                var externalGameId = gameId;
+                if (id == 1)
+                {
+                    externalGameId = 32501;
+                }
+
+                return ExternalGame(id, externalGameId, 1, null, null, $"https://store.steampowered.com/app/{id}");
+            })
             .ToArray();
         var secondPageOrphan = ExternalGame(501, 32502, 1, null, null, "https://store.steampowered.com/app/501");
         var invalidSecondPageRow = new IgdbExternalGame(

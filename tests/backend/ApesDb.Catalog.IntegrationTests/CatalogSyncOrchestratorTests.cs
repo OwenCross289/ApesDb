@@ -325,15 +325,39 @@ public sealed class CatalogSyncOrchestratorTests : IClassFixture<CatalogDatabase
     )
     {
         var createdAt = new DateTime(2026, 7, 9, 10, 0, 0, DateTimeKind.Utc);
+        string? runError = null;
+        DateTime? runStartedAt = createdAt;
+        if (runStatus == IgdbSyncRunStatus.Failed)
+        {
+            runError = "Previous run failure";
+        }
+
+        if (runStatus == IgdbSyncRunStatus.Pending)
+        {
+            runStartedAt = null;
+        }
+
+        string? stageError = null;
+        DateTime? stageStartedAt = createdAt;
+        if (stageStatus == IgdbSyncStageStatus.Failed)
+        {
+            stageError = "Previous stage failure";
+        }
+
+        if (stageStatus == IgdbSyncStageStatus.Pending)
+        {
+            stageStartedAt = null;
+        }
+
         var run = new IgdbSyncRun
         {
             Mode = IgdbSyncRunMode.Incremental,
             Status = runStatus,
             From = createdAt.AddDays(-1),
             Through = createdAt,
-            Error = runStatus == IgdbSyncRunStatus.Failed ? "Previous run failure" : null,
+            Error = runError,
             CreatedAt = createdAt,
-            StartedAt = runStatus == IgdbSyncRunStatus.Pending ? null : createdAt,
+            StartedAt = runStartedAt,
             UpdatedAt = createdAt,
         };
         var stage = new IgdbSyncStage
@@ -345,9 +369,9 @@ public sealed class CatalogSyncOrchestratorTests : IClassFixture<CatalogDatabase
             PageCursor = 123,
             PagesProcessed = 2,
             RowsProcessed = 1_000,
-            Error = stageStatus == IgdbSyncStageStatus.Failed ? "Previous stage failure" : null,
+            Error = stageError,
             CreatedAt = createdAt,
-            StartedAt = stageStatus == IgdbSyncStageStatus.Pending ? null : createdAt,
+            StartedAt = stageStartedAt,
             UpdatedAt = createdAt,
         };
         dbContext.AddRange(run, stage);
