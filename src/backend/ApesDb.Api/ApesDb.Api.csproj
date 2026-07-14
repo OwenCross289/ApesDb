@@ -17,6 +17,5 @@
     <ProjectReference Include="..\ApesDb.Common\ApesDb.Common.csproj" />
     <ProjectReference Include="..\ApesDb.Auth\ApesDb.Auth.csproj" />
     <ProjectReference Include="..\ApesDb.Domain\ApesDb.Domain.csproj" />
-    <ProjectReference Include="..\sdks\ApesDb.Igdb.Sdk\ApesDb.Igdb.Sdk.csproj" />
   </ItemGroup>
 </Project>

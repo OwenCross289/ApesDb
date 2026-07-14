@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 
 namespace ApesDb.Igdb.Sdk.Authentication;
 
-public sealed class IgdbAuthenticationHandler : DelegatingHandler
+internal sealed class IgdbAuthenticationHandler : DelegatingHandler
 {
     private readonly IOptions<IgdbOptions> _options;
     private readonly IIgdbAccessTokenProvider _tokenProvider;

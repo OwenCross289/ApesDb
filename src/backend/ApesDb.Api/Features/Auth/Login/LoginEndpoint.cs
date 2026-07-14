@@ -43,9 +43,12 @@ public sealed class LoginEndpoint : EndpointWithoutRequest
 
     private string? ResolveConnection(string? connection)
     {
-        return string.Equals(connection, "google", StringComparison.OrdinalIgnoreCase)
-            ? _options.Value.GoogleConnectionName
-            : null;
+        if (string.Equals(connection, "google", StringComparison.OrdinalIgnoreCase))
+        {
+            return _options.Value.GoogleConnectionName;
+        }
+
+        return null;
     }
 
     private static bool IsLocalUrl(string url)

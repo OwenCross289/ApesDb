@@ -11,8 +11,6 @@ services:
       Auth0__ClientSecret: ${AUTH0_CLIENT_SECRET:?AUTH0_CLIENT_SECRET is required}
       Auth0__CallbackPath: /api/auth/callback
       Auth0__PostLogoutRedirectUri: /
-      Igdb__ClientId: ${IGDB_CLIENT_ID:?IGDB_CLIENT_ID is required}
-      Igdb__ClientSecret: ${IGDB_CLIENT_SECRET:?IGDB_CLIENT_SECRET is required}
     ports:
       - "8080"
     depends_on:
@@ -25,6 +23,8 @@ services:
       DOTNET_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8081
       Database__ConnectionString: Host=postgres;Port=5432;Database=apesdb;Username=apesdb;Password=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      Igdb__ClientId: ${IGDB_CLIENT_ID:?IGDB_CLIENT_ID is required}
+      Igdb__ClientSecret: ${IGDB_CLIENT_SECRET:?IGDB_CLIENT_SECRET is required}
       Cache__ConnectionString: redis:6379
       Cache__Password: ${REDIS_PASSWORD:?REDIS_PASSWORD is required}
       TickerQ__Dashboard__BasePath: /tickerq/dashboard

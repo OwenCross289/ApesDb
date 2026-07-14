@@ -1,6 +1,6 @@
-namespace ApesDb.Igdb.Sdk.Models;
+namespace ApesDb.Api.Features.Games.TopGames;
 
-public sealed record TopIgdbGame(
+public sealed record TopGameResponse(
     int Rank,
     long Id,
     string Name,
@@ -9,5 +9,7 @@ public sealed record TopIgdbGame(
     double? TotalRating,
     DateTimeOffset? FirstReleaseDate,
     string? CoverImageId,
+    string? CoverSmallUrl,
+    string? CoverLargeUrl,
     double Popularity
 );

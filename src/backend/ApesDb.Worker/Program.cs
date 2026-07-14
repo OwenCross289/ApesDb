@@ -1,7 +1,9 @@
 using ApesDb.Common;
 using ApesDb.Domain;
 using ApesDb.Domain.Options;
+using ApesDb.Igdb.Sdk;
 using ApesDb.Worker;
+using ApesDb.Worker.Games;
 using ApesDb.Worker.Options;
 using Microsoft.EntityFrameworkCore;
 using TickerQ.Dashboard.DependencyInjection;
@@ -21,6 +23,10 @@ var dashboardOptions =
 
 builder.Services.AddApesDbCommon();
 builder.Services.AddApesDbDomain(builder.Configuration);
+builder.Services.AddIgdbSdk(builder.Configuration);
+builder.Services.AddScoped<ICatalogSyncOrchestrator, CatalogSyncOrchestrator>();
+builder.Services.AddScoped<ICatalogStageRunner, CatalogStageRunner>();
+builder.Services.AddScoped<IPopularitySynchronizer, PopularitySynchronizer>();
 
 builder
     .Services.AddOptions<TickerQDashboardOptions>()
@@ -48,6 +54,7 @@ builder.Services.AddTickerQ(options =>
         dashboard.WithBasicAuth(dashboardOptions.Username, dashboardOptions.Password);
     });
 });
+builder.Services.AddHostedService<InitialCatalogSyncScheduler>();
 
 var app = builder.Build();
 

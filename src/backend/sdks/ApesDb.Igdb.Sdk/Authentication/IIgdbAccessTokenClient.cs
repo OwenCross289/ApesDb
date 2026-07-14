@@ -1,6 +1,6 @@
 namespace ApesDb.Igdb.Sdk.Authentication;
 
-public interface IIgdbAccessTokenClient
+internal interface IIgdbAccessTokenClient
 {
     Task<IgdbAccessTokenResponse> RequestTokenAsync(CancellationToken cancellationToken);
 }
