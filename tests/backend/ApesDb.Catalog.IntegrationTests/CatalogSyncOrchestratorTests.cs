@@ -34,7 +34,6 @@ public sealed class CatalogSyncOrchestratorTests : IClassFixture<CatalogDatabase
 
         var bootstrap = await dbContext.IgdbSyncRuns.AsNoTracking().SingleAsync();
         Assert.Equal(IgdbSyncRunMode.Bootstrap, bootstrap.Mode);
-        Assert.Equal(CatalogSyncOrchestrator.CurrentCatalogVersion, bootstrap.CatalogVersion);
         Assert.Null(bootstrap.From);
         Assert.Equal(new DateTime(2026, 7, 9, 11, 55, 0, DateTimeKind.Utc), bootstrap.Through);
         Assert.Equal(21, await dbContext.IgdbSyncStages.CountAsync(value => value.RunId == bootstrap.Id));
@@ -49,7 +48,6 @@ public sealed class CatalogSyncOrchestratorTests : IClassFixture<CatalogDatabase
             .IgdbSyncRuns.AsNoTracking()
             .SingleAsync(value => value.Mode == IgdbSyncRunMode.Incremental);
         Assert.Equal(bootstrap.Through, catchUp.From);
-        Assert.Equal(CatalogSyncOrchestrator.CurrentCatalogVersion, catchUp.CatalogVersion);
         Assert.Equal(CaptureExpectedThrough(clock.UtcNow), catchUp.Through);
         Assert.True(catchUp.From < catchUp.Through);
         Assert.Equal(20, await dbContext.IgdbSyncStages.CountAsync(value => value.RunId == catchUp.Id));
@@ -80,7 +78,7 @@ public sealed class CatalogSyncOrchestratorTests : IClassFixture<CatalogDatabase
     }
 
     [Fact]
-    public async Task PreviousCatalogVersion_ForcesExactlyOneNewBootstrap()
+    public async Task ManualFullSync_StartsFreshBootstrapAfterSucceededBootstrap()
     {
         await _database.ResetAsync();
         await using var dbContext = _database.CreateDbContext();
@@ -90,7 +88,6 @@ public sealed class CatalogSyncOrchestratorTests : IClassFixture<CatalogDatabase
             {
                 Mode = IgdbSyncRunMode.Bootstrap,
                 Status = IgdbSyncRunStatus.Succeeded,
-                CatalogVersion = 1,
                 Through = completedAt,
                 CreatedAt = completedAt,
                 StartedAt = completedAt,
@@ -104,17 +101,77 @@ public sealed class CatalogSyncOrchestratorTests : IClassFixture<CatalogDatabase
         var manager = new FakeTimeTickerManager(_database.CreateTickerDbContext);
         var orchestrator = CreateOrchestrator(dbContext, manager, clock);
 
-        await orchestrator.EnsureBootstrapAsync();
-        await orchestrator.EnsureBootstrapAsync();
+        await orchestrator.StartFullSyncAsync();
 
         dbContext.ChangeTracker.Clear();
         var current = await dbContext
             .IgdbSyncRuns.AsNoTracking()
-            .SingleAsync(run => run.CatalogVersion == CatalogSyncOrchestrator.CurrentCatalogVersion);
+            .SingleAsync(run => run.Status != IgdbSyncRunStatus.Succeeded);
         Assert.Equal(IgdbSyncRunMode.Bootstrap, current.Mode);
         Assert.Equal(IgdbSyncRunStatus.Pending, current.Status);
+        Assert.Null(current.From);
+        Assert.Equal(CaptureExpectedThrough(clock.UtcNow), current.Through);
         Assert.Equal(2, await dbContext.IgdbSyncRuns.CountAsync());
+        Assert.Equal(21, await dbContext.IgdbSyncStages.CountAsync(value => value.RunId == current.Id));
         Assert.Single(manager.Added);
+    }
+
+    [Theory]
+    [InlineData(IgdbSyncRunMode.Bootstrap)]
+    [InlineData(IgdbSyncRunMode.Incremental)]
+    public async Task ManualFullSync_FailsWithoutChangingAnUnfinishedRun(IgdbSyncRunMode activeMode)
+    {
+        await _database.ResetAsync();
+        await using var dbContext = _database.CreateDbContext();
+        var clock = new MutableDateTimeProvider(new DateTime(2026, 7, 9, 12, 0, 0, DateTimeKind.Utc));
+        var (runId, stageId) = await CreateUnfinishedRunAsync(
+            dbContext,
+            IgdbSyncRunStatus.Running,
+            IgdbSyncStageStatus.Running,
+            activeMode
+        );
+        var manager = new FakeTimeTickerManager(_database.CreateTickerDbContext);
+        var orchestrator = CreateOrchestrator(dbContext, manager, clock);
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => orchestrator.StartFullSyncAsync());
+
+        Assert.Contains(runId.ToString(), exception.Message, StringComparison.Ordinal);
+        dbContext.ChangeTracker.Clear();
+        var run = await dbContext.IgdbSyncRuns.AsNoTracking().SingleAsync();
+        var stage = await dbContext.IgdbSyncStages.AsNoTracking().SingleAsync();
+        Assert.Equal(runId, run.Id);
+        Assert.Equal(activeMode, run.Mode);
+        Assert.Equal(IgdbSyncRunStatus.Running, run.Status);
+        Assert.Equal(stageId, stage.Id);
+        Assert.Equal(IgdbSyncStageStatus.Running, stage.Status);
+        Assert.Empty(manager.Added);
+        Assert.Empty(manager.Deleted);
+    }
+
+    [Fact]
+    public async Task ConcurrentManualFullSyncRequests_CreateOneBootstrapAndRejectTheLoser()
+    {
+        await _database.ResetAsync();
+        var now = new DateTime(2026, 7, 9, 12, 0, 0, 500, DateTimeKind.Utc);
+        var clock = new MutableDateTimeProvider(now);
+        await using var firstDbContext = _database.CreateDbContext();
+        await using var secondDbContext = _database.CreateDbContext();
+        var firstManager = new FakeTimeTickerManager(_database.CreateTickerDbContext);
+        var secondManager = new FakeTimeTickerManager(_database.CreateTickerDbContext);
+        var first = CreateOrchestrator(firstDbContext, firstManager, clock);
+        var second = CreateOrchestrator(secondDbContext, secondManager, clock);
+
+        var results = await Task.WhenAll(CaptureFullSyncExceptionAsync(first), CaptureFullSyncExceptionAsync(second));
+
+        Assert.Single(results, value => value is null);
+        var error = Assert.Single(results, value => value is not null);
+        Assert.IsType<InvalidOperationException>(error);
+        await using var verification = _database.CreateDbContext();
+        var run = await verification.IgdbSyncRuns.AsNoTracking().SingleAsync();
+        Assert.Equal(IgdbSyncRunMode.Bootstrap, run.Mode);
+        Assert.Equal(IgdbSyncRunStatus.Pending, run.Status);
+        Assert.Equal(CaptureExpectedThrough(now), run.Through);
+        Assert.Equal(1, firstManager.Added.Count + secondManager.Added.Count);
     }
 
     [Fact]
@@ -361,7 +418,8 @@ public sealed class CatalogSyncOrchestratorTests : IClassFixture<CatalogDatabase
     private static async Task<(Guid RunId, Guid StageId)> CreateUnfinishedRunAsync(
         ApplicationDbContext dbContext,
         IgdbSyncRunStatus runStatus,
-        IgdbSyncStageStatus stageStatus
+        IgdbSyncStageStatus stageStatus,
+        IgdbSyncRunMode mode = IgdbSyncRunMode.Incremental
     )
     {
         var createdAt = new DateTime(2026, 7, 9, 10, 0, 0, DateTimeKind.Utc);
@@ -389,11 +447,17 @@ public sealed class CatalogSyncOrchestratorTests : IClassFixture<CatalogDatabase
             stageStartedAt = null;
         }
 
+        DateTime? from = createdAt.AddDays(-1);
+        if (mode == IgdbSyncRunMode.Bootstrap)
+        {
+            from = null;
+        }
+
         var run = new IgdbSyncRun
         {
-            Mode = IgdbSyncRunMode.Incremental,
+            Mode = mode,
             Status = runStatus,
-            From = createdAt.AddDays(-1),
+            From = from,
             Through = createdAt,
             Error = runError,
             CreatedAt = createdAt,
@@ -417,6 +481,19 @@ public sealed class CatalogSyncOrchestratorTests : IClassFixture<CatalogDatabase
         dbContext.AddRange(run, stage);
         await dbContext.SaveChangesAsync();
         return (run.Id, stage.Id);
+    }
+
+    private static async Task<Exception?> CaptureFullSyncExceptionAsync(CatalogSyncOrchestrator orchestrator)
+    {
+        try
+        {
+            await orchestrator.StartFullSyncAsync();
+            return null;
+        }
+        catch (Exception exception)
+        {
+            return exception;
+        }
     }
 
     private async Task InsertTickerAsync(Guid stageId, TickerStatus status)

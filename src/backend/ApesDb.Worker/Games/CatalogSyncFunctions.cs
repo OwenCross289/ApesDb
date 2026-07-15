@@ -5,6 +5,7 @@ namespace ApesDb.Worker.Games;
 internal static class CatalogSyncFunctions
 {
     public const string ScheduleDaily = "schedule-daily-igdb-sync";
+    public const string StartFull = "start-full-igdb-sync";
     public const string GameTypes = "sync-igdb-game-types";
     public const string GameStatuses = "sync-igdb-game-statuses";
     public const string Genres = "sync-igdb-genres";
