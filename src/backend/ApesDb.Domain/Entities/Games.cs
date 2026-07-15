@@ -31,6 +31,8 @@ public sealed class Game : IIgdbEntity
 
     public GameStatus? GameStatus { get; set; }
 
+    public long? VersionParentId { get; set; }
+
     public string? CoverImageId { get; set; }
 
     public int? CoverWidth { get; set; }
@@ -167,6 +169,7 @@ public sealed class GameConfiguration : IEntityTypeConfiguration<Game>
         game.Property(value => value.CoverImageId).HasMaxLength(128);
         game.Property(value => value.CoverSmallUrl).HasMaxLength(2048);
         game.Property(value => value.CoverLargeUrl).HasMaxLength(2048);
+        game.HasIndex(value => value.VersionParentId);
         game.ToTable(table =>
         {
             table.HasCheckConstraint(

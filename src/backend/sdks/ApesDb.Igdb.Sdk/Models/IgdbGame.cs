@@ -14,6 +14,7 @@ internal sealed record IgdbGameResource(
     [property: JsonPropertyName("url")] string? Url,
     [property: JsonPropertyName("game_type")] long? GameTypeId,
     [property: JsonPropertyName("game_status")] long? GameStatusId,
+    [property: JsonPropertyName("version_parent")] long? VersionParentId,
     [property: JsonPropertyName("cover")] IgdbCover? Cover,
     [property: JsonPropertyName("dlcs")] IReadOnlyList<long>? DlcIds,
     [property: JsonPropertyName("expansions")] IReadOnlyList<long>? ExpansionIds,

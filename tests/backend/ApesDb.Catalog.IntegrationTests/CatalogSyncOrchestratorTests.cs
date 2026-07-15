@@ -34,6 +34,7 @@ public sealed class CatalogSyncOrchestratorTests : IClassFixture<CatalogDatabase
 
         var bootstrap = await dbContext.IgdbSyncRuns.AsNoTracking().SingleAsync();
         Assert.Equal(IgdbSyncRunMode.Bootstrap, bootstrap.Mode);
+        Assert.Equal(CatalogSyncOrchestrator.CurrentCatalogVersion, bootstrap.CatalogVersion);
         Assert.Null(bootstrap.From);
         Assert.Equal(new DateTime(2026, 7, 9, 11, 55, 0, DateTimeKind.Utc), bootstrap.Through);
         Assert.Equal(21, await dbContext.IgdbSyncStages.CountAsync(value => value.RunId == bootstrap.Id));
@@ -48,6 +49,7 @@ public sealed class CatalogSyncOrchestratorTests : IClassFixture<CatalogDatabase
             .IgdbSyncRuns.AsNoTracking()
             .SingleAsync(value => value.Mode == IgdbSyncRunMode.Incremental);
         Assert.Equal(bootstrap.Through, catchUp.From);
+        Assert.Equal(CatalogSyncOrchestrator.CurrentCatalogVersion, catchUp.CatalogVersion);
         Assert.Equal(CaptureExpectedThrough(clock.UtcNow), catchUp.Through);
         Assert.True(catchUp.From < catchUp.Through);
         Assert.Equal(20, await dbContext.IgdbSyncStages.CountAsync(value => value.RunId == catchUp.Id));
@@ -75,6 +77,44 @@ public sealed class CatalogSyncOrchestratorTests : IClassFixture<CatalogDatabase
         Assert.Equal(catchUp.Through, daily.From);
         Assert.Equal(CaptureExpectedThrough(clock.UtcNow), daily.Through);
         Assert.Equal(1, await dbContext.IgdbSyncRuns.CountAsync(value => value.Status != IgdbSyncRunStatus.Succeeded));
+    }
+
+    [Fact]
+    public async Task PreviousCatalogVersion_ForcesExactlyOneNewBootstrap()
+    {
+        await _database.ResetAsync();
+        await using var dbContext = _database.CreateDbContext();
+        var completedAt = new DateTime(2026, 7, 9, 10, 0, 0, DateTimeKind.Utc);
+        dbContext.IgdbSyncRuns.Add(
+            new IgdbSyncRun
+            {
+                Mode = IgdbSyncRunMode.Bootstrap,
+                Status = IgdbSyncRunStatus.Succeeded,
+                CatalogVersion = 1,
+                Through = completedAt,
+                CreatedAt = completedAt,
+                StartedAt = completedAt,
+                CompletedAt = completedAt,
+                UpdatedAt = completedAt,
+            }
+        );
+        await dbContext.SaveChangesAsync();
+
+        var clock = new MutableDateTimeProvider(new DateTime(2026, 7, 9, 12, 0, 0, DateTimeKind.Utc));
+        var manager = new FakeTimeTickerManager(_database.CreateTickerDbContext);
+        var orchestrator = CreateOrchestrator(dbContext, manager, clock);
+
+        await orchestrator.EnsureBootstrapAsync();
+        await orchestrator.EnsureBootstrapAsync();
+
+        dbContext.ChangeTracker.Clear();
+        var current = await dbContext
+            .IgdbSyncRuns.AsNoTracking()
+            .SingleAsync(run => run.CatalogVersion == CatalogSyncOrchestrator.CurrentCatalogVersion);
+        Assert.Equal(IgdbSyncRunMode.Bootstrap, current.Mode);
+        Assert.Equal(IgdbSyncRunStatus.Pending, current.Status);
+        Assert.Equal(2, await dbContext.IgdbSyncRuns.CountAsync());
+        Assert.Single(manager.Added);
     }
 
     [Fact]

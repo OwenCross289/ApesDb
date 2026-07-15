@@ -37,6 +37,7 @@ public sealed class IgdbServiceTests
                 Url: "https://www.igdb.com/games/a-game",
                 GameTypeId: 7,
                 GameStatusId: 3,
+                VersionParentId: 1_200,
                 Cover: new IgdbCover(91, "cover-91", 264, 374, "//images.igdb.com/cover-91.jpg", checksum),
                 DlcIds: [2_001],
                 ExpansionIds: [2_002],
@@ -64,6 +65,7 @@ public sealed class IgdbServiceTests
                 Url: null,
                 GameTypeId: null,
                 GameStatusId: null,
+                VersionParentId: null,
                 Cover: null,
                 DlcIds: null,
                 ExpansionIds: null,
@@ -87,6 +89,7 @@ public sealed class IgdbServiceTests
         Assert.Equal(2, page.Count);
         var game = page[0];
         Assert.Equal(1_201, game.Id);
+        Assert.Equal(1_200, game.VersionParentId);
         Assert.Equal([2_001], game.DlcIds);
         Assert.Equal([2_002], game.ExpansionIds);
         Assert.Equal([2_003], game.StandaloneExpansionIds);
@@ -105,6 +108,8 @@ public sealed class IgdbServiceTests
         var query = Assert.Single(client.Queries);
         Assert.Equal("games", query.Endpoint);
         Assert.Contains("cover.id,cover.image_id,cover.width,cover.height", query.Query, StringComparison.Ordinal);
+        Assert.Contains("version_parent", query.Query, StringComparison.Ordinal);
+        Assert.DoesNotContain("version_title", query.Query, StringComparison.Ordinal);
         Assert.DoesNotContain("parent_game", query.Query, StringComparison.Ordinal);
         Assert.DoesNotContain("external_games", query.Query, StringComparison.Ordinal);
         Assert.DoesNotContain("involved_companies", query.Query, StringComparison.Ordinal);
@@ -249,7 +254,7 @@ public sealed class IgdbServiceTests
         var client = new EndpointIgdbClient(CreateLookupResponses());
         var service = new IgdbService(client);
 
-        Assert.Equal("Main Game", Assert.Single(await service.FetchGameTypesPageAsync(0)).Name);
+        Assert.Equal("Main Game", Assert.Single(await service.FetchGameTypesPageAsync(-1)).Name);
         Assert.Equal("Released", Assert.Single(await service.FetchGameStatusesPageAsync(0)).Name);
         Assert.Equal("Adventure", Assert.Single(await service.FetchGenresPageAsync(0)).Name);
         Assert.Equal("Science fiction", Assert.Single(await service.FetchThemesPageAsync(0)).Name);
@@ -337,7 +342,7 @@ public sealed class IgdbServiceTests
     {
         return new Dictionary<string, IReadOnlyList<object>>
         {
-            ["game_types"] = [new IgdbGameTypeResource(1, "Main Game", null, UpdatedAt)],
+            ["game_types"] = [new IgdbGameTypeResource(0, "Main Game", null, UpdatedAt)],
             ["game_statuses"] = [new IgdbGameStatusResource(1, "Released", null, UpdatedAt)],
             ["genres"] = [new IgdbNamedResource(1, "Adventure", "adventure", null, null, UpdatedAt)],
             ["themes"] = [new IgdbNamedResource(1, "Science fiction", "science-fiction", null, null, UpdatedAt)],

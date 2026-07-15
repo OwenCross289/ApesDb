@@ -12,6 +12,8 @@ namespace ApesDb.Worker.Games;
 
 public sealed class CatalogSyncOrchestrator : ICatalogSyncOrchestrator
 {
+    public const int CurrentCatalogVersion = 2;
+
     private const string UnfinishedRunIndex = "UX_IgdbSyncRuns_Unfinished";
 
     private static readonly TimeSpan CatalogConsistencyLag = TimeSpan.FromMinutes(5);
@@ -98,7 +100,10 @@ public sealed class CatalogSyncOrchestrator : ICatalogSyncOrchestrator
 
         if (
             await _dbContext.IgdbSyncRuns.AnyAsync(
-                run => run.Mode == IgdbSyncRunMode.Bootstrap && run.Status == IgdbSyncRunStatus.Succeeded,
+                run =>
+                    run.Mode == IgdbSyncRunMode.Bootstrap
+                    && run.Status == IgdbSyncRunStatus.Succeeded
+                    && run.CatalogVersion == CurrentCatalogVersion,
                 cancellationToken
             )
         )
@@ -126,9 +131,22 @@ public sealed class CatalogSyncOrchestrator : ICatalogSyncOrchestrator
             return;
         }
 
+        var hasCurrentBootstrap = await _dbContext.IgdbSyncRuns.AnyAsync(
+            run =>
+                run.Mode == IgdbSyncRunMode.Bootstrap
+                && run.Status == IgdbSyncRunStatus.Succeeded
+                && run.CatalogVersion == CurrentCatalogVersion,
+            cancellationToken
+        );
+        if (!hasCurrentBootstrap)
+        {
+            await EnsureBootstrapAsync(cancellationToken);
+            return;
+        }
+
         var previous = await _dbContext
             .IgdbSyncRuns.AsNoTracking()
-            .Where(run => run.Status == IgdbSyncRunStatus.Succeeded)
+            .Where(run => run.Status == IgdbSyncRunStatus.Succeeded && run.CatalogVersion == CurrentCatalogVersion)
             .OrderByDescending(run => run.Through)
             .FirstOrDefaultAsync(cancellationToken);
         if (previous is null)
@@ -170,11 +188,7 @@ public sealed class CatalogSyncOrchestrator : ICatalogSyncOrchestrator
         var run = await _dbContext.IgdbSyncRuns.SingleAsync(value => value.Id == runId, cancellationToken);
         if (run.Status == IgdbSyncRunStatus.Succeeded)
         {
-            if (run.Mode == IgdbSyncRunMode.Bootstrap)
-            {
-                await EnsureIncrementalAsync(cancellationToken);
-            }
-
+            await ContinueAfterCompletionAsync(run, cancellationToken);
             return;
         }
 
@@ -231,10 +245,7 @@ public sealed class CatalogSyncOrchestrator : ICatalogSyncOrchestrator
             run.RowsSkipped
         );
 
-        if (run.Mode == IgdbSyncRunMode.Bootstrap)
-        {
-            await EnsureIncrementalAsync(cancellationToken);
-        }
+        await ContinueAfterCompletionAsync(run, cancellationToken);
     }
 
     public async Task AdvanceAsync(
@@ -291,6 +302,7 @@ public sealed class CatalogSyncOrchestrator : ICatalogSyncOrchestrator
             Id = Guid.CreateVersion7(),
             Mode = mode,
             Status = IgdbSyncRunStatus.Pending,
+            CatalogVersion = CurrentCatalogVersion,
             From = from,
             Through = through,
             CreatedAt = now,
@@ -332,6 +344,20 @@ public sealed class CatalogSyncOrchestrator : ICatalogSyncOrchestrator
         }
 
         await ScheduleStageAsync(run, stages[0], cancellationToken);
+    }
+
+    private async Task ContinueAfterCompletionAsync(IgdbSyncRun run, CancellationToken cancellationToken)
+    {
+        if (run.CatalogVersion < CurrentCatalogVersion)
+        {
+            await EnsureBootstrapAsync(cancellationToken);
+            return;
+        }
+
+        if (run.Mode == IgdbSyncRunMode.Bootstrap)
+        {
+            await EnsureIncrementalAsync(cancellationToken);
+        }
     }
 
     private async Task EnsureRunScheduledAsync(IgdbSyncRun run, CancellationToken cancellationToken)

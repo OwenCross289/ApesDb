@@ -116,6 +116,7 @@ public sealed record IgdbGame(
     string? Url,
     long? GameTypeId,
     long? GameStatusId,
+    long? VersionParentId,
     IgdbImage? Cover,
     IReadOnlyList<long> DlcIds,
     IReadOnlyList<long> ExpansionIds,

@@ -33,8 +33,8 @@ public sealed class ListGamesEndpoint : Endpoint<ListGamesRequest, Pagable<ListG
 
     public override async Task HandleAsync(ListGamesRequest request, CancellationToken ct)
     {
-        var query = _dbContext
-            .Games.AsNoTracking()
+        var baseQuery = _dbContext.Games.AsNoTracking().Where(game => game.VersionParentId == null);
+        var query = baseQuery
             .WhereContains(request.GameTypeIds, game => game.GameTypeId)
             .WhereContains(request.GameStatusIds, game => game.GameStatusId ?? ReleasedStatusId)
             .WhereContains(
@@ -102,7 +102,7 @@ public sealed class ListGamesEndpoint : Endpoint<ListGamesRequest, Pagable<ListG
                     )
             );
 
-        var total = await Total(ct);
+        var total = await Total(baseQuery, ct);
         var filteredTotal = await FilteredTotal(query, ct);
         var items = await Query(query, request, ct);
         await Send.OkAsync(
@@ -111,9 +111,9 @@ public sealed class ListGamesEndpoint : Endpoint<ListGamesRequest, Pagable<ListG
         );
     }
 
-    private Task<int> Total(CancellationToken ct)
+    private static Task<int> Total(IQueryable<Game> query, CancellationToken ct)
     {
-        return _dbContext.Games.CountAsync(ct);
+        return query.CountAsync(ct);
     }
 
     private static Task<int> FilteredTotal(IQueryable<Game> query, CancellationToken ct)
