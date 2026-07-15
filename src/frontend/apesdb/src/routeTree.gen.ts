@@ -15,6 +15,7 @@ import { Route as PrivacyImport } from "./routes/privacy";
 import { Route as LoginImport } from "./routes/login";
 import { Route as AppImport } from "./routes/_app";
 import { Route as AppIndexImport } from "./routes/_app.index";
+import { Route as AppGamesImport } from "./routes/_app.games";
 
 // Create/Update Routes
 
@@ -38,6 +39,12 @@ const AppRoute = AppImport.update({
 const AppIndexRoute = AppIndexImport.update({
   id: "/",
   path: "/",
+  getParentRoute: () => AppRoute,
+} as any);
+
+const AppGamesRoute = AppGamesImport.update({
+  id: "/games",
+  path: "/games",
   getParentRoute: () => AppRoute,
 } as any);
 
@@ -66,6 +73,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof PrivacyImport;
       parentRoute: typeof rootRoute;
     };
+    "/_app/games": {
+      id: "/_app/games";
+      path: "/games";
+      fullPath: "/games";
+      preLoaderRoute: typeof AppGamesImport;
+      parentRoute: typeof AppImport;
+    };
     "/_app/": {
       id: "/_app/";
       path: "/";
@@ -79,10 +93,12 @@ declare module "@tanstack/react-router" {
 // Create and export the route tree
 
 interface AppRouteChildren {
+  AppGamesRoute: typeof AppGamesRoute;
   AppIndexRoute: typeof AppIndexRoute;
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppGamesRoute: AppGamesRoute,
   AppIndexRoute: AppIndexRoute,
 };
 
@@ -92,12 +108,14 @@ export interface FileRoutesByFullPath {
   "": typeof AppRouteWithChildren;
   "/login": typeof LoginRoute;
   "/privacy": typeof PrivacyRoute;
+  "/games": typeof AppGamesRoute;
   "/": typeof AppIndexRoute;
 }
 
 export interface FileRoutesByTo {
   "/login": typeof LoginRoute;
   "/privacy": typeof PrivacyRoute;
+  "/games": typeof AppGamesRoute;
   "/": typeof AppIndexRoute;
 }
 
@@ -106,15 +124,16 @@ export interface FileRoutesById {
   "/_app": typeof AppRouteWithChildren;
   "/login": typeof LoginRoute;
   "/privacy": typeof PrivacyRoute;
+  "/_app/games": typeof AppGamesRoute;
   "/_app/": typeof AppIndexRoute;
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "" | "/login" | "/privacy" | "/";
+  fullPaths: "" | "/login" | "/privacy" | "/games" | "/";
   fileRoutesByTo: FileRoutesByTo;
-  to: "/login" | "/privacy" | "/";
-  id: "__root__" | "/_app" | "/login" | "/privacy" | "/_app/";
+  to: "/login" | "/privacy" | "/games" | "/";
+  id: "__root__" | "/_app" | "/login" | "/privacy" | "/_app/games" | "/_app/";
   fileRoutesById: FileRoutesById;
 }
 
@@ -148,6 +167,7 @@ export const routeTree = rootRoute
     "/_app": {
       "filePath": "_app.tsx",
       "children": [
+        "/_app/games",
         "/_app/"
       ]
     },
@@ -156,6 +176,10 @@ export const routeTree = rootRoute
     },
     "/privacy": {
       "filePath": "privacy.tsx"
+    },
+    "/_app/games": {
+      "filePath": "_app.games.tsx",
+      "parent": "/_app"
     },
     "/_app/": {
       "filePath": "_app.index.tsx",

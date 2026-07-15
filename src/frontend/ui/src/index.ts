@@ -1,4 +1,24 @@
 export { Button, buttonVariants, type ButtonProps } from "./lib/button";
+export { Badge, badgeVariants } from "./lib/badge";
+export { Checkbox } from "./lib/checkbox";
+export {
+  Combobox,
+  ComboboxChip,
+  ComboboxChips,
+  ComboboxChipsInput,
+  ComboboxCollection,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxGroup,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxLabel,
+  ComboboxList,
+  ComboboxSeparator,
+  ComboboxTrigger,
+  ComboboxValue,
+  useComboboxAnchor,
+} from "./lib/combobox";
 export { cn } from "./lib/utils";
 export {
   Avatar,
@@ -9,6 +29,39 @@ export {
   AvatarImage,
 } from "./lib/avatar";
 export { Input } from "./lib/input";
+export {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSeparator,
+  FieldSet,
+  FieldTitle,
+} from "./lib/field";
+export {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemFooter,
+  ItemGroup,
+  ItemHeader,
+  ItemMedia,
+  ItemSeparator,
+  ItemTitle,
+} from "./lib/item";
+export {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "./lib/pagination";
 export {
   Popover,
   PopoverContent,
@@ -29,6 +82,17 @@ export {
   SheetTrigger,
 } from "./lib/sheet";
 export { Skeleton } from "./lib/skeleton";
+export { Switch } from "./lib/switch";
+export {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./lib/table";
 export { Toaster } from "./lib/sonner";
 export {
   Sidebar,

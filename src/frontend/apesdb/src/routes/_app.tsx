@@ -17,7 +17,7 @@ import {
   TooltipProvider,
 } from "@apesdb/ui";
 import { appName } from "@apesdb/common";
-import { Home } from "lucide-react";
+import { Gamepad2, Home } from "lucide-react";
 import { useAuth } from "../auth-context";
 import { AccountMenu } from "../account-menu";
 
@@ -39,7 +39,7 @@ export const Route = createFileRoute("/_app")({
 function AppLayout() {
   return (
     <TooltipProvider>
-      <SidebarProvider>
+      <SidebarProvider className="h-svh overflow-hidden">
         <AppSidebar />
         <SidebarInset>
           <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
@@ -47,7 +47,7 @@ function AppLayout() {
             <Separator className="h-4" orientation="vertical" />
             <p className="text-sm font-medium">{appName}</p>
           </header>
-          <div className="flex flex-1 flex-col p-6">
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-6">
             <Outlet />
           </div>
         </SidebarInset>
@@ -89,6 +89,16 @@ function AppSidebar() {
                 >
                   <Home />
                   <span>Home</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  render={<Link to="/games" />}
+                  isActive={pathname === "/games"}
+                  tooltip="Games"
+                >
+                  <Gamepad2 />
+                  <span>Games</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

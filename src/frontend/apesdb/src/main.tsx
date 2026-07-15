@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { RouterProvider, createRouter, defaultParseSearch } from "@tanstack/react-router";
 import { ThemeProvider, Toaster } from "@apesdb/ui";
 import { AuthGate, AuthProvider } from "./auth-context";
 import { registerPwaUpdateListener } from "./register-pwa-update-listener";
@@ -11,6 +11,7 @@ registerPwaUpdateListener();
 
 const router = createRouter({
   routeTree,
+  parseSearch: (search) => defaultParseSearch(search.replaceAll("+", "%20")),
   context: {
     auth: undefined!,
   },
