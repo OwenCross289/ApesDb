@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { RouterProvider, createRouter, defaultParseSearch } from "@tanstack/react-router";
 import { ThemeProvider, Toaster } from "@apesdb/ui";
 import { AuthGate, AuthProvider } from "./auth-context";
 import { registerPwaUpdateListener } from "./register-pwa-update-listener";
@@ -9,8 +10,11 @@ import "./styles.css";
 
 registerPwaUpdateListener();
 
+const queryClient = new QueryClient();
+
 const router = createRouter({
   routeTree,
+  parseSearch: (search) => defaultParseSearch(search.replaceAll("+", "%20")),
   context: {
     auth: undefined!,
   },
@@ -31,9 +35,11 @@ if (!rootElement) {
 createRoot(rootElement).render(
   <StrictMode>
     <ThemeProvider>
-      <AuthProvider>
-        <AuthGate>{(auth) => <RouterProvider router={router} context={{ auth }} />}</AuthGate>
-      </AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <AuthGate>{(auth) => <RouterProvider router={router} context={{ auth }} />}</AuthGate>
+        </AuthProvider>
+      </QueryClientProvider>
       <Toaster />
     </ThemeProvider>
   </StrictMode>,

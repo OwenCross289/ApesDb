@@ -117,6 +117,25 @@ public sealed class CatalogSyncOrchestrator : ICatalogSyncOrchestrator
         );
     }
 
+    public async Task StartFullSyncAsync(CancellationToken cancellationToken = default)
+    {
+        var unfinished = await FindUnfinishedRunAsync(cancellationToken);
+        if (unfinished is not null)
+        {
+            throw CreateFullSyncConflictException(unfinished);
+        }
+
+        var now = CaptureRunThrough();
+        await CreateAndScheduleRunAsync(
+            IgdbSyncRunMode.Bootstrap,
+            from: null,
+            through: now,
+            BootstrapStages,
+            cancellationToken,
+            failOnUnfinishedRunConflict: true
+        );
+    }
+
     public async Task EnsureIncrementalAsync(CancellationToken cancellationToken = default)
     {
         var unfinished = await FindUnfinishedRunAsync(cancellationToken);
@@ -282,7 +301,8 @@ public sealed class CatalogSyncOrchestrator : ICatalogSyncOrchestrator
         DateTime? from,
         DateTime through,
         IReadOnlyList<IgdbSyncStageKind> stageKinds,
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken,
+        bool failOnUnfinishedRunConflict = false
     )
     {
         var now = _dateTimeProvider.UtcNow;
@@ -325,6 +345,11 @@ public sealed class CatalogSyncOrchestrator : ICatalogSyncOrchestrator
             if (winner is null)
             {
                 throw;
+            }
+
+            if (failOnUnfinishedRunConflict)
+            {
+                throw CreateFullSyncConflictException(winner);
             }
 
             await EnsureRunScheduledAsync(winner, cancellationToken);
@@ -566,5 +591,12 @@ public sealed class CatalogSyncOrchestrator : ICatalogSyncOrchestrator
     {
         return exception.InnerException
             is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation, ConstraintName: UnfinishedRunIndex };
+    }
+
+    private static InvalidOperationException CreateFullSyncConflictException(IgdbSyncRun run)
+    {
+        return new InvalidOperationException(
+            $"Cannot start a full IGDB sync while run {run.Id} ({run.Mode}, {run.Status}) is unfinished."
+        );
     }
 }

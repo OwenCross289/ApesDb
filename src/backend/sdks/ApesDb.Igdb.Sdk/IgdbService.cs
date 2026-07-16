@@ -14,7 +14,7 @@ internal sealed class IgdbService : IIgdbService
         + "platform_logo.url,platform_logo.checksum";
     private const string GameFields =
         "id,name,slug,summary,storyline,total_rating,total_rating_count,first_release_date,url,"
-        + "game_type,game_status,"
+        + "game_type,game_status,version_parent,"
         + CoverFields
         + ",dlcs,expansions,standalone_expansions,genres,themes,game_modes,player_perspectives,"
         + "platforms,collections,franchise,franchises,checksum,updated_at";
@@ -531,6 +531,7 @@ internal sealed class IgdbService : IIgdbService
             resource.Url,
             resource.GameTypeId,
             resource.GameStatusId,
+            resource.VersionParentId,
             MapImage(resource.Cover),
             NormalizeIds(resource.DlcIds),
             NormalizeIds(resource.ExpansionIds),

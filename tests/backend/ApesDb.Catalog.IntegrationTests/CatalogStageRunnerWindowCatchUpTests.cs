@@ -260,6 +260,7 @@ public sealed partial class CatalogStageRunnerTests
             Url: "https://www.igdb.com/games/catch-up-game",
             GameTypeId: null,
             GameStatusId: null,
+            VersionParentId: null,
             Cover: null,
             DlcIds: [],
             ExpansionIds: [],

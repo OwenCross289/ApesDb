@@ -1,4 +1,5 @@
 import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
+import { NuqsAdapter } from "nuqs/adapters/tanstack-router";
 import type { AuthContextValue } from "../auth-context";
 
 export const Route = createRootRouteWithContext<{
@@ -10,7 +11,9 @@ export const Route = createRootRouteWithContext<{
 function RootComponent() {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Outlet />
+      <NuqsAdapter>
+        <Outlet />
+      </NuqsAdapter>
     </div>
   );
 }

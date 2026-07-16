@@ -4,6 +4,8 @@ public interface ICatalogSyncOrchestrator
 {
     Task EnsureBootstrapAsync(CancellationToken cancellationToken = default);
 
+    Task StartFullSyncAsync(CancellationToken cancellationToken = default);
+
     Task EnsureIncrementalAsync(CancellationToken cancellationToken = default);
 
     Task AdvanceAsync(

@@ -13,17 +13,21 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "4.3.2",
+    "@tanstack/react-query": "5.101.2",
     "@tanstack/react-router": "1.114.27",
+    "@tanstack/react-table": "^8.21.3",
     "@vitejs/plugin-react": "6.0.3",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "lucide-react": "1.23.0",
+    "nuqs": "^2.9.0",
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "sonner": "2.0.7",
     "tailwind-merge": "3.6.0",
     "tailwindcss": "4.3.2",
-    "workbox-window": "7.4.1"
+    "workbox-window": "7.4.1",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@nx/js": "23.0.1",

@@ -27,6 +27,12 @@ public sealed class CatalogSyncJobs
         return _orchestrator.EnsureIncrementalAsync(cancellationToken);
     }
 
+    [TickerFunction(CatalogSyncFunctions.StartFull, maxConcurrency: 1)]
+    public Task StartFullAsync(TickerFunctionContext context, CancellationToken cancellationToken)
+    {
+        return _orchestrator.StartFullSyncAsync(cancellationToken);
+    }
+
     [TickerFunction(CatalogSyncFunctions.GameTypes, maxConcurrency: 1)]
     public Task SyncGameTypesAsync(
         TickerFunctionContext<CatalogSyncJobRequest> context,

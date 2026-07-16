@@ -1172,6 +1172,7 @@ public sealed class CatalogStageRunner : ICatalogStageRunner
             IgdbUrl = value.Url,
             GameTypeId = value.GameTypeId,
             GameStatusId = value.GameStatusId,
+            VersionParentId = value.VersionParentId,
             CoverImageId = value.Cover?.ImageId,
             CoverWidth = value.Cover?.Width,
             CoverHeight = value.Cover?.Height,

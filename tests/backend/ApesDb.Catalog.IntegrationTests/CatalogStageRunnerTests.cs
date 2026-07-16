@@ -73,16 +73,20 @@ public sealed partial class CatalogStageRunnerTests : IClassFixture<CatalogDatab
         var game = await dbContext.Games.AsNoTracking().SingleAsync(value => value.Id == 5_000_000_500);
         Assert.Equal(5_000_000_500, game.Id);
         Assert.Equal("Catalog Game", game.Name);
-        Assert.Equal(1, game.GameTypeId);
+        Assert.Equal(0, game.GameTypeId);
         Assert.Equal(0, game.GameStatusId);
         Assert.Equal("cover500", game.CoverImageId);
         Assert.Equal("https://images.example/cover500-small.jpg", game.CoverSmallUrl);
         Assert.Equal("https://images.example/cover500-large.jpg", game.CoverLargeUrl);
+        Assert.Null(game.VersionParentId);
         Assert.Equal(SynchronizedAt, game.LastSyncedAt);
+
+        var edition = await dbContext.Games.AsNoTracking().SingleAsync(value => value.Id == 5_000_000_502);
+        Assert.Equal(game.Id, edition.VersionParentId);
 
         Assert.Equal(new long[] { 0 }, await dbContext.GameStatuses.Select(value => value.Id).ToArrayAsync());
         Assert.Equal(
-            new long[] { 1, 2 },
+            new long[] { 0, 1 },
             await dbContext.GameTypes.OrderBy(value => value.Id).Select(value => value.Id).ToArrayAsync()
         );
         Assert.Equal(new long[] { 10 }, await dbContext.Genres.Select(value => value.Id).ToArrayAsync());
@@ -493,7 +497,7 @@ public sealed partial class CatalogStageRunnerTests : IClassFixture<CatalogDatab
         await using var dbContext = _database.CreateDbContext();
         const long gameId = 5_000_000_500;
         const long nameOnlySteamGameId = 5_000_000_501;
-        var gameType = Stamp(new GameType { Id = 1, Name = "Main Game" });
+        var gameType = Stamp(new GameType { Id = 0, Name = "Main Game" });
         var gameStatus = Stamp(new GameStatus { Id = 9, Name = "Early Access" });
         var genre = Stamp(
             new Genre
@@ -604,7 +608,7 @@ public sealed partial class CatalogStageRunnerTests : IClassFixture<CatalogDatab
             endpointDbContext,
             new ListGamesRequest
             {
-                GameTypeIds = [1],
+                GameTypeIds = [0],
                 GameStatusIds = [9],
                 GenreIds = [999, 10],
                 ThemeIds = [20],
@@ -689,6 +693,61 @@ public sealed partial class CatalogStageRunnerTests : IClassFixture<CatalogDatab
         var releasedResponse = await InvokeListGamesAsync(dbContext, new ListGamesRequest { GameStatusIds = [0] });
         Assert.Equal(literalGame.Id, Assert.Single(releasedResponse.Items).Id);
         Assert.Equal(1, releasedResponse.FilteredTotal);
+    }
+
+    [Fact]
+    public async Task ListGamesEndpoint_AlwaysExcludesEditionsButKeepsOtherGameTypes()
+    {
+        await _database.ResetAsync();
+        await using var dbContext = _database.CreateDbContext();
+        var mainGameType = Stamp(new GameType { Id = 0, Name = "Main Game" });
+        var dlcGameType = Stamp(new GameType { Id = 1, Name = "DLC" });
+        var expansionGameType = Stamp(new GameType { Id = 2, Name = "Expansion" });
+        var standaloneExpansionGameType = Stamp(new GameType { Id = 4, Name = "Standalone Expansion" });
+        var baseGame = CreateStoredGame(5_000_000_700, "Base Game");
+        baseGame.GameTypeId = mainGameType.Id;
+        var edition = CreateStoredGame(5_000_000_701, "Base Game - Gold Edition");
+        edition.GameTypeId = mainGameType.Id;
+        edition.VersionParentId = baseGame.Id;
+        var dlc = CreateStoredGame(5_000_000_702, "DLC");
+        dlc.GameTypeId = dlcGameType.Id;
+        var expansion = CreateStoredGame(5_000_000_703, "Expansion");
+        expansion.GameTypeId = expansionGameType.Id;
+        var standaloneExpansion = CreateStoredGame(5_000_000_704, "Standalone Expansion");
+        standaloneExpansion.GameTypeId = standaloneExpansionGameType.Id;
+        dbContext.AddRange(
+            mainGameType,
+            dlcGameType,
+            expansionGameType,
+            standaloneExpansionGameType,
+            baseGame,
+            edition,
+            dlc,
+            expansion,
+            standaloneExpansion
+        );
+        await dbContext.SaveChangesAsync();
+
+        var all = await InvokeListGamesAsync(dbContext, new ListGamesRequest());
+        Assert.Equal(
+            [baseGame.Id, dlc.Id, expansion.Id, standaloneExpansion.Id],
+            all.Items.Select(value => value.Id).ToArray()
+        );
+        Assert.Equal(4, all.Total);
+        Assert.Equal(4, all.FilteredTotal);
+
+        var additionalContent = await InvokeListGamesAsync(dbContext, new ListGamesRequest { GameTypeIds = [1, 2, 4] });
+        Assert.Equal(
+            [dlc.Id, expansion.Id, standaloneExpansion.Id],
+            additionalContent.Items.Select(value => value.Id).ToArray()
+        );
+        Assert.Equal(4, additionalContent.Total);
+        Assert.Equal(3, additionalContent.FilteredTotal);
+
+        var editionSearch = await InvokeListGamesAsync(dbContext, new ListGamesRequest { Search = "Gold Edition" });
+        Assert.Empty(editionSearch.Items);
+        Assert.Equal(4, editionSearch.Total);
+        Assert.Equal(0, editionSearch.FilteredTotal);
     }
 
     [Fact]
@@ -797,8 +856,8 @@ public sealed partial class CatalogStageRunnerTests : IClassFixture<CatalogDatab
         {
             GameTypes =
             [
-                new IgdbGameType(1, "Main Game", null, IgdbUpdatedAt),
-                new IgdbGameType(2, "DLC/Add-on", null, IgdbUpdatedAt),
+                new IgdbGameType(0, "Main Game", null, IgdbUpdatedAt),
+                new IgdbGameType(1, "DLC", null, IgdbUpdatedAt),
             ],
             GameStatuses = [new IgdbGameStatus(0, "Released", null, IgdbUpdatedAt)],
             Genres = [new IgdbGenre(10, "Adventure", "adventure", null, null, IgdbUpdatedAt)],
@@ -847,7 +906,7 @@ public sealed partial class CatalogStageRunnerTests : IClassFixture<CatalogDatab
                 CreateIgdbGame(
                     gameId,
                     "Catalog Game",
-                    gameTypeId: 1,
+                    gameTypeId: 0,
                     dlcIds: [gameId + 1],
                     genreIds: [10],
                     themeIds: [20],
@@ -868,7 +927,13 @@ public sealed partial class CatalogStageRunnerTests : IClassFixture<CatalogDatab
                         null
                     )
                 ),
-                CreateIgdbGame(gameId + 1, "Catalog Game DLC", gameTypeId: 2),
+                CreateIgdbGame(gameId + 1, "Catalog Game DLC", gameTypeId: 1),
+                CreateIgdbGame(
+                    gameId + 2,
+                    "Catalog Game - Collector's Edition",
+                    gameTypeId: 0,
+                    versionParentId: gameId
+                ),
             ],
             InvolvedCompanies =
             [
@@ -929,7 +994,8 @@ public sealed partial class CatalogStageRunnerTests : IClassFixture<CatalogDatab
         IReadOnlyList<long>? collectionIds = null,
         long? franchiseId = null,
         IReadOnlyList<long>? franchiseIds = null,
-        IgdbImage? cover = null
+        IgdbImage? cover = null,
+        long? versionParentId = null
     )
     {
         return new IgdbGame(
@@ -944,6 +1010,7 @@ public sealed partial class CatalogStageRunnerTests : IClassFixture<CatalogDatab
             $"https://www.igdb.com/games/game-{id}",
             gameTypeId,
             0,
+            versionParentId,
             cover,
             dlcIds ?? [],
             [],
