@@ -4,6 +4,7 @@ import {
   AvatarImage,
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
@@ -94,23 +95,25 @@ export function TeamSwitcher() {
         sideOffset={8}
         className="min-w-56"
       >
-        <DropdownMenuLabel>Teams</DropdownMenuLabel>
-        {teams.map((team) => {
-          const isActive = team.id === activeTeam.id;
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Teams</DropdownMenuLabel>
+          {teams.map((team) => {
+            const isActive = team.id === activeTeam.id;
 
-          return (
-            <DropdownMenuItem key={team.id} onClick={() => setActiveTeamId(team.id)}>
-              <TeamAvatar className="size-6 rounded-md" team={team} />
-              <div className="grid min-w-0 flex-1 text-left leading-tight">
-                <span className="truncate">{team.name}</span>
-                <span className="truncate text-xs text-muted-foreground">
-                  {teamKindLabel(team.kind)}
-                </span>
-              </div>
-              {isActive ? <Check className="ml-auto size-4" /> : null}
-            </DropdownMenuItem>
-          );
-        })}
+            return (
+              <DropdownMenuItem key={team.id} onClick={() => setActiveTeamId(team.id)}>
+                <TeamAvatar className="size-6 rounded-md" team={team} />
+                <div className="grid min-w-0 flex-1 text-left leading-tight">
+                  <span className="truncate">{team.name}</span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    {teamKindLabel(team.kind)}
+                  </span>
+                </div>
+                {isActive ? <Check className="ml-auto size-4" /> : null}
+              </DropdownMenuItem>
+            );
+          })}
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );
