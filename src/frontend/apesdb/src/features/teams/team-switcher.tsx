@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Avatar,
   AvatarFallback,
@@ -7,12 +8,14 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
   SidebarMenuButton,
   Skeleton,
   useSidebar,
 } from "@apesdb/ui";
-import { Check, ChevronsUpDown, User, Users } from "lucide-react";
+import { Check, ChevronsUpDown, Plus, User, Users } from "lucide-react";
+import { CreateTeamDialog } from "./create-team-dialog";
 import { useActiveTeam } from "./team-context";
 import type { Team, TeamKind } from "./teams.schemas";
 
@@ -33,14 +36,9 @@ function TeamKindIcon({ kind }: { kind: TeamKind }) {
 }
 
 function TeamAvatar({ team, className }: { team: Team; className?: string }) {
-  let profilePictureUrl: string | undefined;
-  if (team.profilePicture !== null) {
-    profilePictureUrl = `data:${team.profilePicture.contentType};base64,${team.profilePicture.data}`;
-  }
-
   return (
     <Avatar className={className}>
-      <AvatarImage alt={team.name} src={profilePictureUrl} />
+      <AvatarImage alt={team.name} src={team.profilePictureUrl ?? undefined} />
       <AvatarFallback className="rounded-md bg-sidebar-accent text-sidebar-foreground">
         <TeamKindIcon kind={team.kind} />
       </AvatarFallback>
@@ -51,6 +49,7 @@ function TeamAvatar({ team, className }: { team: Team; className?: string }) {
 export function TeamSwitcher() {
   const { isMobile } = useSidebar();
   const { teams, activeTeam, isLoading, error, setActiveTeamId } = useActiveTeam();
+  const [isCreateTeamDialogOpen, setIsCreateTeamDialogOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -78,48 +77,60 @@ export function TeamSwitcher() {
   }
 
   return (
-    <DropdownMenu>
-      <SidebarMenuButton
-        render={<DropdownMenuTrigger />}
-        size="lg"
-        tooltip={activeTeam.name}
-        className="data-popup-open:bg-sidebar-accent data-popup-open:text-sidebar-accent-foreground"
-      >
-        <TeamAvatar className="size-8 rounded-md" team={activeTeam} />
-        <div className="grid flex-1 text-left leading-tight">
-          <span className="truncate font-medium">{activeTeam.name}</span>
-          <span className="truncate text-xs text-muted-foreground">
-            {teamKindLabel(activeTeam.kind)}
-          </span>
-        </div>
-        <ChevronsUpDown className="ml-auto size-4" />
-      </SidebarMenuButton>
-      <DropdownMenuContent
-        align="start"
-        side={isMobile ? "bottom" : "right"}
-        sideOffset={8}
-        className="min-w-56"
-      >
-        <DropdownMenuGroup>
-          <DropdownMenuLabel>Teams</DropdownMenuLabel>
-          {teams.map((team) => {
-            const isActive = team.id === activeTeam.id;
+    <>
+      <DropdownMenu>
+        <SidebarMenuButton
+          render={<DropdownMenuTrigger />}
+          size="lg"
+          tooltip={activeTeam.name}
+          className="data-popup-open:bg-sidebar-accent data-popup-open:text-sidebar-accent-foreground"
+        >
+          <TeamAvatar className="size-8 rounded-md" team={activeTeam} />
+          <div className="grid flex-1 text-left leading-tight">
+            <span className="truncate font-medium">{activeTeam.name}</span>
+            <span className="truncate text-xs text-muted-foreground">
+              {teamKindLabel(activeTeam.kind)}
+            </span>
+          </div>
+          <ChevronsUpDown className="ml-auto size-4" />
+        </SidebarMenuButton>
+        <DropdownMenuContent
+          align="start"
+          side={isMobile ? "bottom" : "right"}
+          sideOffset={8}
+          className="min-w-56"
+        >
+          <DropdownMenuGroup>
+            <DropdownMenuLabel>Teams</DropdownMenuLabel>
+            {teams.map((team) => {
+              const isActive = team.id === activeTeam.id;
 
-            return (
-              <DropdownMenuItem key={team.id} onClick={() => setActiveTeamId(team.id)}>
-                <TeamAvatar className="size-6 rounded-md" team={team} />
-                <div className="grid min-w-0 flex-1 text-left leading-tight">
-                  <span className="truncate">{team.name}</span>
-                  <span className="truncate text-xs text-muted-foreground">
-                    {teamKindLabel(team.kind)}
-                  </span>
-                </div>
-                {isActive ? <Check className="ml-auto size-4" /> : null}
-              </DropdownMenuItem>
-            );
-          })}
-        </DropdownMenuGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
+              return (
+                <DropdownMenuItem key={team.id} onClick={() => setActiveTeamId(team.id)}>
+                  <TeamAvatar className="size-6 rounded-md" team={team} />
+                  <div className="grid min-w-0 flex-1 text-left leading-tight">
+                    <span className="truncate">{team.name}</span>
+                    <span className="truncate text-xs text-muted-foreground">
+                      {teamKindLabel(team.kind)}
+                    </span>
+                  </div>
+                  {isActive ? <Check className="ml-auto size-4" /> : null}
+                </DropdownMenuItem>
+              );
+            })}
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => setIsCreateTeamDialogOpen(true)}>
+            <Plus />
+            Create team
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <CreateTeamDialog
+        open={isCreateTeamDialogOpen}
+        onOpenChange={setIsCreateTeamDialogOpen}
+        onCreated={setActiveTeamId}
+      />
+    </>
   );
 }

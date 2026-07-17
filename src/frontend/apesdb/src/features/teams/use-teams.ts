@@ -2,6 +2,8 @@ import { useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTeams } from "./teams.api";
 
+export const teamsQueryKey = ["teams", "list"] as const;
+
 function errorMessage(error: unknown): string {
   if (error instanceof Error) {
     return error.message;
@@ -12,7 +14,7 @@ function errorMessage(error: unknown): string {
 
 export function useTeams() {
   const { data, error, isLoading, refetch } = useQuery({
-    queryKey: ["teams", "list"],
+    queryKey: teamsQueryKey,
     queryFn: ({ signal }) => fetchTeams(signal),
   });
   const retry = useCallback(() => {

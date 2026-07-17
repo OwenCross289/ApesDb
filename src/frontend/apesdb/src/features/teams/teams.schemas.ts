@@ -7,12 +7,20 @@ export const teamProfilePictureSchema = z.object({
   data: z.string(),
 });
 
-export const teamSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  profilePicture: teamProfilePictureSchema.nullable(),
-  kind: teamKindSchema,
-});
+export const teamSchema = z
+  .object({
+    id: z.string(),
+    name: z.string(),
+    profilePicture: teamProfilePictureSchema.nullable(),
+    kind: teamKindSchema,
+  })
+  .transform(({ profilePicture, ...team }) => ({
+    ...team,
+    profilePictureUrl:
+      profilePicture === null
+        ? null
+        : `data:${profilePicture.contentType};base64,${profilePicture.data}`,
+  }));
 
 export const teamsResponseSchema = z.array(teamSchema);
 

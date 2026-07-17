@@ -45,6 +45,18 @@ export {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "./lib/dropdown-menu";
+export {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle,
+  DialogTrigger,
+} from "./lib/dialog";
 export { cn } from "./lib/utils";
 export {
   Avatar,
