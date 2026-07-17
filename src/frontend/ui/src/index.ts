@@ -122,3 +122,11 @@ export {
 } from "./lib/sidebar";
 export { ThemeModeSelector, ThemeProvider, useTheme, type ThemeMode } from "./lib/theme";
 export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./lib/tooltip";
+export {
+  EpicGamesIcon,
+  NintendoSwitchIcon,
+  PlayStationIcon,
+  SteamIcon,
+  TwitchIcon,
+  XboxIcon,
+} from "./icons";

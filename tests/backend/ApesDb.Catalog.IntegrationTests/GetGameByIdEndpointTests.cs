@@ -210,6 +210,7 @@ public sealed class GetGameByIdEndpointTests : IClassFixture<CatalogDatabaseFixt
         Assert.Equal(new GameReferenceResponse(platform.Id, platform.Name), response.StorePages[0].Platform);
         Assert.Null(response.StorePages[1].Platform);
         Assert.Null(response.StorePages[1].ExternalId);
+        Assert.Empty(response.Editions);
         Assert.Equal(["Dlc", "Expansion", "StandaloneExpansion"], response.Addons.Select(value => value.Type));
         Assert.Equal([dlc.Id, expansion.Id, standaloneExpansion.Id], response.Addons.Select(value => value.Id));
         Assert.Equal("Addon description", response.Addons[0].Description);
@@ -229,7 +230,142 @@ public sealed class GetGameByIdEndpointTests : IClassFixture<CatalogDatabaseFixt
         Assert.Equal("https://images.example/complete-large.jpg", coverElement.GetProperty("largeUrl").GetString());
         Assert.True(root.TryGetProperty("addons", out var addonsElement), contractJson);
         Assert.Equal("Dlc", addonsElement[0].GetProperty("type").GetString());
+        Assert.True(root.TryGetProperty("editions", out var editionsElement), contractJson);
+        Assert.Equal(0, editionsElement.GetArrayLength());
         Assert.True(root.TryGetProperty("portingCompanies", out _));
+    }
+
+    [Fact]
+    public async Task GetGameByIdEndpoint_ReturnsDirectEditionsAndTheirOrderedStorePagesForBaseGames()
+    {
+        await _database.ResetAsync();
+        await using var dbContext = _database.CreateDbContext();
+
+        var steam = Stamp(new ExternalGameSource { Id = 1, Name = "Steam" });
+        var xbox = Stamp(new ExternalGameSource { Id = 31, Name = "Xbox Marketplace" });
+        var baseGame = Stamp(new Game { Id = 5_000_004_000, Name = "Base Game" });
+        var newerEdition = Stamp(
+            new Game
+            {
+                Id = 5_000_004_001,
+                Name = "Complete Edition",
+                Summary = "The complete release.",
+                FirstReleaseDate = SynchronizedAt.AddYears(-1),
+                VersionParentId = baseGame.Id,
+                CoverSmallUrl = "https://images.example/complete-small.jpg",
+                CoverLargeUrl = "https://images.example/complete-large.jpg",
+            }
+        );
+        var olderEdition = Stamp(
+            new Game
+            {
+                Id = 5_000_004_002,
+                Name = "Launch Edition",
+                FirstReleaseDate = SynchronizedAt.AddYears(-2),
+                VersionParentId = baseGame.Id,
+            }
+        );
+        var undatedEdition = Stamp(
+            new Game
+            {
+                Id = 5_000_004_003,
+                Name = "Collector's Edition",
+                VersionParentId = baseGame.Id,
+            }
+        );
+
+        dbContext.AddRange(steam, xbox, baseGame, newerEdition, olderEdition, undatedEdition);
+        dbContext.AddRange(
+            Stamp(
+                new ExternalGame
+                {
+                    Id = 400,
+                    GameId = baseGame.Id,
+                    ExternalGameSourceId = xbox.Id,
+                    Name = baseGame.Name,
+                    Url = "https://www.xbox.com/games/store/base-game",
+                }
+            ),
+            Stamp(
+                new ExternalGame
+                {
+                    Id = 401,
+                    GameId = newerEdition.Id,
+                    ExternalGameSourceId = steam.Id,
+                    Name = newerEdition.Name,
+                    Url = "http://store.steampowered.com/app/401",
+                }
+            ),
+            Stamp(
+                new ExternalGame
+                {
+                    Id = 402,
+                    GameId = newerEdition.Id,
+                    ExternalGameSourceId = steam.Id,
+                    Name = newerEdition.Name,
+                    Url = "https://store.steampowered.com/app/402",
+                }
+            ),
+            Stamp(
+                new ExternalGame
+                {
+                    Id = 403,
+                    GameId = newerEdition.Id,
+                    ExternalGameSourceId = xbox.Id,
+                    Name = newerEdition.Name,
+                    Url = "https://www.xbox.com/games/store/complete-edition",
+                }
+            ),
+            Stamp(
+                new ExternalGame
+                {
+                    Id = 404,
+                    GameId = olderEdition.Id,
+                    ExternalGameSourceId = steam.Id,
+                    Name = olderEdition.Name,
+                    Url = "https://store.steampowered.com/app/404",
+                }
+            ),
+            Stamp(
+                new ExternalGame
+                {
+                    Id = 405,
+                    GameId = undatedEdition.Id,
+                    ExternalGameSourceId = steam.Id,
+                    Name = undatedEdition.Name,
+                    Url = "https://store.steampowered.com/app/405",
+                }
+            )
+        );
+        await dbContext.SaveChangesAsync();
+
+        var commandInterceptor = new CountingDbCommandInterceptor();
+        await using var endpointDbContext = _database.CreateDbContext(commandInterceptor);
+        await using var cacheServices = CreateCacheServices();
+        var cacheProvider = cacheServices.GetRequiredService<IFusionCacheProvider>();
+
+        var baseResult = await InvokeAsync(endpointDbContext, cacheProvider, baseGame.Id);
+
+        Assert.Equal(StatusCodes.Status200OK, baseResult.StatusCode);
+        var baseResponse = Assert.IsType<GetGameByIdResponse>(baseResult.Response);
+        Assert.Equal(
+            [newerEdition.Id, olderEdition.Id, undatedEdition.Id],
+            baseResponse.Editions.Select(edition => edition.Id).ToArray()
+        );
+        Assert.Equal("The complete release.", baseResponse.Editions[0].Description);
+        Assert.Equal("https://images.example/complete-large.jpg", baseResponse.Editions[0].CoverLargeUrl);
+        Assert.Null(baseResponse.Editions[1].Description);
+        Assert.Equal([400L, 402L, 403L, 401L, 404L, 405L], baseResponse.StorePages.Select(page => page.Id));
+        Assert.Equal([400L, 403L], baseResponse.StorePages.Where(IsXboxStore).Select(page => page.Id));
+        Assert.Equal([402L, 401L, 404L, 405L], baseResponse.StorePages.Where(IsSteamStore).Select(page => page.Id));
+
+        var editionResult = await InvokeAsync(endpointDbContext, cacheProvider, newerEdition.Id);
+
+        Assert.Equal(StatusCodes.Status200OK, editionResult.StatusCode);
+        var editionResponse = Assert.IsType<GetGameByIdResponse>(editionResult.Response);
+        Assert.Empty(editionResponse.Editions);
+        Assert.Equal([402L, 403L, 401L], editionResponse.StorePages.Select(page => page.Id));
+        Assert.Equal(2, commandInterceptor.CommandCount);
     }
 
     [Fact]
@@ -269,6 +405,7 @@ public sealed class GetGameByIdEndpointTests : IClassFixture<CatalogDatabaseFixt
         Assert.Empty(response.PortingCompanies);
         Assert.Empty(response.SupportingCompanies);
         Assert.Empty(response.StorePages);
+        Assert.Empty(response.Editions);
         Assert.Empty(response.Addons);
         Assert.Empty(response.Genres);
         Assert.Empty(response.Themes);
@@ -311,6 +448,16 @@ public sealed class GetGameByIdEndpointTests : IClassFixture<CatalogDatabaseFixt
                 CoverLargeUrl = "https://images.example/addon-large.jpg",
             }
         );
+    }
+
+    private static bool IsSteamStore(GameStorePageResponse storePage)
+    {
+        return storePage.Source.Name == "Steam";
+    }
+
+    private static bool IsXboxStore(GameStorePageResponse storePage)
+    {
+        return storePage.Source.Name == "Xbox Marketplace";
     }
 
     private static GameRelation CreateRelation(long gameId, long relatedGameId, GameRelationType relationType)

@@ -1,6 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { GamesPage } from "../features/games/list-games/games-page";
+import { Outlet, createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_app/games")({
-  component: GamesPage,
+  component: GamesLayout,
 });
+
+function GamesLayout() {
+  return <Outlet />;
+}
