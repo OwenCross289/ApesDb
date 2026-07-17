@@ -7,13 +7,13 @@ import {
 } from "nuqs";
 
 const idArrayParser = parseAsArrayOf(parseAsInteger).withDefault([]);
-const mainGameTypeIdsParser = parseAsArrayOf(parseAsInteger).withDefault([0]);
+const defaultGameTypeIdsParser = parseAsArrayOf(parseAsInteger).withDefault([0, 9]);
 
 export const gameFilterParsers = {
   search: parseAsString.withDefault(""),
   isCoop: parseAsBoolean.withDefault(false),
   page: parseAsInteger.withDefault(1),
-  gameTypeIds: mainGameTypeIdsParser,
+  gameTypeIds: defaultGameTypeIdsParser,
   gameStatusIds: idArrayParser,
   genreIds: idArrayParser,
   themeIds: idArrayParser,
@@ -54,7 +54,7 @@ export function hasGameFilters(filters: GameFilters): boolean {
 }
 
 export const defaultAdvancedFilters: GameFilterPatch = {
-  gameTypeIds: [0],
+  gameTypeIds: [0, 9],
   gameStatusIds: [],
   genreIds: [],
   themeIds: [],
