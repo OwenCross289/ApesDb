@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { Link } from "@tanstack/react-router";
 import {
   Badge,
   Button,
@@ -80,10 +81,16 @@ const columns = [
     id: "game",
     header: "Game",
     cell: ({ row }) => (
-      <div className="flex min-w-56 items-center gap-3">
+      <Link
+        className="group flex min-w-56 items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
+        params={{ gameId: row.original.id.toString() }}
+        to="/games/$gameId"
+      >
         <GameCover game={row.original} />
-        <span className="font-medium whitespace-normal">{row.original.name}</span>
-      </div>
+        <span className="font-medium whitespace-normal group-hover:underline group-hover:underline-offset-4">
+          {row.original.name}
+        </span>
+      </Link>
     ),
   }),
   columnHelper.accessor((game) => game.gameType?.name, {

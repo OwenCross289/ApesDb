@@ -47,7 +47,7 @@ function AppLayout() {
             <Separator className="h-4" orientation="vertical" />
             <p className="text-sm font-medium">{appName}</p>
           </header>
-          <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-6">
+          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-6">
             <Outlet />
           </div>
         </SidebarInset>
@@ -94,7 +94,7 @@ function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   render={<Link to="/games" />}
-                  isActive={pathname === "/games"}
+                  isActive={pathname.startsWith("/games")}
                   tooltip="Games"
                 >
                   <Gamepad2 />

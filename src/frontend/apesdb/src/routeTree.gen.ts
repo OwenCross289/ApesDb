@@ -16,6 +16,8 @@ import { Route as LoginImport } from "./routes/login";
 import { Route as AppImport } from "./routes/_app";
 import { Route as AppIndexImport } from "./routes/_app.index";
 import { Route as AppGamesImport } from "./routes/_app.games";
+import { Route as AppGamesIndexImport } from "./routes/_app.games.index";
+import { Route as AppGamesGameIdImport } from "./routes/_app.games.$gameId";
 
 // Create/Update Routes
 
@@ -46,6 +48,18 @@ const AppGamesRoute = AppGamesImport.update({
   id: "/games",
   path: "/games",
   getParentRoute: () => AppRoute,
+} as any);
+
+const AppGamesIndexRoute = AppGamesIndexImport.update({
+  id: "/",
+  path: "/",
+  getParentRoute: () => AppGamesRoute,
+} as any);
+
+const AppGamesGameIdRoute = AppGamesGameIdImport.update({
+  id: "/$gameId",
+  path: "/$gameId",
+  getParentRoute: () => AppGamesRoute,
 } as any);
 
 // Populate the FileRoutesByPath interface
@@ -87,18 +101,44 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof AppIndexImport;
       parentRoute: typeof AppImport;
     };
+    "/_app/games/$gameId": {
+      id: "/_app/games/$gameId";
+      path: "/$gameId";
+      fullPath: "/games/$gameId";
+      preLoaderRoute: typeof AppGamesGameIdImport;
+      parentRoute: typeof AppGamesImport;
+    };
+    "/_app/games/": {
+      id: "/_app/games/";
+      path: "/";
+      fullPath: "/games/";
+      preLoaderRoute: typeof AppGamesIndexImport;
+      parentRoute: typeof AppGamesImport;
+    };
   }
 }
 
 // Create and export the route tree
 
+interface AppGamesRouteChildren {
+  AppGamesGameIdRoute: typeof AppGamesGameIdRoute;
+  AppGamesIndexRoute: typeof AppGamesIndexRoute;
+}
+
+const AppGamesRouteChildren: AppGamesRouteChildren = {
+  AppGamesGameIdRoute: AppGamesGameIdRoute,
+  AppGamesIndexRoute: AppGamesIndexRoute,
+};
+
+const AppGamesRouteWithChildren = AppGamesRoute._addFileChildren(AppGamesRouteChildren);
+
 interface AppRouteChildren {
-  AppGamesRoute: typeof AppGamesRoute;
+  AppGamesRoute: typeof AppGamesRouteWithChildren;
   AppIndexRoute: typeof AppIndexRoute;
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppGamesRoute: AppGamesRoute,
+  AppGamesRoute: AppGamesRouteWithChildren,
   AppIndexRoute: AppIndexRoute,
 };
 
@@ -108,15 +148,18 @@ export interface FileRoutesByFullPath {
   "": typeof AppRouteWithChildren;
   "/login": typeof LoginRoute;
   "/privacy": typeof PrivacyRoute;
-  "/games": typeof AppGamesRoute;
+  "/games": typeof AppGamesRouteWithChildren;
   "/": typeof AppIndexRoute;
+  "/games/$gameId": typeof AppGamesGameIdRoute;
+  "/games/": typeof AppGamesIndexRoute;
 }
 
 export interface FileRoutesByTo {
   "/login": typeof LoginRoute;
   "/privacy": typeof PrivacyRoute;
-  "/games": typeof AppGamesRoute;
   "/": typeof AppIndexRoute;
+  "/games/$gameId": typeof AppGamesGameIdRoute;
+  "/games": typeof AppGamesIndexRoute;
 }
 
 export interface FileRoutesById {
@@ -124,16 +167,26 @@ export interface FileRoutesById {
   "/_app": typeof AppRouteWithChildren;
   "/login": typeof LoginRoute;
   "/privacy": typeof PrivacyRoute;
-  "/_app/games": typeof AppGamesRoute;
+  "/_app/games": typeof AppGamesRouteWithChildren;
   "/_app/": typeof AppIndexRoute;
+  "/_app/games/$gameId": typeof AppGamesGameIdRoute;
+  "/_app/games/": typeof AppGamesIndexRoute;
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "" | "/login" | "/privacy" | "/games" | "/";
+  fullPaths: "" | "/login" | "/privacy" | "/games" | "/" | "/games/$gameId" | "/games/";
   fileRoutesByTo: FileRoutesByTo;
-  to: "/login" | "/privacy" | "/games" | "/";
-  id: "__root__" | "/_app" | "/login" | "/privacy" | "/_app/games" | "/_app/";
+  to: "/login" | "/privacy" | "/" | "/games/$gameId" | "/games";
+  id:
+    | "__root__"
+    | "/_app"
+    | "/login"
+    | "/privacy"
+    | "/_app/games"
+    | "/_app/"
+    | "/_app/games/$gameId"
+    | "/_app/games/";
   fileRoutesById: FileRoutesById;
 }
 
@@ -179,11 +232,23 @@ export const routeTree = rootRoute
     },
     "/_app/games": {
       "filePath": "_app.games.tsx",
-      "parent": "/_app"
+      "parent": "/_app",
+      "children": [
+        "/_app/games/$gameId",
+        "/_app/games/"
+      ]
     },
     "/_app/": {
       "filePath": "_app.index.tsx",
       "parent": "/_app"
+    },
+    "/_app/games/$gameId": {
+      "filePath": "_app.games.$gameId.tsx",
+      "parent": "/_app/games"
+    },
+    "/_app/games/": {
+      "filePath": "_app.games.index.tsx",
+      "parent": "/_app/games"
     }
   }
 }
