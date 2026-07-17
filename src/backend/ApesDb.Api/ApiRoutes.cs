@@ -15,6 +15,7 @@ public static class ApiRoutes
     public static class Games
     {
         public const string List = "games";
+        public const string ById = "games/{id:long}";
         public const string Top = "games/top";
         public const string Types = "games/types";
         public const string Statuses = "games/statuses";

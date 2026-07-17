@@ -762,9 +762,9 @@ public sealed partial class CatalogStageRunnerTests : IClassFixture<CatalogDatab
 
         var services = new ServiceCollection();
         services
-            .AddFusionCache(GameLookupCache.CacheName)
-            .WithCacheKeyPrefix(GameLookupCache.CacheKeyPrefix)
-            .WithDefaultEntryOptions(options => options.SetDuration(GameLookupCache.Expiration));
+            .AddFusionCache(GameCache.CacheName)
+            .WithCacheKeyPrefix(GameCache.CacheKeyPrefix)
+            .WithDefaultEntryOptions(options => options.SetDuration(GameCache.Expiration));
         await using var serviceProvider = services.BuildServiceProvider();
         var cacheProvider = serviceProvider.GetRequiredService<IFusionCacheProvider>();
 
@@ -775,7 +775,7 @@ public sealed partial class CatalogStageRunnerTests : IClassFixture<CatalogDatab
         await dbContext.SaveChangesAsync();
         Assert.Equal(first, await InvokeGenresAsync(dbContext, cacheProvider));
 
-        await cacheProvider.GetCache(GameLookupCache.CacheName).RemoveAsync(GameGenresEndpoint.CacheKey);
+        await cacheProvider.GetCache(GameCache.CacheName).RemoveAsync(GameGenresEndpoint.CacheKey);
         var refreshed = await InvokeGenresAsync(dbContext, cacheProvider);
         Assert.Equal([new GenreResponse(actionId, "Action"), new GenreResponse(adventureId, "Adventure")], refreshed);
 

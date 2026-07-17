@@ -17,7 +17,7 @@ public sealed class GameModesEndpoint : EndpointWithoutRequest<GameModeResponse[
     public GameModesEndpoint(ApplicationDbContext dbContext, IFusionCacheProvider cacheProvider)
     {
         _dbContext = dbContext;
-        _cache = cacheProvider.GetCache(GameLookupCache.CacheName);
+        _cache = cacheProvider.GetCache(GameCache.CacheName);
     }
 
     public override void Configure()

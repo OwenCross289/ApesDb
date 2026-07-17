@@ -17,7 +17,7 @@ public sealed class GameThemesEndpoint : EndpointWithoutRequest<ThemeResponse[]>
     public GameThemesEndpoint(ApplicationDbContext dbContext, IFusionCacheProvider cacheProvider)
     {
         _dbContext = dbContext;
-        _cache = cacheProvider.GetCache(GameLookupCache.CacheName);
+        _cache = cacheProvider.GetCache(GameCache.CacheName);
     }
 
     public override void Configure()

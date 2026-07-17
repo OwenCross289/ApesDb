@@ -17,7 +17,7 @@ public sealed class GamePlatformsEndpoint : EndpointWithoutRequest<PlatformRespo
     public GamePlatformsEndpoint(ApplicationDbContext dbContext, IFusionCacheProvider cacheProvider)
     {
         _dbContext = dbContext;
-        _cache = cacheProvider.GetCache(GameLookupCache.CacheName);
+        _cache = cacheProvider.GetCache(GameCache.CacheName);
     }
 
     public override void Configure()
