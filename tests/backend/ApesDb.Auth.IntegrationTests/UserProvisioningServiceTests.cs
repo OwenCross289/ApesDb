@@ -147,9 +147,13 @@ public sealed class UserProvisioningServiceTests : IAsyncLifetime
         var team = await dbContext.Teams.SingleAsync(t => t.OwnerUserId == result.Id);
         Assert.Equal(TeamKind.Solo, team.Kind);
         Assert.Equal("Team Owner's Team", team.Name);
-        Assert.Null(team.ProfilePictureUrl);
+        Assert.Null(team.ProfilePicture);
         Assert.Equal(fixedDate, team.CreatedAt);
         Assert.Equal(fixedDate, team.UpdatedAt);
+        var membership = await dbContext.TeamMemberships.SingleAsync(value => value.TeamId == team.Id);
+        Assert.Equal(result.Id, membership.UserId);
+        Assert.Equal(TeamMembershipStatus.Accepted, membership.Status);
+        Assert.Equal(fixedDate, membership.AcceptedAt);
     }
 
     [Fact]

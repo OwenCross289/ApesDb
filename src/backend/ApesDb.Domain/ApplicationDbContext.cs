@@ -12,6 +12,10 @@ public sealed class ApplicationDbContext : DbContext
 
     public DbSet<Team> Teams => Set<Team>();
 
+    public DbSet<TeamMembership> TeamMemberships => Set<TeamMembership>();
+
+    public DbSet<Notification> Notifications => Set<Notification>();
+
     public DbSet<Game> Games => Set<Game>();
 
     public DbSet<GameType> GameTypes => Set<GameType>();

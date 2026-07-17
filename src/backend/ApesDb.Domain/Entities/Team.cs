@@ -17,7 +17,7 @@ public sealed class Team
 
     public required string Name { get; set; }
 
-    public string? ProfilePictureUrl { get; set; }
+    public byte[]? ProfilePicture { get; set; }
 
     public TeamKind Kind { get; init; }
 
@@ -37,7 +37,6 @@ public sealed class TeamConfiguration : IEntityTypeConfiguration<Team>
         team.HasIndex(t => t.OwnerUserId);
         team.Property(t => t.Id).HasDefaultValueSql("uuidv7()").ValueGeneratedOnAdd();
         team.Property(t => t.Name).HasMaxLength(256);
-        team.Property(t => t.ProfilePictureUrl).HasMaxLength(2048);
         team.Property(t => t.Kind).HasConversion<string>().HasMaxLength(32);
         team.Property(t => t.CreatedAt).HasDefaultValueSql("now()");
         team.Property(t => t.UpdatedAt).HasDefaultValueSql("now()");
