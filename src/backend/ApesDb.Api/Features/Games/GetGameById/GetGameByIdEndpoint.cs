@@ -30,6 +30,10 @@ public sealed class GetGameByIdEndpoint : Endpoint<GetGameByIdRequest, GetGameBy
 
     public override async Task HandleAsync(GetGameByIdRequest request, CancellationToken ct)
     {
+        var requestedGameIsBase = _dbContext
+            .Games.AsNoTracking()
+            .Where(game => game.Id == request.Id && game.VersionParentId == null)
+            .Select(game => game.Id);
         var gameTypes = _dbContext.GameTypes.AsNoTracking();
         var gameStatuses = _dbContext.GameStatuses.AsNoTracking();
         var covers = _dbContext
@@ -105,12 +109,19 @@ public sealed class GetGameByIdEndpoint : Endpoint<GetGameByIdRequest, GetGameBy
         var platforms = _dbContext.Platforms.AsNoTracking();
         var storePages = _dbContext
             .ExternalGames.AsNoTracking()
-            .Where(storePage => storePage.GameId == request.Id)
-            .SortBy(
-                ListSortDirection.Ascending,
-                storePage => storePage.ExternalGameSource.Name,
-                storePage => storePage.PlatformId == null
+            .Where(storePage =>
+                storePage.GameId == request.Id
+                || (requestedGameIsBase.Any() && storePage.Game.VersionParentId == request.Id)
             )
+            .OrderBy(storePage => storePage.GameId != request.Id)
+            .ThenBy(storePage => storePage.Game.FirstReleaseDate == null)
+            .ThenByDescending(storePage => storePage.Game.FirstReleaseDate)
+            .ThenBy(storePage => storePage.Url == null || !storePage.Url.StartsWith("https://"))
+            .ThenBy(storePage =>
+                storePage.Url == null || (!storePage.Url.StartsWith("https://") && !storePage.Url.StartsWith("http://"))
+            )
+            .ThenBy(storePage => storePage.ExternalGameSource.Name)
+            .ThenBy(storePage => storePage.Id)
             .Select(storePage => new GameStorePageResponse(
                 storePage.Id,
                 new GameReferenceResponse(storePage.ExternalGameSource.Id, storePage.ExternalGameSource.Name),
@@ -122,6 +133,22 @@ public sealed class GetGameByIdEndpoint : Endpoint<GetGameByIdRequest, GetGameBy
                 storePage.Name,
                 storePage.Url,
                 storePage.Year
+            ));
+        var editions = _dbContext
+            .Games.AsNoTracking()
+            .Where(edition => requestedGameIsBase.Any() && edition.VersionParentId == request.Id)
+            .OrderBy(edition => edition.FirstReleaseDate == null)
+            .ThenByDescending(edition => edition.FirstReleaseDate)
+            .ThenBy(edition => edition.Name.ToLower())
+            .ThenBy(edition => edition.Name)
+            .ThenBy(edition => edition.Id)
+            .Select(edition => new GameEditionResponse(
+                edition.Id,
+                edition.Name,
+                edition.Summary,
+                edition.FirstReleaseDate,
+                edition.CoverSmallUrl,
+                edition.CoverLargeUrl
             ));
         var addons = _dbContext
             .GameRelations.AsNoTracking()
@@ -241,6 +268,7 @@ public sealed class GetGameByIdEndpoint : Endpoint<GetGameByIdRequest, GetGameBy
                 portingCompanies.ToArray(),
                 supportingCompanies.ToArray(),
                 storePages.ToArray(),
+                editions.ToArray(),
                 addons.ToArray(),
                 genres.ToArray(),
                 themes.ToArray(),

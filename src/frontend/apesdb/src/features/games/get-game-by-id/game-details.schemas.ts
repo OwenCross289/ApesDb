@@ -41,6 +41,15 @@ export const gameAddonSchema = z.object({
   coverLargeUrl: z.string().nullable(),
 });
 
+export const gameEditionSchema = z.object({
+  id: z.number().int().nonnegative(),
+  name: z.string(),
+  description: z.string().nullable(),
+  releaseDate: z.string().datetime({ offset: true }).nullable(),
+  coverSmallUrl: z.string().nullable(),
+  coverLargeUrl: z.string().nullable(),
+});
+
 export const gameDetailsSchema = z.object({
   id: z.number().int().nonnegative(),
   name: z.string(),
@@ -61,6 +70,7 @@ export const gameDetailsSchema = z.object({
   portingCompanies: z.array(gameReferenceSchema),
   supportingCompanies: z.array(gameReferenceSchema),
   storePages: z.array(gameStorePageSchema),
+  editions: z.array(gameEditionSchema),
   addons: z.array(gameAddonSchema),
   genres: z.array(gameReferenceSchema),
   themes: z.array(gameReferenceSchema),
@@ -74,4 +84,5 @@ export const gameDetailsSchema = z.object({
 export type GameReference = z.infer<typeof gameReferenceSchema>;
 export type GameStorePage = z.infer<typeof gameStorePageSchema>;
 export type GameAddon = z.infer<typeof gameAddonSchema>;
+export type GameEdition = z.infer<typeof gameEditionSchema>;
 export type GameDetails = z.infer<typeof gameDetailsSchema>;

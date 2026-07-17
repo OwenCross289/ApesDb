@@ -20,6 +20,7 @@ public sealed record GetGameByIdResponse(
     IReadOnlyList<GameReferenceResponse> PortingCompanies,
     IReadOnlyList<GameReferenceResponse> SupportingCompanies,
     IReadOnlyList<GameStorePageResponse> StorePages,
+    IReadOnlyList<GameEditionResponse> Editions,
     IReadOnlyList<GameAddonResponse> Addons,
     IReadOnlyList<GameReferenceResponse> Genres,
     IReadOnlyList<GameReferenceResponse> Themes,
@@ -50,6 +51,15 @@ public sealed record GameStorePageResponse(
     string? Name,
     string? Url,
     int? Year
+);
+
+public sealed record GameEditionResponse(
+    long Id,
+    string Name,
+    string? Description,
+    DateTime? ReleaseDate,
+    string? CoverSmallUrl,
+    string? CoverLargeUrl
 );
 
 public sealed record GameAddonResponse(

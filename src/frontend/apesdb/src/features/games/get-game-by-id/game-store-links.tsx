@@ -1,4 +1,4 @@
-import { Tooltip, TooltipContent, TooltipTrigger, buttonVariants, cn } from "@apesdb/ui";
+import { Tooltip, TooltipContent, TooltipTrigger, buttonVariants } from "@apesdb/ui";
 import { BsNintendoSwitch } from "react-icons/bs";
 import { FaPlaystation, FaSteam, FaTwitch, FaXbox } from "react-icons/fa";
 import { SiEpicgames } from "react-icons/si";
@@ -106,14 +106,23 @@ function storeDescription(storePage: GameStorePage): string {
 }
 
 export function GameStoreLinks({ storePages }: GameStoreLinksProps) {
-  const visibleStorePages = storePages.flatMap((storePage) => {
+  const visibleStorePages: Array<{
+    storePage: GameStorePage;
+    platform: StorePlatform;
+    href: string;
+  }> = [];
+  const visiblePlatforms = new Set<StorePlatform>();
+
+  for (const storePage of storePages) {
     const platform = storePlatform(storePage.source.name);
-    if (!platform) {
-      return [];
+    const href = safeHttpUrl(storePage.url);
+    if (!platform || !href || visiblePlatforms.has(platform)) {
+      continue;
     }
 
-    return [{ storePage, platform }];
-  });
+    visiblePlatforms.add(platform);
+    visibleStorePages.push({ storePage, platform, href });
+  }
 
   if (visibleStorePages.length === 0) {
     return null;
@@ -121,42 +130,23 @@ export function GameStoreLinks({ storePages }: GameStoreLinksProps) {
 
   return (
     <div className="flex flex-wrap items-center gap-2" aria-label="Store links" role="group">
-      {visibleStorePages.map(({ storePage, platform }) => {
-        const href = safeHttpUrl(storePage.url);
+      {visibleStorePages.map(({ storePage, platform, href }) => {
         const description = storeDescription(storePage);
-        const label = href
-          ? `Open ${storePage.source.name} in a new tab`
-          : `${storePage.source.name} link unavailable`;
-        let trigger;
-
-        if (href) {
-          trigger = (
-            <a
-              aria-label={label}
-              className={buttonVariants({ variant: "outline", size: "icon-lg" })}
-              href={href}
-              rel="noopener noreferrer"
-              target="_blank"
-            />
-          );
-        } else {
-          trigger = (
-            <span
-              aria-disabled="true"
-              aria-label={label}
-              className={cn(
-                buttonVariants({ variant: "outline", size: "icon-lg" }),
-                "cursor-not-allowed opacity-50",
-              )}
-              role="img"
-              tabIndex={0}
-            />
-          );
-        }
+        const label = `Open ${storePage.source.name} in a new tab`;
 
         return (
-          <Tooltip key={storePage.id}>
-            <TooltipTrigger render={trigger}>
+          <Tooltip key={platform}>
+            <TooltipTrigger
+              render={
+                <a
+                  aria-label={label}
+                  className={buttonVariants({ variant: "outline", size: "icon-lg" })}
+                  href={href}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                />
+              }
+            >
               <StoreIcon platform={platform} />
             </TooltipTrigger>
             <TooltipContent>{description}</TooltipContent>
