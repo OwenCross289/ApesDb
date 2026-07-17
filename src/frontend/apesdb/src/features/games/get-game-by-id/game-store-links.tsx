@@ -1,7 +1,15 @@
-import { Tooltip, TooltipContent, TooltipTrigger, buttonVariants } from "@apesdb/ui";
-import { BsNintendoSwitch } from "react-icons/bs";
-import { FaPlaystation, FaSteam, FaTwitch, FaXbox } from "react-icons/fa";
-import { SiEpicgames } from "react-icons/si";
+import {
+  EpicGamesIcon,
+  NintendoSwitchIcon,
+  PlayStationIcon,
+  SteamIcon,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TwitchIcon,
+  XboxIcon,
+  buttonVariants,
+} from "@apesdb/ui";
 import type { GameStorePage } from "./game-details.schemas";
 
 type GameStoreLinksProps = {
@@ -62,26 +70,26 @@ function storePlatform(sourceName: string): StorePlatform | null {
 
 function StoreIcon({ platform }: { platform: StorePlatform }) {
   if (platform === "xbox") {
-    return <FaXbox aria-hidden="true" />;
+    return <XboxIcon aria-hidden="true" />;
   }
 
   if (platform === "playstation") {
-    return <FaPlaystation aria-hidden="true" />;
+    return <PlayStationIcon aria-hidden="true" />;
   }
 
   if (platform === "steam") {
-    return <FaSteam aria-hidden="true" />;
+    return <SteamIcon aria-hidden="true" />;
   }
 
   if (platform === "epic") {
-    return <SiEpicgames aria-hidden="true" />;
+    return <EpicGamesIcon aria-hidden="true" />;
   }
 
   if (platform === "twitch") {
-    return <FaTwitch aria-hidden="true" />;
+    return <TwitchIcon aria-hidden="true" />;
   }
 
-  return <BsNintendoSwitch aria-hidden="true" />;
+  return <NintendoSwitchIcon aria-hidden="true" />;
 }
 
 function storeDescription(storePage: GameStorePage): string {
