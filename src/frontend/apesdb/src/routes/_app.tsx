@@ -20,6 +20,8 @@ import { appName } from "@apesdb/common";
 import { Gamepad2, Home } from "lucide-react";
 import { useAuth } from "../auth-context";
 import { AccountMenu } from "../account-menu";
+import { TeamProvider } from "../features/teams/team-context";
+import { TeamSwitcher } from "../features/teams/team-switcher";
 
 export const Route = createFileRoute("/_app")({
   beforeLoad: ({ context, location }) => {
@@ -38,21 +40,23 @@ export const Route = createFileRoute("/_app")({
 
 function AppLayout() {
   return (
-    <TooltipProvider>
-      <SidebarProvider className="h-svh overflow-hidden">
-        <AppSidebar />
-        <SidebarInset>
-          <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator className="h-4" orientation="vertical" />
-            <p className="text-sm font-medium">{appName}</p>
-          </header>
-          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-3">
-            <Outlet />
-          </div>
-        </SidebarInset>
-      </SidebarProvider>
-    </TooltipProvider>
+    <TeamProvider>
+      <TooltipProvider>
+        <SidebarProvider className="h-svh overflow-hidden">
+          <AppSidebar />
+          <SidebarInset>
+            <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
+              <SidebarTrigger className="-ml-1" />
+              <Separator className="h-4" orientation="vertical" />
+              <p className="text-sm font-medium">{appName}</p>
+            </header>
+            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-3">
+              <Outlet />
+            </div>
+          </SidebarInset>
+        </SidebarProvider>
+      </TooltipProvider>
+    </TeamProvider>
   );
 }
 
@@ -65,15 +69,7 @@ function AppSidebar() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" tooltip={appName}>
-              <div className="flex aspect-square size-8 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
-                <Home className="size-4" />
-              </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{appName}</span>
-                <span className="truncate text-xs">Dashboard</span>
-              </div>
-            </SidebarMenuButton>
+            <TeamSwitcher />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>

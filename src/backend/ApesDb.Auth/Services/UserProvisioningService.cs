@@ -53,6 +53,39 @@ public sealed class UserProvisioningService : IUserProvisioningService
             .Select(u => u.Id)
             .FirstAsync(cancellationToken);
 
+        await EnsureSoloTeamAsync(userId, name, now, cancellationToken);
+
         return new ProvisionedUser(userId);
+    }
+
+    private async Task EnsureSoloTeamAsync(
+        Guid userId,
+        string userName,
+        DateTime now,
+        CancellationToken cancellationToken
+    )
+    {
+        var teamName = BuildSoloTeamName(userName);
+
+        await _dbContext.Database.ExecuteSqlInterpolatedAsync(
+            $"""
+            INSERT INTO "Teams" ("Id", "OwnerUserId", "Name", "ProfilePictureUrl", "Kind", "CreatedAt", "UpdatedAt")
+            SELECT {Guid.CreateVersion7()}, {userId}, {teamName}, NULL, 'Solo', {now}, {now}
+            WHERE NOT EXISTS (SELECT 1 FROM "Teams" WHERE "OwnerUserId" = {userId} AND "Kind" = 'Solo')
+            """,
+            cancellationToken
+        );
+    }
+
+    private static string BuildSoloTeamName(string userName)
+    {
+        var trimmed = userName.Trim();
+
+        if (trimmed.Length == 0)
+        {
+            return "Solo Team";
+        }
+
+        return $"{trimmed}'s Team";
     }
 }
