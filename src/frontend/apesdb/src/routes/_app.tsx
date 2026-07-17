@@ -6,6 +6,7 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarInset,
   SidebarMenu,
@@ -17,10 +18,10 @@ import {
   TooltipProvider,
 } from "@apesdb/ui";
 import { appName } from "@apesdb/common";
-import { Gamepad2, Home } from "lucide-react";
+import { Gamepad2, Home, Settings } from "lucide-react";
 import { useAuth } from "../auth-context";
 import { AccountMenu } from "../account-menu";
-import { TeamProvider } from "../features/teams/team-context";
+import { TeamProvider, useActiveTeam } from "../features/teams/team-context";
 import { TeamSwitcher } from "../features/teams/select-team/team-switcher";
 
 export const Route = createFileRoute("/_app")({
@@ -62,6 +63,7 @@ function AppLayout() {
 
 function AppSidebar() {
   const { user, logout } = useAuth();
+  const { activeTeam } = useActiveTeam();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
 
   return (
@@ -75,6 +77,7 @@ function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
+          <SidebarGroupLabel className="text-primary">General</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -96,6 +99,30 @@ function AppSidebar() {
                   <Gamepad2 />
                   <span>Games</span>
                 </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-primary">Team</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                {activeTeam !== null ? (
+                  <SidebarMenuButton
+                    render={<Link params={{ teamId: activeTeam.id }} to="/teams/$teamId/manage" />}
+                    isActive={pathname === `/teams/${activeTeam.id}/manage`}
+                    tooltip="Manage"
+                  >
+                    <Settings />
+                    <span>Manage</span>
+                  </SidebarMenuButton>
+                ) : (
+                  <SidebarMenuButton disabled tooltip="Manage">
+                    <Settings />
+                    <span>Manage</span>
+                  </SidebarMenuButton>
+                )}
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
