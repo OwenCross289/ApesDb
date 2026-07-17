@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using ApesDb.Auth.Services;
 using ApesDb.Domain;
+using ApesDb.Domain.Entities;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Networks;
@@ -130,6 +131,59 @@ public sealed class UserProvisioningServiceTests : IAsyncLifetime
 
         var user = await dbContext.Users.SingleAsync(u => u.Auth0Subject == "auth0|789");
         Assert.Equal("Mapped Auth0 Name", user.Name);
+    }
+
+    [Fact]
+    public async Task EnsureUserFromPrincipalAsync_CreatesSoloTeam_WhenUserIsNew()
+    {
+        var fixedDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var dateTimeProvider = new FixedDateTimeProvider(fixedDate);
+        await using var dbContext = CreateDbContext();
+        var service = new UserProvisioningService(dbContext, dateTimeProvider);
+        var principal = CreatePrincipal("auth0|team-1", "team@example.com", "Team Owner");
+
+        var result = await service.EnsureUserFromPrincipalAsync(principal);
+
+        var team = await dbContext.Teams.SingleAsync(t => t.OwnerUserId == result.Id);
+        Assert.Equal(TeamKind.Solo, team.Kind);
+        Assert.Equal("Team Owner's Team", team.Name);
+        Assert.Null(team.ProfilePictureUrl);
+        Assert.Equal(fixedDate, team.CreatedAt);
+        Assert.Equal(fixedDate, team.UpdatedAt);
+    }
+
+    [Fact]
+    public async Task EnsureUserFromPrincipalAsync_NamesSoloTeamSoloTeam_WhenNameIsEmpty()
+    {
+        var dateTimeProvider = new FixedDateTimeProvider(new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+        await using var dbContext = CreateDbContext();
+        var service = new UserProvisioningService(dbContext, dateTimeProvider);
+        var principal = CreatePrincipal("auth0|team-2", "noname@example.com", string.Empty);
+
+        var result = await service.EnsureUserFromPrincipalAsync(principal);
+
+        var team = await dbContext.Teams.SingleAsync(t => t.OwnerUserId == result.Id);
+        Assert.Equal("Solo Team", team.Name);
+    }
+
+    [Fact]
+    public async Task EnsureUserFromPrincipalAsync_DoesNotCreateDuplicateSoloTeam_WhenUserLogsInAgain()
+    {
+        var dateTimeProvider = new FixedDateTimeProvider(new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+        await using var dbContext = CreateDbContext();
+        var service = new UserProvisioningService(dbContext, dateTimeProvider);
+
+        await service.EnsureUserFromPrincipalAsync(
+            CreatePrincipal("auth0|team-3", "repeat@example.com", "Repeat User")
+        );
+        var result = await service.EnsureUserFromPrincipalAsync(
+            CreatePrincipal("auth0|team-3", "repeat@example.com", "Repeat User")
+        );
+
+        var soloTeamCount = await dbContext.Teams.CountAsync(t =>
+            t.OwnerUserId == result.Id && t.Kind == TeamKind.Solo
+        );
+        Assert.Equal(1, soloTeamCount);
     }
 
     private static ClaimsPrincipal CreatePrincipal(string subject, string email, string name)

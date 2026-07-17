@@ -26,6 +26,11 @@ public static class ApiRoutes
         public const string Platforms = "games/platforms";
     }
 
+    public static class Teams
+    {
+        public const string List = "teams";
+    }
+
     public static class Auth
     {
         public const string Prefix = "auth";
