@@ -11,7 +11,7 @@ type GameDetailsPageProps = {
 
 function BackToGamesButton() {
   return (
-    <Button render={<Link to="/games" />} variant="ghost">
+    <Button render={<Link search to="/games" />} variant="ghost">
       <ArrowLeft />
       Back to games
     </Button>

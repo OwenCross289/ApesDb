@@ -5,6 +5,7 @@ namespace ApesDb.Api.Features.Games.ListGames;
 public sealed record ListGameResponse(
     long Id,
     string? CoverSmallUrl,
+    string? CoverLargeUrl,
     string Name,
     IReadOnlyList<string> Developers,
     IReadOnlyList<string> Publishers,

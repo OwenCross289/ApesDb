@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useQueryStates } from "nuqs";
 import { AdvancedFiltersSheet } from "./advanced-filters-sheet";
-import { gamesPageSize } from "./games.api";
+import { usePageTableViewPreference } from "../../../lib/table-view-preferences";
 import {
   countAdvancedFilters,
   gameFilterParsers,
@@ -14,6 +14,7 @@ import { useGameLookups, useGames } from "./use-games";
 
 export function GamesPage() {
   const [advancedFiltersOpen, setAdvancedFiltersOpen] = useState(false);
+  const [tableView, setTableView] = usePageTableViewPreference("games");
   const [filters, setFilters] = useQueryStates(gameFilterParsers, {
     clearOnDefault: true,
     history: "replace",
@@ -40,7 +41,7 @@ export function GamesPage() {
       return;
     }
 
-    const pageCount = Math.max(1, Math.ceil(games.data.filteredTotal / gamesPageSize));
+    const pageCount = Math.max(1, Math.ceil(games.data.filteredTotal / games.data.pageSize));
     const normalizedPage = Math.min(Math.max(1, filters.page), pageCount);
     if (normalizedPage !== filters.page) {
       void setFilters({ page: normalizedPage }, { history: "replace" });
@@ -55,18 +56,22 @@ export function GamesPage() {
           Browse and filter the synchronized game catalog.
         </p>
       </div>
-      <GamesToolbar
-        filters={filters}
-        advancedFilterCount={countAdvancedFilters(filters)}
-        onFiltersChange={updateFilters}
-        onOpenAdvancedFilters={() => setAdvancedFiltersOpen(true)}
-      />
       <GamesTable
         data={games.data}
         error={games.error}
-        isLoading={games.isLoading}
         hasFilters={hasGameFilters(filters)}
+        header={
+          <GamesToolbar
+            advancedFilterCount={countAdvancedFilters(filters)}
+            filters={filters}
+            onFiltersChange={updateFilters}
+            onOpenAdvancedFilters={() => setAdvancedFiltersOpen(true)}
+          />
+        }
+        isLoading={games.isLoading}
+        mode={tableView}
         page={Math.max(1, filters.page)}
+        onModeChange={setTableView}
         onPageChange={updatePage}
         onRetry={games.retry}
       />
