@@ -21,6 +21,7 @@ import {
 import {
   createColumnHelper,
   flexRender,
+  functionalUpdate,
   getCoreRowModel,
   useReactTable,
   type PaginationState,
@@ -218,10 +219,7 @@ export function GamesTable({
     pageCount,
     state: { pagination },
     onPaginationChange: (updater) => {
-      let next = updater;
-      if (typeof updater === "function") {
-        next = updater(pagination);
-      }
+      const next = functionalUpdate(updater, pagination);
 
       onPageChange(next.pageIndex + 1);
     },
