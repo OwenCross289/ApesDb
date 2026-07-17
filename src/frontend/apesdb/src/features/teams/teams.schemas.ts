@@ -2,10 +2,15 @@ import { z } from "zod";
 
 export const teamKindSchema = z.enum(["solo", "group"]);
 
+export const teamProfilePictureSchema = z.object({
+  contentType: z.string(),
+  data: z.string(),
+});
+
 export const teamSchema = z.object({
   id: z.string(),
   name: z.string(),
-  profilePictureUrl: z.string().nullable(),
+  profilePicture: teamProfilePictureSchema.nullable(),
   kind: teamKindSchema,
 });
 

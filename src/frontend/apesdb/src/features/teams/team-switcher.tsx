@@ -33,9 +33,14 @@ function TeamKindIcon({ kind }: { kind: TeamKind }) {
 }
 
 function TeamAvatar({ team, className }: { team: Team; className?: string }) {
+  let profilePictureUrl: string | undefined;
+  if (team.profilePicture !== null) {
+    profilePictureUrl = `data:${team.profilePicture.contentType};base64,${team.profilePicture.data}`;
+  }
+
   return (
     <Avatar className={className}>
-      <AvatarImage alt={team.name} src={team.profilePictureUrl ?? undefined} />
+      <AvatarImage alt={team.name} src={profilePictureUrl} />
       <AvatarFallback className="rounded-md bg-sidebar-accent text-sidebar-foreground">
         <TeamKindIcon kind={team.kind} />
       </AvatarFallback>
