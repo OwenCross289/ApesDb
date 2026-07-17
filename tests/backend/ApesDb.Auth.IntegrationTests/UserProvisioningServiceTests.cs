@@ -72,7 +72,12 @@ public sealed class UserProvisioningServiceTests : IAsyncLifetime
         var dateTimeProvider = new FixedDateTimeProvider(fixedDate);
         await using var dbContext = CreateDbContext();
         var service = new UserProvisioningService(dbContext, dateTimeProvider);
-        var principal = CreatePrincipal("auth0|123", "test@example.com", "Test User");
+        var principal = CreatePrincipal(
+            "auth0|123",
+            "test@example.com",
+            "Test User",
+            "https://images.example.com/test-user.png"
+        );
 
         var result = await service.EnsureUserFromPrincipalAsync(principal);
 
@@ -80,6 +85,7 @@ public sealed class UserProvisioningServiceTests : IAsyncLifetime
         var user = await dbContext.Users.SingleAsync(u => u.Auth0Subject == "auth0|123");
         Assert.Equal("test@example.com", user.Email);
         Assert.Equal("Test User", user.Name);
+        Assert.Equal("https://images.example.com/test-user.png", user.PictureUrl);
         Assert.Equal(fixedDate, user.CreatedAt);
         Assert.Equal(fixedDate, user.UpdatedAt);
     }
@@ -92,17 +98,28 @@ public sealed class UserProvisioningServiceTests : IAsyncLifetime
         var dateTimeProvider = new FixedDateTimeProvider(initialDate);
         await using var dbContext = CreateDbContext();
         var service = new UserProvisioningService(dbContext, dateTimeProvider);
-        var principal = CreatePrincipal("auth0|456", "old@example.com", "Old Name");
+        var principal = CreatePrincipal(
+            "auth0|456",
+            "old@example.com",
+            "Old Name",
+            "https://images.example.com/old.png"
+        );
         var created = await service.EnsureUserFromPrincipalAsync(principal);
 
         dateTimeProvider.UtcNow = updatedDate;
-        var updatedPrincipal = CreatePrincipal("auth0|456", "new@example.com", "New Name");
+        var updatedPrincipal = CreatePrincipal(
+            "auth0|456",
+            "new@example.com",
+            "New Name",
+            "https://images.example.com/new.png"
+        );
         var result = await service.EnsureUserFromPrincipalAsync(updatedPrincipal);
 
         Assert.Equal(created.Id, result.Id);
         var user = await dbContext.Users.SingleAsync(u => u.Auth0Subject == "auth0|456");
         Assert.Equal("new@example.com", user.Email);
         Assert.Equal("New Name", user.Name);
+        Assert.Equal("https://images.example.com/new.png", user.PictureUrl);
         Assert.Equal(initialDate, user.CreatedAt);
         Assert.Equal(updatedDate, user.UpdatedAt);
     }
@@ -190,18 +207,26 @@ public sealed class UserProvisioningServiceTests : IAsyncLifetime
         Assert.Equal(1, soloTeamCount);
     }
 
-    private static ClaimsPrincipal CreatePrincipal(string subject, string email, string name)
+    private static ClaimsPrincipal CreatePrincipal(
+        string subject,
+        string email,
+        string name,
+        string? pictureUrl = null
+    )
     {
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, subject),
+            new(ClaimTypes.Email, email),
+            new(ClaimTypes.Name, name),
+        };
+        if (pictureUrl is not null)
+        {
+            claims.Add(new Claim("picture", pictureUrl));
+        }
+
         return new ClaimsPrincipal(
-            new ClaimsIdentity(
-                new[]
-                {
-                    new Claim(ClaimTypes.NameIdentifier, subject),
-                    new Claim(ClaimTypes.Email, email),
-                    new Claim(ClaimTypes.Name, name),
-                },
-                "Test"
-            )
+            new ClaimsIdentity(claims, "Test")
         );
     }
 

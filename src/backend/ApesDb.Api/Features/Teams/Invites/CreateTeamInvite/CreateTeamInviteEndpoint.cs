@@ -28,11 +28,15 @@ public sealed class CreateTeamInviteEndpoint : Endpoint<CreateTeamInviteRequest>
     public override async Task HandleAsync(CreateTeamInviteRequest request, CancellationToken ct)
     {
         var inviterId = User.GetApesDbUserId();
-        var canInvite = await _dbContext.TeamMemberships.AnyAsync(
-            membership =>
-                membership.TeamId == request.TeamId
-                && membership.UserId == inviterId
-                && membership.Status == TeamMembershipStatus.Accepted,
+        var canInvite = await _dbContext.Teams.AnyAsync(
+            team =>
+                team.Id == request.TeamId
+                && team.Kind == TeamKind.Group
+                && _dbContext.TeamMemberships.Any(membership =>
+                    membership.TeamId == team.Id
+                    && membership.UserId == inviterId
+                    && membership.Status == TeamMembershipStatus.Accepted
+                ),
             ct
         );
         if (!canInvite)

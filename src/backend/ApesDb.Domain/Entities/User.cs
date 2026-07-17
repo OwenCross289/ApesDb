@@ -13,6 +13,8 @@ public sealed class User
 
     public required string Name { get; set; }
 
+    public string? PictureUrl { get; set; }
+
     public DateTime CreatedAt { get; init; }
 
     public DateTime UpdatedAt { get; set; }
@@ -29,6 +31,7 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
         user.Property(u => u.Auth0Subject).HasMaxLength(256);
         user.Property(u => u.Email).HasMaxLength(256);
         user.Property(u => u.Name).HasMaxLength(256);
+        user.Property(u => u.PictureUrl).HasMaxLength(2048);
         user.Property(u => u.CreatedAt).HasDefaultValueSql("now()");
         user.Property(u => u.UpdatedAt).HasDefaultValueSql("now()");
     }

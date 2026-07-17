@@ -2,7 +2,7 @@ namespace ApesDb.Api.Features.Teams;
 
 public sealed record TeamProfilePictureResponse(string ContentType, byte[] Data);
 
-public sealed record TeamMemberResponse(Guid Id, string Name);
+public sealed record TeamMemberResponse(Guid Id, string Name, string? PictureUrl);
 
 public sealed record TeamResponse(
     Guid Id,

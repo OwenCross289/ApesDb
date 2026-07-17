@@ -21,7 +21,7 @@ import { Gamepad2, Home } from "lucide-react";
 import { useAuth } from "../auth-context";
 import { AccountMenu } from "../account-menu";
 import { TeamProvider } from "../features/teams/team-context";
-import { TeamSwitcher } from "../features/teams/team-switcher";
+import { TeamSwitcher } from "../features/teams/select-team/team-switcher";
 
 export const Route = createFileRoute("/_app")({
   beforeLoad: ({ context, location }) => {

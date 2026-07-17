@@ -39,6 +39,7 @@ public sealed class GetTeamInviteEndpoint : Endpoint<GetTeamInviteRequest, TeamI
                 membership.Team.ProfilePicture,
                 InvitedById = membership.InvitedByUserId!.Value,
                 InvitedByName = membership.InvitedByUser!.Name,
+                InvitedByPictureUrl = membership.InvitedByUser.PictureUrl,
                 membership.InvitedAt,
             })
             .SingleOrDefaultAsync(ct);
@@ -56,7 +57,7 @@ public sealed class GetTeamInviteEndpoint : Endpoint<GetTeamInviteRequest, TeamI
                     invite.TeamName,
                     TeamResponseFactory.CreateProfilePicture(invite.ProfilePicture)
                 ),
-                new TeamMemberResponse(invite.InvitedById, invite.InvitedByName),
+                new TeamMemberResponse(invite.InvitedById, invite.InvitedByName, invite.InvitedByPictureUrl),
                 invite.InvitedAt
             ),
             ct

@@ -100,6 +100,37 @@ public sealed class TeamEndpointTests : IClassFixture<TeamDatabaseFixture>
     }
 
     [Fact]
+    public async Task GetTeam_ReturnsNotFoundForUserWithoutAcceptedMembership()
+    {
+        await _database.ResetAsync();
+        var owner = CreateUser("owner@example.com", "Owner");
+        var outsider = CreateUser("outsider@example.com", "Outsider");
+        var team = CreateTeam(owner.Id);
+        await SeedAsync(owner, outsider, team, CreateAcceptedMembership(team.Id, owner.Id));
+
+        var status = await GetTeamStatusAsync(outsider.Id, team.Id);
+
+        Assert.Equal(StatusCodes.Status404NotFound, status);
+    }
+
+    [Fact]
+    public async Task Invite_RejectsSoloTeamWithoutCreatingMembershipOrNotification()
+    {
+        await _database.ResetAsync();
+        var owner = CreateUser("owner@example.com", "Owner");
+        var invitee = CreateUser("invitee@example.com", "Invitee");
+        var team = CreateTeam(owner.Id, TeamKind.Solo);
+        await SeedAsync(owner, invitee, team, CreateAcceptedMembership(team.Id, owner.Id));
+
+        var status = await InviteAsync(owner.Id, team.Id, invitee.Email);
+
+        Assert.Equal(StatusCodes.Status404NotFound, status);
+        await using var dbContext = _database.CreateDbContext();
+        Assert.Single(await dbContext.TeamMemberships.ToArrayAsync());
+        Assert.Empty(await dbContext.Notifications.ToArrayAsync());
+    }
+
+    [Fact]
     public async Task InviteNotificationReadAndAcceptFlow_UpdatesCountsAndMembership()
     {
         await _database.ResetAsync();
@@ -130,10 +161,12 @@ public sealed class TeamEndpointTests : IClassFixture<TeamDatabaseFixture>
         var teamResponse = await GetTeamAsync(owner.Id, team.Id);
         Assert.Single(teamResponse.Members);
         Assert.Equal(owner.Id, teamResponse.Members[0].Id);
+        Assert.Equal(owner.PictureUrl, teamResponse.Members[0].PictureUrl);
 
         var inviteResponse = await GetInviteAsync(invitee.Id, inviteId);
         Assert.Equal(team.Id, inviteResponse.Team.Id);
         Assert.Equal(owner.Id, inviteResponse.InvitedBy.Id);
+        Assert.Equal(owner.PictureUrl, inviteResponse.InvitedBy.PictureUrl);
 
         var beforeRead = await ListNotificationsAsync(invitee.Id);
         Assert.Equal(1, beforeRead.Metadata.TotalCount);
@@ -261,6 +294,15 @@ public sealed class TeamEndpointTests : IClassFixture<TeamDatabaseFixture>
         return await ReadResponseAsync<TeamResponse>(context);
     }
 
+    private async Task<int> GetTeamStatusAsync(Guid userId, Guid teamId)
+    {
+        await using var dbContext = _database.CreateDbContext();
+        var context = CreateHttpContext(userId);
+        var endpoint = Factory.Create<GetTeamEndpoint>(context, dbContext);
+        await endpoint.HandleAsync(new GetTeamRequest { TeamId = teamId }, default);
+        return context.Response.StatusCode;
+    }
+
     private async Task<TeamInviteResponse> GetInviteAsync(Guid userId, Guid inviteId)
     {
         await using var dbContext = _database.CreateDbContext();
@@ -330,19 +372,20 @@ public sealed class TeamEndpointTests : IClassFixture<TeamDatabaseFixture>
             Auth0Subject = $"auth0|{Guid.NewGuid():N}",
             Email = email,
             Name = name,
+            PictureUrl = $"https://images.example.com/{email}.png",
             CreatedAt = Now,
             UpdatedAt = Now,
         };
     }
 
-    private static Team CreateTeam(Guid ownerId)
+    private static Team CreateTeam(Guid ownerId, TeamKind kind = TeamKind.Group)
     {
         return new Team
         {
             Id = Guid.CreateVersion7(),
             OwnerUserId = ownerId,
             Name = "Apes",
-            Kind = TeamKind.Group,
+            Kind = kind,
             CreatedAt = Now,
             UpdatedAt = Now,
         };

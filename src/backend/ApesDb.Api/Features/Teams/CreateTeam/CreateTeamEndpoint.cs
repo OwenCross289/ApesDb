@@ -91,9 +91,9 @@ public sealed class CreateTeamEndpoint : Endpoint<CreateTeamRequest, TeamRespons
         _dbContext.TeamMemberships.Add(membership);
         await _dbContext.SaveChangesAsync(ct);
 
-        var creatorName = await _dbContext
+        var creator = await _dbContext
             .Users.Where(user => user.Id == userId)
-            .Select(user => user.Name)
+            .Select(user => new { user.Name, user.PictureUrl })
             .SingleAsync(ct);
         var response = new TeamResponse(
             team.Id,
@@ -101,7 +101,7 @@ public sealed class CreateTeamEndpoint : Endpoint<CreateTeamRequest, TeamRespons
             TeamResponseFactory.CreateKind(team.Kind),
             team.CreatedAt,
             TeamResponseFactory.CreateProfilePicture(team.ProfilePicture),
-            [new TeamMemberResponse(userId, creatorName)]
+            [new TeamMemberResponse(userId, creator.Name, creator.PictureUrl)]
         );
         HttpContext.Response.Headers.Location = $"/{ApiRoutes.Api.Prefix}/teams/{team.Id}";
         await Send.ResponseAsync(response, StatusCodes.Status201Created, ct);

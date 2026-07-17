@@ -28,6 +28,7 @@ public sealed class UserProvisioningService : IUserProvisioningService
             ?? throw new InvalidOperationException("Missing subject claim.");
         var email = principal.FindFirstValue(ClaimTypes.Email) ?? string.Empty;
         var name = principal.FindFirstValue(ClaimTypes.Name) ?? string.Empty;
+        var pictureUrl = principal.FindFirstValue("picture");
         var now = _dateTimeProvider.UtcNow;
 
         var user = new User
@@ -36,6 +37,7 @@ public sealed class UserProvisioningService : IUserProvisioningService
             Auth0Subject = subject,
             Email = email,
             Name = name,
+            PictureUrl = pictureUrl,
             CreatedAt = now,
             UpdatedAt = now,
         };
@@ -43,7 +45,13 @@ public sealed class UserProvisioningService : IUserProvisioningService
         var bulkConfig = new BulkConfig
         {
             UpdateByProperties = [nameof(User.Auth0Subject)],
-            PropertiesToIncludeOnUpdate = [nameof(User.Email), nameof(User.Name), nameof(User.UpdatedAt)],
+            PropertiesToIncludeOnUpdate =
+            [
+                nameof(User.Email),
+                nameof(User.Name),
+                nameof(User.PictureUrl),
+                nameof(User.UpdatedAt),
+            ],
         };
 
         await _dbContext.BulkInsertOrUpdateAsync([user], bulkConfig, cancellationToken: cancellationToken);

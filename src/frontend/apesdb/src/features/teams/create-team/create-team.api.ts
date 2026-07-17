@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { teamSchema, teamsResponseSchema, type Team } from "./teams.schemas";
+import { teamSchema, type Team } from "../teams.schemas";
 
 export type CreateTeamInput = {
   name: string;
@@ -39,19 +39,6 @@ async function createRequestError(response: Response): Promise<Error> {
   }
 
   return new Error(`Unable to create the team (status ${response.status}).`);
-}
-
-export async function fetchTeams(signal: AbortSignal): Promise<Team[]> {
-  const response = await fetch("/api/teams", {
-    credentials: "include",
-    signal,
-  });
-
-  if (!response.ok) {
-    throw new Error(`Request failed with status ${response.status}.`);
-  }
-
-  return teamsResponseSchema.parse(await response.json());
 }
 
 export async function createTeam(input: CreateTeamInput): Promise<Team> {

@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
 import type { Team } from "./teams.schemas";
-import { useTeams } from "./use-teams";
+import { useTeams } from "./select-team/use-teams";
 
 export type TeamContextValue = {
   teams: Team[];

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createTeam } from "./teams.api";
-import type { Team } from "./teams.schemas";
-import { teamsQueryKey } from "./use-teams";
+import { teamQueryKeys } from "../team-query-keys";
+import type { Team } from "../teams.schemas";
+import { createTeam } from "./create-team.api";
 
 export function useCreateTeam() {
   const queryClient = useQueryClient();
@@ -9,7 +9,7 @@ export function useCreateTeam() {
   return useMutation({
     mutationFn: createTeam,
     onSuccess: (createdTeam) => {
-      queryClient.setQueryData<Team[]>(teamsQueryKey, (teams) => {
+      queryClient.setQueryData<Team[]>(teamQueryKeys.list, (teams) => {
         if (!teams) {
           return [createdTeam];
         }
@@ -29,7 +29,7 @@ export function useCreateTeam() {
         });
       });
 
-      void queryClient.invalidateQueries({ queryKey: teamsQueryKey });
+      void queryClient.invalidateQueries({ queryKey: teamQueryKeys.list });
     },
   });
 }

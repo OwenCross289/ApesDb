@@ -57,7 +57,11 @@ public sealed class GetTeamEndpoint : Endpoint<GetTeamRequest, TeamResponse>
             .OrderBy(membership => membership.User.Name.ToLower())
             .ThenBy(membership => membership.User.Name)
             .ThenBy(membership => membership.UserId)
-            .Select(membership => new TeamMemberResponse(membership.UserId, membership.User.Name))
+            .Select(membership => new TeamMemberResponse(
+                membership.UserId,
+                membership.User.Name,
+                membership.User.PictureUrl
+            ))
             .ToArrayAsync(ct);
 
         await Send.OkAsync(

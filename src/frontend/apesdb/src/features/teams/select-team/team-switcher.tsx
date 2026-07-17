@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import {
   Avatar,
   AvatarFallback,
@@ -9,15 +10,18 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
   SidebarMenuButton,
   Skeleton,
   useSidebar,
 } from "@apesdb/ui";
-import { Check, ChevronsUpDown, Plus, User, Users } from "lucide-react";
-import { CreateTeamDialog } from "./create-team-dialog";
-import { useActiveTeam } from "./team-context";
-import type { Team, TeamKind } from "./teams.schemas";
+import { Check, ChevronsUpDown, Plus, Settings, User, Users } from "lucide-react";
+import { CreateTeamDialog } from "../create-team/create-team-dialog";
+import { useActiveTeam } from "../team-context";
+import type { Team, TeamKind } from "../teams.schemas";
 
 function teamKindLabel(kind: TeamKind): string {
   if (kind === "solo") {
@@ -120,6 +124,28 @@ export function TeamSwitcher() {
             })}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <Settings />
+              Manage team
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent className="min-w-56">
+              {teams.map((team) => (
+                <DropdownMenuItem
+                  key={team.id}
+                  render={<Link params={{ teamId: team.id }} to="/teams/$teamId/manage" />}
+                >
+                  <TeamAvatar className="size-6 rounded-md" team={team} />
+                  <div className="grid min-w-0 flex-1 text-left leading-tight">
+                    <span className="truncate">{team.name}</span>
+                    <span className="truncate text-xs text-muted-foreground">
+                      {teamKindLabel(team.kind)}
+                    </span>
+                  </div>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
           <DropdownMenuItem onClick={() => setIsCreateTeamDialogOpen(true)}>
             <Plus />
             Create team
