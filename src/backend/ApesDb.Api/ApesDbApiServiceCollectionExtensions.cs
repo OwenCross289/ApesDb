@@ -35,9 +35,9 @@ public static class ApesDbApiServiceCollectionExtensions
 
         services.AddFusionCache().TryWithAutoSetup();
         services
-            .AddFusionCache(GameLookupCache.CacheName)
-            .WithCacheKeyPrefix(GameLookupCache.CacheKeyPrefix)
-            .WithDefaultEntryOptions(options => options.SetDuration(GameLookupCache.Expiration))
+            .AddFusionCache(GameCache.CacheName)
+            .WithCacheKeyPrefix(GameCache.CacheKeyPrefix)
+            .WithDefaultEntryOptions(options => options.SetDuration(GameCache.Expiration))
             .TryWithAutoSetup();
 
         return services;

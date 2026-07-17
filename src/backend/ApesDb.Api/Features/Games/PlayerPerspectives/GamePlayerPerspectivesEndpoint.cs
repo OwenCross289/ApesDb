@@ -17,7 +17,7 @@ public sealed class GamePlayerPerspectivesEndpoint : EndpointWithoutRequest<Play
     public GamePlayerPerspectivesEndpoint(ApplicationDbContext dbContext, IFusionCacheProvider cacheProvider)
     {
         _dbContext = dbContext;
-        _cache = cacheProvider.GetCache(GameLookupCache.CacheName);
+        _cache = cacheProvider.GetCache(GameCache.CacheName);
     }
 
     public override void Configure()
