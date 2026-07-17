@@ -108,6 +108,7 @@ export function GameDetailsHeader({ game }: GameDetailsHeaderProps) {
             <Link
               className="font-medium text-foreground underline underline-offset-4"
               params={{ gameId: game.versionParentId.toString() }}
+              search
               to="/games/$gameId"
             >
               game #{game.versionParentId}

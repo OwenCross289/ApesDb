@@ -234,6 +234,7 @@ public sealed class QueryableExtensionsTranslationTests
             .Select(game => new ListGameResponse(
                 game.Id,
                 game.CoverSmallUrl,
+                game.CoverLargeUrl,
                 game.Name,
                 dbContext
                     .GameCompanies.Where(link => link.GameId == game.Id && link.Developer)

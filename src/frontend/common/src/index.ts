@@ -1,1 +1,2 @@
-export const appName = "ApesDb";
+export { appName } from "./app-name";
+export type { Pageable } from "./pageable";

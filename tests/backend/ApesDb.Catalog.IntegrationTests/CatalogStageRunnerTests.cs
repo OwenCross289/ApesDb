@@ -541,6 +541,7 @@ public sealed partial class CatalogStageRunnerTests : IClassFixture<CatalogDatab
         game.GameTypeId = gameType.Id;
         game.GameStatusId = gameStatus.Id;
         game.CoverSmallUrl = "https://images.example/filterable-small.jpg";
+        game.CoverLargeUrl = "https://images.example/filterable-large.jpg";
         var nameOnlySteamGame = CreateStoredGame(nameOnlySteamGameId, "Name-only Steam Game");
         nameOnlySteamGame.GameTypeId = gameType.Id;
         nameOnlySteamGame.GameStatusId = gameStatus.Id;
@@ -627,6 +628,8 @@ public sealed partial class CatalogStageRunnerTests : IClassFixture<CatalogDatab
 
         var item = Assert.Single(response.Items);
         Assert.Equal(gameId, item.Id);
+        Assert.Equal("https://images.example/filterable-small.jpg", item.CoverSmallUrl);
+        Assert.Equal("https://images.example/filterable-large.jpg", item.CoverLargeUrl);
         Assert.Equal("Filterable Game", item.Name);
         Assert.Equal(["Developer Publisher"], item.Developers);
         Assert.Equal(["Developer Publisher"], item.Publishers);

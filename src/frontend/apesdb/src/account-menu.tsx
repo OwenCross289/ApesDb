@@ -4,6 +4,7 @@ import {
   AvatarFallback,
   AvatarImage,
   Button,
+  DataViewModeSelector,
   Popover,
   PopoverContent,
   PopoverDescription,
@@ -17,6 +18,7 @@ import {
 import { LogOut, UserCircle } from "lucide-react";
 
 import type { AuthUser } from "./auth-context";
+import { useDefaultTableViewPreference } from "./lib/table-view-preferences";
 
 type AccountMenuProps = {
   user: AuthUser | null;
@@ -85,6 +87,8 @@ function AccountMenuContent({
   onLogout: () => void;
   user: AuthUser | null;
 }) {
+  const [defaultTableView, setDefaultTableView] = useDefaultTableViewPreference();
+
   return (
     <div className="grid gap-4">
       <div className="flex min-w-0 items-center gap-3">
@@ -105,6 +109,17 @@ function AccountMenuContent({
           aria-label="Theme"
           buttonClassName="w-full justify-center"
           className="grid grid-cols-3 bg-muted/60"
+        />
+      </div>
+      <div className="grid gap-2">
+        <p className="text-xs font-medium text-muted-foreground">Default table view</p>
+        <DataViewModeSelector
+          aria-label="Default table view"
+          className="grid w-full grid-cols-2 bg-muted/60"
+          buttonClassName="w-full justify-center"
+          mode={defaultTableView}
+          onModeChange={setDefaultTableView}
+          showLabels
         />
       </div>
       <Button className="w-full justify-start" onClick={onLogout} type="button" variant="ghost">

@@ -204,6 +204,7 @@ function RelatedGameCard({ game, label }: { game: RelatedGame; label: string }) 
     <Link
       className="group flex gap-4 border p-3 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
       params={{ gameId: game.id.toString() }}
+      search
       to="/games/$gameId"
     >
       <RelatedGameCover key={game.coverSmallUrl ?? game.coverLargeUrl ?? "missing"} game={game} />

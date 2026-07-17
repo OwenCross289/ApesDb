@@ -2,6 +2,15 @@ export { Button, buttonVariants, type ButtonProps } from "./lib/button";
 export { Badge, badgeVariants } from "./lib/badge";
 export { Checkbox } from "./lib/checkbox";
 export {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./lib/card";
+export {
   Combobox,
   ComboboxChip,
   ComboboxChips,
@@ -83,6 +92,8 @@ export {
 } from "./lib/sheet";
 export { Skeleton } from "./lib/skeleton";
 export { Switch } from "./lib/switch";
+export { Toggle, toggleVariants } from "./lib/toggle";
+export { ToggleGroup, ToggleGroupItem } from "./lib/toggle-group";
 export {
   Table,
   TableBody,
@@ -93,6 +104,13 @@ export {
   TableHeader,
   TableRow,
 } from "./lib/table";
+export {
+  DataViewModeSelector,
+  PageableDataView,
+  type DataViewMode,
+  type PageableDataViewColumnMeta,
+  type PageableDataViewProps,
+} from "./lib/pageable-data-view";
 export { Toaster } from "./lib/sonner";
 export {
   Sidebar,

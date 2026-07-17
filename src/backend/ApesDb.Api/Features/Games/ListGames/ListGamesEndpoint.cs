@@ -129,6 +129,7 @@ public sealed class ListGamesEndpoint : Endpoint<ListGamesRequest, Pagable<ListG
             .Select(game => new ListGameResponse(
                 game.Id,
                 game.CoverSmallUrl,
+                game.CoverLargeUrl,
                 game.Name,
                 _dbContext
                     .GameCompanies.Where(link => link.GameId == game.Id && link.Developer)
