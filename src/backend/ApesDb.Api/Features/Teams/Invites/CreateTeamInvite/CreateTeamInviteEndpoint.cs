@@ -133,7 +133,6 @@ public sealed class CreateTeamInviteEndpoint : Endpoint<CreateTeamInviteRequest>
 
     private static bool IsUniqueViolation(DbUpdateException exception)
     {
-        return exception.InnerException is PostgresException postgresException
-            && postgresException.SqlState == PostgresErrorCodes.UniqueViolation;
+        return exception.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation };
     }
 }
