@@ -83,7 +83,7 @@ public sealed class TeamEndpointTests : IClassFixture<TeamDatabaseFixture>
         var owner = CreateUser("owner@example.com", "Owner");
         await SeedAsync(owner);
 
-        var oversized = new byte[CreateTeamEndpoint.MaximumProfilePictureLength + 1];
+        var oversized = new byte[CreateTeamValidator.MaximumProfilePictureLength + 1];
         var oversizedFile = new FormFile(
             new MemoryStream(oversized),
             0,
@@ -92,7 +92,7 @@ public sealed class TeamEndpointTests : IClassFixture<TeamDatabaseFixture>
             "large.png"
         );
         var oversizedStatus = await CreateTeamAsync(owner.Id, oversizedFile);
-        Assert.Equal(StatusCodes.Status413PayloadTooLarge, oversizedStatus);
+        Assert.Equal(StatusCodes.Status400BadRequest, oversizedStatus);
 
         var invalid = new byte[] { 1, 2, 3, 4 };
         var invalidFile = new FormFile(new MemoryStream(invalid), 0, invalid.Length, "ProfilePicture", "invalid.png");

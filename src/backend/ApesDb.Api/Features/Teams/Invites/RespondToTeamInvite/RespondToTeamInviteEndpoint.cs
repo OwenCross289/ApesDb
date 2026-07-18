@@ -4,7 +4,6 @@ using ApesDb.Domain;
 using ApesDb.Domain.Entities.Notifications;
 using ApesDb.Domain.Entities.Teams;
 using FastEndpoints;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApesDb.Api.Features.Teams.Invites.RespondToTeamInvite;
@@ -82,7 +81,7 @@ public sealed class RespondToTeamInviteEndpoint : Endpoint<RespondToTeamInviteRe
                     return;
                 }
 
-                await Send.StatusCodeAsync(StatusCodes.Status409Conflict, ct);
+                await Send.ConflictAsync();
                 return;
             }
 

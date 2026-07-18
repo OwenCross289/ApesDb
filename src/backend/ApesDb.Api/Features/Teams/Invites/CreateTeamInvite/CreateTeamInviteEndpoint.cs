@@ -6,7 +6,6 @@ using ApesDb.Domain.Entities.Notifications;
 using ApesDb.Domain.Entities.Teams;
 using ApesDb.Domain.Entities.Users;
 using FastEndpoints;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
@@ -65,7 +64,7 @@ public sealed class CreateTeamInviteEndpoint : Endpoint<CreateTeamInviteRequest>
             .ToArrayAsync(ct);
         if (targetIds.Length != 1 || targetIds[0] == inviterId)
         {
-            await Send.StatusCodeAsync(StatusCodes.Status202Accepted, ct);
+            await Send.AcceptedAsync();
             return;
         }
 
@@ -76,7 +75,7 @@ public sealed class CreateTeamInviteEndpoint : Endpoint<CreateTeamInviteRequest>
         );
         if (alreadyBelongsToTeam)
         {
-            await Send.StatusCodeAsync(StatusCodes.Status202Accepted, ct);
+            await Send.AcceptedAsync();
             return;
         }
 
@@ -109,7 +108,7 @@ public sealed class CreateTeamInviteEndpoint : Endpoint<CreateTeamInviteRequest>
         catch (DbUpdateException exception) when (IsUniqueViolation(exception))
         {
             _dbContext.ChangeTracker.Clear();
-            await Send.StatusCodeAsync(StatusCodes.Status202Accepted, ct);
+            await Send.AcceptedAsync();
             return;
         }
 
@@ -129,7 +128,7 @@ public sealed class CreateTeamInviteEndpoint : Endpoint<CreateTeamInviteRequest>
             )
         );
 
-        await Send.StatusCodeAsync(StatusCodes.Status202Accepted, ct);
+        await Send.AcceptedAsync();
     }
 
     private static bool IsUniqueViolation(DbUpdateException exception)

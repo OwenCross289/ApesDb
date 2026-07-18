@@ -10,8 +10,6 @@ namespace ApesDb.Api.Features.Teams.CreateTeam;
 
 public sealed class CreateTeamEndpoint : Endpoint<CreateTeamRequest, TeamResponse>
 {
-    public const long MaximumProfilePictureLength = 5 * 1024 * 1024;
-
     private readonly ApplicationDbContext _dbContext;
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly ITeamProfilePictureProcessor _profilePictureProcessor;
@@ -39,12 +37,6 @@ public sealed class CreateTeamEndpoint : Endpoint<CreateTeamRequest, TeamRespons
         byte[]? profilePicture = null;
         if (request.ProfilePicture is not null)
         {
-            if (request.ProfilePicture.Length > MaximumProfilePictureLength)
-            {
-                await Send.StatusCodeAsync(StatusCodes.Status413PayloadTooLarge, ct);
-                return;
-            }
-
             try
             {
                 await using var stream = request.ProfilePicture.OpenReadStream();
