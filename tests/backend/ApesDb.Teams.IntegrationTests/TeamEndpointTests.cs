@@ -1,6 +1,8 @@
 using System.Security.Claims;
 using System.Text.Json;
-using ApesDb.Api.Features.Notifications;
+using ApesDb.Api.Features.Notifications.ListNotifications;
+using ApesDb.Api.Features.Notifications.NotificationsStream;
+using ApesDb.Api.Features.Notifications.ReadNotifications;
 using ApesDb.Api.Features.Teams;
 using ApesDb.Api.Features.Teams.CreateTeam;
 using ApesDb.Api.Features.Teams.GetTeam;
@@ -332,7 +334,7 @@ public sealed class TeamEndpointTests : IClassFixture<TeamDatabaseFixture>
         var context = CreateHttpContext(userId);
         using var cts = new CancellationTokenSource();
         context.RequestAborted = cts.Token;
-        var endpoint = Factory.Create<NotificationStreamEndpoint>(context, _streamService);
+        var endpoint = Factory.Create<NotificationsStreamEndpoint>(context, _streamService);
         var handleTask = endpoint.HandleAsync(CancellationToken.None);
 
         var body = (MemoryStream)context.Response.Body;
@@ -419,13 +421,13 @@ public sealed class TeamEndpointTests : IClassFixture<TeamDatabaseFixture>
         return await ReadResponseAsync<TeamInviteResponse>(context);
     }
 
-    private async Task<ListNotificationsResponse> ListNotificationsAsync(Guid userId)
+    private async Task<NotificationsResponse> ListNotificationsAsync(Guid userId)
     {
         await using var dbContext = _database.CreateDbContext();
         var context = CreateHttpContext(userId);
         var endpoint = Factory.Create<ListNotificationsEndpoint>(context, dbContext);
         await endpoint.HandleAsync(default);
-        return await ReadResponseAsync<ListNotificationsResponse>(context);
+        return await ReadResponseAsync<NotificationsResponse>(context);
     }
 
     private async Task ReadNotificationsAsync(Guid userId)

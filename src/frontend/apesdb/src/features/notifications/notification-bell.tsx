@@ -20,6 +20,11 @@ import { useNotifications } from "./use-notifications";
 import { useRespondToInvite } from "./use-respond-to-invite";
 import { useTeamInvite } from "./use-team-invite";
 
+type NotificationBellProps = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+};
+
 function errorMessage(error: unknown): string {
   if (error instanceof Error) {
     return error.message;
@@ -141,7 +146,7 @@ function NotificationRow({ notification }: { notification: Notification }) {
   );
 }
 
-export function NotificationBell() {
+export function NotificationBell({ open, onOpenChange }: NotificationBellProps) {
   const notifications = useNotifications();
   const markRead = useMarkNotificationsRead();
 
@@ -150,7 +155,7 @@ export function NotificationBell() {
   const items = notifications.data?.items ?? [];
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={onOpenChange}>
       <PopoverTrigger
         render={
           <Button

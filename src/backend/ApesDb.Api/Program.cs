@@ -1,5 +1,5 @@
 using ApesDb.Api;
-using ApesDb.Api.Features.Notifications;
+using ApesDb.Api.Features.Notifications.NotificationsStream;
 using ApesDb.Api.Features.Teams;
 using ApesDb.Auth;
 using ApesDb.Common;

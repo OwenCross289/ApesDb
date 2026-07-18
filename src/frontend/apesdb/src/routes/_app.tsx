@@ -1,4 +1,5 @@
 import { Link, Outlet, createFileRoute, redirect, useRouterState } from "@tanstack/react-router";
+import { useCallback, useState } from "react";
 import {
   Separator,
   Sidebar,
@@ -42,7 +43,12 @@ export const Route = createFileRoute("/_app")({
 });
 
 function AppLayout() {
-  useNotificationStream();
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const openNotifications = useCallback(() => {
+    setNotificationsOpen(true);
+  }, []);
+
+  useNotificationStream(openNotifications);
 
   return (
     <TeamProvider>
@@ -55,7 +61,7 @@ function AppLayout() {
               <Separator className="h-4" orientation="vertical" />
               <p className="text-sm font-medium">{appName}</p>
               <div className="ml-auto flex items-center">
-                <NotificationBell />
+                <NotificationBell open={notificationsOpen} onOpenChange={setNotificationsOpen} />
               </div>
             </header>
             <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-3">

@@ -1,5 +1,6 @@
-import { useEffect } from "react";
+import { createElement, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { z } from "zod";
 import { notificationQueryKeys } from "./notification-query-keys";
 import { notificationSchema, type ListNotificationsResponse } from "./notifications.schemas";
@@ -17,6 +18,8 @@ const resolvedEventSchema = z.object({
   resourceId: z.string(),
 });
 
+const notificationToastId = "notification-created";
+
 function parseEventData(event: Event): unknown {
   if (!(event instanceof MessageEvent) || typeof event.data !== "string") {
     return null;
@@ -29,7 +32,31 @@ function parseEventData(event: Event): unknown {
   }
 }
 
-export function useNotificationStream() {
+function showNotificationToast(openNotifications: () => void) {
+  const handleClick = () => {
+    openNotifications();
+    toast.dismiss(notificationToastId);
+  };
+
+  const message = createElement(
+    "button",
+    {
+      "aria-label": "Open notifications",
+      className: "w-full cursor-pointer text-left",
+      onClick: handleClick,
+      type: "button",
+    },
+    "You have a new notification.",
+  );
+
+  toast(message, {
+    closeButton: true,
+    duration: Number.POSITIVE_INFINITY,
+    id: notificationToastId,
+  });
+}
+
+export function useNotificationStream(openNotifications: () => void) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -45,6 +72,7 @@ export function useNotificationStream() {
       queryClient.setQueryData<ListNotificationsResponse>(notificationQueryKeys.list, (current) =>
         withNotificationAdded(current, parsed.data),
       );
+      showNotificationToast(openNotifications);
     };
 
     const onRead = (event: Event) => {
@@ -78,5 +106,5 @@ export function useNotificationStream() {
     return () => {
       source.close();
     };
-  }, [queryClient]);
+  }, [openNotifications, queryClient]);
 }
