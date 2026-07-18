@@ -46,40 +46,34 @@ public sealed class UserProvisioningService : IUserProvisioningService
                         "UpdatedAt" = EXCLUDED."UpdatedAt"
                     RETURNING "Id"
                 ),
-                "upserted_team" AS (
+                "inserted_if_not_exists_team" AS (
                     INSERT INTO "public"."Teams" (
                         "OwnerUserId", "Name", "Kind", "CreatedAt", "UpdatedAt"
                     )
                     SELECT "Id", {teamName}, 'Solo', {now}, {now}
                     FROM "upserted_user"
-                    ON CONFLICT ("OwnerUserId") WHERE "Kind" = 'Solo' DO UPDATE SET
-                        "Name" = EXCLUDED."Name",
-                        "UpdatedAt" = EXCLUDED."UpdatedAt"
+                    ON CONFLICT DO NOTHING
                     RETURNING "Id", "OwnerUserId"
                 ),
-                "upserted_membership" AS (
+                "solo_team" AS (
+                    SELECT "Id", "OwnerUserId" FROM "inserted_if_not_exists_team"
+                    UNION ALL
+                    SELECT t."Id", t."OwnerUserId"
+                    FROM "public"."Teams" AS t
+                    JOIN "upserted_user" AS u ON t."OwnerUserId" = u."Id"
+                    WHERE t."Kind" = 'Solo'
+                ),
+                "inserted_if_not_exists_membership" AS (
                     INSERT INTO "public"."TeamMemberships" (
-                        "TeamId", "UserId", "Status", "InvitedByUserId", "InvitedAt", "AcceptedAt"
+                        "TeamId", "UserId", "Status", "InvitedAt", "AcceptedAt"
                     )
-                    SELECT
-                        "upserted_team"."Id",
-                        "upserted_team"."OwnerUserId",
-                        1,
-                        NULL,
-                        {now},
-                        {now}
-                    FROM "upserted_team"
-                    ON CONFLICT ("TeamId", "UserId") DO UPDATE SET
-                        "Status" = 1,
-                        "InvitedByUserId" = NULL,
-                        "AcceptedAt" = COALESCE(
-                            "TeamMemberships"."AcceptedAt",
-                            EXCLUDED."AcceptedAt"
-                        )
+                    SELECT "Id", "OwnerUserId", 1, {now}, {now}
+                    FROM "solo_team"
+                    ON CONFLICT DO NOTHING
                     RETURNING "UserId"
                 )
-                SELECT "UserId" AS "Value"
-                FROM "upserted_membership"
+                SELECT "Id" AS "Value"
+                FROM "upserted_user"
                 """
             )
             .AsAsyncEnumerable()

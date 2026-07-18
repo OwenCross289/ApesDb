@@ -241,7 +241,7 @@ public sealed class UserProvisioningServiceTests : IAsyncLifetime
         Assert.Equal(1, soloTeamCount);
         var soloTeam = await dbContext.Teams.SingleAsync(t => t.OwnerUserId == result.Id && t.Kind == TeamKind.Solo);
         Assert.Equal(originalSoloTeamId, soloTeam.Id);
-        Assert.Equal("Renamed User's Team", soloTeam.Name);
+        Assert.Equal("Repeat User's Team", soloTeam.Name);
         var membership = await dbContext.TeamMemberships.SingleAsync(value => value.TeamId == soloTeam.Id);
         Assert.Equal(originalMembershipId, membership.Id);
     }
@@ -303,7 +303,7 @@ public sealed class UserProvisioningServiceTests : IAsyncLifetime
 
         await using var verificationDbContext = CreateDbContext();
         var soloTeam = await verificationDbContext.Teams.SingleAsync(value => value.Id == soloTeamId);
-        Assert.Equal("New Owner Name's Team", soloTeam.Name);
+        Assert.Equal("Old Owner Name's Team", soloTeam.Name);
         var membership = await verificationDbContext.TeamMemberships.SingleAsync(value => value.TeamId == soloTeamId);
         Assert.Equal(membershipId, membership.Id);
         Assert.Equal(ownerId, membership.UserId);
