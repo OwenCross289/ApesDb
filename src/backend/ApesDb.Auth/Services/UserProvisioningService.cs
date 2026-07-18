@@ -4,6 +4,7 @@ using ApesDb.Domain;
 using ApesDb.Domain.Entities;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace ApesDb.Auth.Services;
 
@@ -75,29 +76,76 @@ public sealed class UserProvisioningService : IUserProvisioningService
     {
         var teamName = BuildSoloTeamName(userName);
 
-        await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
-        await _dbContext.Database.ExecuteSqlInterpolatedAsync(
-            $"""
-            INSERT INTO "Teams" ("Id", "OwnerUserId", "Name", "ProfilePicture", "Kind", "CreatedAt", "UpdatedAt")
-            SELECT {Guid.CreateVersion7()}, {userId}, {teamName}, NULL, 'Solo', {now}, {now}
-            WHERE NOT EXISTS (SELECT 1 FROM "Teams" WHERE "OwnerUserId" = {userId} AND "Kind" = 'Solo')
-            ON CONFLICT ("OwnerUserId") WHERE "Kind" = 'Solo' DO NOTHING
-            """,
+        var team = await _dbContext.Teams.SingleOrDefaultAsync(
+            existingTeam => existingTeam.OwnerUserId == userId && existingTeam.Kind == TeamKind.Solo,
             cancellationToken
         );
-        await _dbContext.Database.ExecuteSqlInterpolatedAsync(
-            $"""
-            INSERT INTO "TeamMemberships" (
-                "Id", "TeamId", "UserId", "Status", "InvitedByUserId", "InvitedAt", "AcceptedAt"
-            )
-            SELECT {Guid.CreateVersion7()}, "Id", {userId}, 1, NULL, {now}, {now}
-            FROM "Teams"
-            WHERE "OwnerUserId" = {userId} AND "Kind" = 'Solo'
-            ON CONFLICT ("TeamId", "UserId") DO NOTHING
-            """,
+
+        if (team is null)
+        {
+            team = new Team
+            {
+                Id = Guid.CreateVersion7(),
+                OwnerUserId = userId,
+                Name = teamName,
+                Kind = TeamKind.Solo,
+                CreatedAt = now,
+                UpdatedAt = now,
+            };
+            _dbContext.Teams.Add(team);
+
+            try
+            {
+                await _dbContext.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateException exception) when (IsUniqueViolation(exception))
+            {
+                // A concurrent login provisioned the solo team first.
+                _dbContext.ChangeTracker.Clear();
+                team = await _dbContext.Teams.SingleAsync(
+                    existingTeam => existingTeam.OwnerUserId == userId && existingTeam.Kind == TeamKind.Solo,
+                    cancellationToken
+                );
+            }
+        }
+
+        var membershipExists = await _dbContext.TeamMemberships.AnyAsync(
+            membership => membership.TeamId == team.Id && membership.UserId == userId,
             cancellationToken
         );
-        await transaction.CommitAsync(cancellationToken);
+
+        if (membershipExists)
+        {
+            return;
+        }
+
+        _dbContext.TeamMemberships.Add(
+            new TeamMembership
+            {
+                Id = Guid.CreateVersion7(),
+                TeamId = team.Id,
+                UserId = userId,
+                Status = TeamMembershipStatus.Accepted,
+                InvitedAt = now,
+                AcceptedAt = now,
+            }
+        );
+
+        try
+        {
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException exception) when (IsUniqueViolation(exception))
+        {
+            // A concurrent login provisioned the membership first.
+            _dbContext.ChangeTracker.Clear();
+        }
+    }
+
+    private static bool IsUniqueViolation(DbUpdateException exception)
+    {
+        return exception.InnerException is PostgresException postgresException
+            && postgresException.SqlState == PostgresErrorCodes.UniqueViolation;
     }
 
     private static string BuildSoloTeamName(string userName)
