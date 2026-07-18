@@ -7,11 +7,6 @@ public static class ApiRoutes
         public const string Prefix = "api";
     }
 
-    public static class Ping
-    {
-        public const string Path = "ping";
-    }
-
     public static class Games
     {
         public const string List = "games";
