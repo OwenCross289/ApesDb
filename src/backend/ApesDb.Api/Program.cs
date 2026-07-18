@@ -16,7 +16,7 @@ builder.Services.AddApesDbDomain(builder.Configuration);
 builder.Services.AddApesDbAuth(builder.Configuration);
 
 builder.Services.AddFastEndpoints();
-builder.Services.AddSingleton<ITeamProfilePictureProcessor, TeamProfilePictureProcessor>();
+builder.Services.AddTeams();
 builder.Services.AddNotifications();
 builder.Services.AddApesDbSwagger();
 builder.Services.AddSpaStaticFiles(options =>
