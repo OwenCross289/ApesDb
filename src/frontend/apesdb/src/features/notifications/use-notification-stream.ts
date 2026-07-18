@@ -42,7 +42,7 @@ function showNotificationToast(openNotifications: () => void) {
     "button",
     {
       "aria-label": "Open notifications",
-      className: "w-full cursor-pointer text-left",
+      className: "w-full cursor-pointer text-left before:absolute before:inset-0",
       onClick: handleClick,
       type: "button",
     },
@@ -53,6 +53,7 @@ function showNotificationToast(openNotifications: () => void) {
     closeButton: true,
     duration: Number.POSITIVE_INFINITY,
     id: notificationToastId,
+    position: "top-right",
   });
 }
 
