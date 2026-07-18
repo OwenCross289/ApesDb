@@ -1,6 +1,6 @@
-using System.Security.Claims;
+using ApesDb.Api.Features.Teams;
 using ApesDb.Domain;
-using ApesDb.Domain.Entities;
+using ApesDb.Domain.Entities.Teams;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,20 +23,29 @@ public sealed class ListTeamsEndpoint : EndpointWithoutRequest<TeamResponse[]>
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var userIdClaim =
-            User.FindFirstValue("ApesDbUserId") ?? throw new InvalidOperationException("Missing user id claim.");
-        var userId = Guid.Parse(userIdClaim);
+        var userId = User.GetApesDbUserId();
 
         var teams = await _dbContext
             .Teams.AsNoTracking()
-            .Where(team => team.OwnerUserId == userId)
+            .Where(team =>
+                _dbContext.TeamMemberships.Any(membership =>
+                    membership.TeamId == team.Id
+                    && membership.UserId == userId
+                    && membership.Status == TeamMembershipStatus.Accepted
+                )
+            )
             .OrderByDescending(team => team.Kind == TeamKind.Solo)
             .ThenBy(team => team.Name.ToLower())
             .ThenBy(team => team.Id)
             .ToArrayAsync(ct);
 
         var response = teams
-            .Select(team => new TeamResponse(team.Id, team.Name, team.ProfilePictureUrl, MapKind(team.Kind)))
+            .Select(team => new TeamResponse(
+                team.Id,
+                team.Name,
+                TeamResponseFactory.CreateProfilePicture(team.ProfilePicture),
+                MapKind(team.Kind)
+            ))
             .ToArray();
 
         await Send.OkAsync(response, ct);

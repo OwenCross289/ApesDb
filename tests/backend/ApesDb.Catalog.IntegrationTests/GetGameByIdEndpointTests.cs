@@ -2,7 +2,7 @@ using System.Text.Json;
 using ApesDb.Api.Features.Games;
 using ApesDb.Api.Features.Games.GetGameById;
 using ApesDb.Domain;
-using ApesDb.Domain.Entities;
+using ApesDb.Domain.Entities.Games;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;

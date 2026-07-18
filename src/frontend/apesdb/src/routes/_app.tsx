@@ -1,4 +1,5 @@
 import { Link, Outlet, createFileRoute, redirect, useRouterState } from "@tanstack/react-router";
+import { useCallback, useState } from "react";
 import {
   Separator,
   Sidebar,
@@ -6,6 +7,7 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarInset,
   SidebarMenu,
@@ -17,11 +19,13 @@ import {
   TooltipProvider,
 } from "@apesdb/ui";
 import { appName } from "@apesdb/common";
-import { Gamepad2, Home } from "lucide-react";
+import { Gamepad2, Home, Settings } from "lucide-react";
 import { useAuth } from "../auth-context";
 import { AccountMenu } from "../account-menu";
-import { TeamProvider } from "../features/teams/team-context";
-import { TeamSwitcher } from "../features/teams/team-switcher";
+import { NotificationBell } from "../features/notifications/notification-bell";
+import { useNotificationStream } from "../features/notifications/use-notification-stream";
+import { TeamProvider, useActiveTeam } from "../features/teams/team-context";
+import { TeamSwitcher } from "../features/teams/select-team/team-switcher";
 
 export const Route = createFileRoute("/_app")({
   beforeLoad: ({ context, location }) => {
@@ -39,6 +43,13 @@ export const Route = createFileRoute("/_app")({
 });
 
 function AppLayout() {
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const openNotifications = useCallback(() => {
+    setNotificationsOpen(true);
+  }, []);
+
+  useNotificationStream(openNotifications);
+
   return (
     <TeamProvider>
       <TooltipProvider>
@@ -49,6 +60,9 @@ function AppLayout() {
               <SidebarTrigger className="-ml-1" />
               <Separator className="h-4" orientation="vertical" />
               <p className="text-sm font-medium">{appName}</p>
+              <div className="ml-auto flex items-center">
+                <NotificationBell open={notificationsOpen} onOpenChange={setNotificationsOpen} />
+              </div>
             </header>
             <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-3">
               <Outlet />
@@ -62,6 +76,7 @@ function AppLayout() {
 
 function AppSidebar() {
   const { user, logout } = useAuth();
+  const { activeTeam } = useActiveTeam();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
 
   return (
@@ -75,6 +90,7 @@ function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
+          <SidebarGroupLabel className="text-primary">General</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
@@ -96,6 +112,30 @@ function AppSidebar() {
                   <Gamepad2 />
                   <span>Games</span>
                 </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-primary">Team</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                {activeTeam !== null ? (
+                  <SidebarMenuButton
+                    render={<Link params={{ teamId: activeTeam.id }} to="/teams/$teamId/manage" />}
+                    isActive={pathname === `/teams/${activeTeam.id}/manage`}
+                    tooltip="Manage"
+                  >
+                    <Settings />
+                    <span>Manage</span>
+                  </SidebarMenuButton>
+                ) : (
+                  <SidebarMenuButton disabled tooltip="Manage">
+                    <Settings />
+                    <span>Manage</span>
+                  </SidebarMenuButton>
+                )}
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>

@@ -1,6 +1,6 @@
 using ApesDb.Common;
 using ApesDb.Domain;
-using ApesDb.Domain.Entities;
+using ApesDb.Domain.Entities.IgdbSync;
 using ApesDb.Worker.Games;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;

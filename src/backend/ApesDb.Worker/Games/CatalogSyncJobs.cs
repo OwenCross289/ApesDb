@@ -1,4 +1,4 @@
-using ApesDb.Domain.Entities;
+using ApesDb.Domain.Entities.IgdbSync;
 using TickerQ.Utilities.Base;
 
 namespace ApesDb.Worker.Games;

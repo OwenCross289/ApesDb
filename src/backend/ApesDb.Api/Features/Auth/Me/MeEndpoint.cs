@@ -12,12 +12,11 @@ public sealed class MeEndpoint : EndpointWithoutRequest<AuthUserResponse>
 
     public override Task HandleAsync(CancellationToken ct)
     {
-        var userId =
-            User.FindFirstValue("ApesDbUserId") ?? throw new InvalidOperationException("Missing user id claim.");
+        var userId = User.GetApesDbUserId();
         var email = User.FindFirstValue(ClaimTypes.Email) ?? string.Empty;
         var name = User.FindFirstValue(ClaimTypes.Name) ?? string.Empty;
         var pictureUrl = User.FindFirstValue("picture");
 
-        return Send.OkAsync(new AuthUserResponse(Guid.Parse(userId), email, name, pictureUrl), ct);
+        return Send.OkAsync(new AuthUserResponse(userId, email, name, pictureUrl), ct);
     }
 }

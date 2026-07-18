@@ -1,6 +1,6 @@
 using ApesDb.Common;
 using ApesDb.Domain;
-using ApesDb.Domain.Entities;
+using ApesDb.Domain.Entities.IgdbSync;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using TickerQ.Utilities;
