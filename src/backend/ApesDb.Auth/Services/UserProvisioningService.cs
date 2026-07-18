@@ -1,10 +1,7 @@
 using System.Security.Claims;
 using ApesDb.Common;
 using ApesDb.Domain;
-using ApesDb.Domain.Entities;
-using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
 
 namespace ApesDb.Auth.Services;
 
@@ -27,125 +24,68 @@ public sealed class UserProvisioningService : IUserProvisioningService
         var subject =
             principal.FindFirstValue(ClaimTypes.NameIdentifier)
             ?? throw new InvalidOperationException("Missing subject claim.");
-        var email = principal.FindFirstValue(ClaimTypes.Email) ?? string.Empty;
-        var name = principal.FindFirstValue(ClaimTypes.Name) ?? string.Empty;
+        var email =
+            principal.FindFirstValue(ClaimTypes.Email) ?? throw new InvalidOperationException("Missing email claim.");
+        var name = principal.FindFirstValue(ClaimTypes.Name) ?? "Unknown Soldier";
         var pictureUrl = principal.FindFirstValue("picture");
         var now = _dateTimeProvider.UtcNow;
+        var teamName = BuildSoloTeamName(name);
 
-        var user = new User
-        {
-            Id = Guid.CreateVersion7(),
-            Auth0Subject = subject,
-            Email = email,
-            Name = name,
-            PictureUrl = pictureUrl,
-            CreatedAt = now,
-            UpdatedAt = now,
-        };
+        var provisionedUserId = await _dbContext
+            .Database.SqlQuery<Guid>(
+                $"""
+                WITH "upserted_user" AS (
+                    INSERT INTO "public"."Users" (
+                        "Auth0Subject", "Email", "Name", "PictureUrl", "CreatedAt", "UpdatedAt"
+                    )
+                    VALUES ({subject}, {email}, {name}, {pictureUrl}, {now}, {now})
+                    ON CONFLICT ("Auth0Subject") DO UPDATE SET
+                        "Email" = EXCLUDED."Email",
+                        "Name" = EXCLUDED."Name",
+                        "PictureUrl" = EXCLUDED."PictureUrl",
+                        "UpdatedAt" = EXCLUDED."UpdatedAt"
+                    RETURNING "Id"
+                ),
+                "upserted_team" AS (
+                    INSERT INTO "public"."Teams" (
+                        "OwnerUserId", "Name", "Kind", "CreatedAt", "UpdatedAt"
+                    )
+                    SELECT "Id", {teamName}, 'Solo', {now}, {now}
+                    FROM "upserted_user"
+                    ON CONFLICT ("OwnerUserId") WHERE "Kind" = 'Solo' DO UPDATE SET
+                        "Name" = EXCLUDED."Name",
+                        "UpdatedAt" = EXCLUDED."UpdatedAt"
+                    RETURNING "Id", "OwnerUserId"
+                ),
+                "upserted_membership" AS (
+                    INSERT INTO "public"."TeamMemberships" (
+                        "TeamId", "UserId", "Status", "InvitedByUserId", "InvitedAt", "AcceptedAt"
+                    )
+                    SELECT
+                        "upserted_team"."Id",
+                        "upserted_team"."OwnerUserId",
+                        1,
+                        NULL,
+                        {now},
+                        {now}
+                    FROM "upserted_team"
+                    ON CONFLICT ("TeamId", "UserId") DO UPDATE SET
+                        "Status" = 1,
+                        "InvitedByUserId" = NULL,
+                        "AcceptedAt" = COALESCE(
+                            "TeamMemberships"."AcceptedAt",
+                            EXCLUDED."AcceptedAt"
+                        )
+                    RETURNING "UserId"
+                )
+                SELECT "UserId" AS "Value"
+                FROM "upserted_membership"
+                """
+            )
+            .AsAsyncEnumerable()
+            .SingleAsync(cancellationToken);
 
-        var bulkConfig = new BulkConfig
-        {
-            UpdateByProperties = [nameof(User.Auth0Subject)],
-            PropertiesToIncludeOnUpdate =
-            [
-                nameof(User.Email),
-                nameof(User.Name),
-                nameof(User.PictureUrl),
-                nameof(User.UpdatedAt),
-            ],
-        };
-
-        await _dbContext.BulkInsertOrUpdateAsync([user], bulkConfig, cancellationToken: cancellationToken);
-
-        var userId = await _dbContext
-            .Users.Where(u => u.Auth0Subject == subject)
-            .Select(u => u.Id)
-            .FirstAsync(cancellationToken);
-
-        await EnsureSoloTeamAsync(userId, name, now, cancellationToken);
-
-        return new ProvisionedUser(userId);
-    }
-
-    private async Task EnsureSoloTeamAsync(
-        Guid userId,
-        string userName,
-        DateTime now,
-        CancellationToken cancellationToken
-    )
-    {
-        var teamName = BuildSoloTeamName(userName);
-
-        var team = await _dbContext.Teams.SingleOrDefaultAsync(
-            existingTeam => existingTeam.OwnerUserId == userId && existingTeam.Kind == TeamKind.Solo,
-            cancellationToken
-        );
-
-        if (team is null)
-        {
-            team = new Team
-            {
-                Id = Guid.CreateVersion7(),
-                OwnerUserId = userId,
-                Name = teamName,
-                Kind = TeamKind.Solo,
-                CreatedAt = now,
-                UpdatedAt = now,
-            };
-            _dbContext.Teams.Add(team);
-
-            try
-            {
-                await _dbContext.SaveChangesAsync(cancellationToken);
-            }
-            catch (DbUpdateException exception) when (IsUniqueViolation(exception))
-            {
-                // A concurrent login provisioned the solo team first.
-                _dbContext.ChangeTracker.Clear();
-                team = await _dbContext.Teams.SingleAsync(
-                    existingTeam => existingTeam.OwnerUserId == userId && existingTeam.Kind == TeamKind.Solo,
-                    cancellationToken
-                );
-            }
-        }
-
-        var membershipExists = await _dbContext.TeamMemberships.AnyAsync(
-            membership => membership.TeamId == team.Id && membership.UserId == userId,
-            cancellationToken
-        );
-
-        if (membershipExists)
-        {
-            return;
-        }
-
-        _dbContext.TeamMemberships.Add(
-            new TeamMembership
-            {
-                Id = Guid.CreateVersion7(),
-                TeamId = team.Id,
-                UserId = userId,
-                Status = TeamMembershipStatus.Accepted,
-                InvitedAt = now,
-                AcceptedAt = now,
-            }
-        );
-
-        try
-        {
-            await _dbContext.SaveChangesAsync(cancellationToken);
-        }
-        catch (DbUpdateException exception) when (IsUniqueViolation(exception))
-        {
-            // A concurrent login provisioned the membership first.
-            _dbContext.ChangeTracker.Clear();
-        }
-    }
-
-    private static bool IsUniqueViolation(DbUpdateException exception)
-    {
-        return exception.InnerException is PostgresException postgresException
-            && postgresException.SqlState == PostgresErrorCodes.UniqueViolation;
+        return new ProvisionedUser(provisionedUserId);
     }
 
     private static string BuildSoloTeamName(string userName)
