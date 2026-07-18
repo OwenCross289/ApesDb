@@ -1,6 +1,7 @@
 using ApesDb.Common;
 using ApesDb.Domain;
-using ApesDb.Domain.Entities;
+using ApesDb.Domain.Entities.Teams;
+using ApesDb.Domain.Entities.Users;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -58,13 +59,6 @@ public sealed class CreateTeamEndpoint : Endpoint<CreateTeamRequest, TeamRespons
         }
 
         var name = request.Name.Trim();
-        if (name.Length == 0)
-        {
-            AddError(request => request.Name, "A team name is required.");
-            await Send.ErrorsAsync(cancellation: ct);
-            return;
-        }
-
         var userId = User.GetApesDbUserId();
         var now = _dateTimeProvider.UtcNow;
         var team = new Team

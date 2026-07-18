@@ -10,7 +10,7 @@ public interface ICatalogSyncOrchestrator
 
     Task AdvanceAsync(
         Guid runId,
-        ApesDb.Domain.Entities.IgdbSyncStageKind completedStage,
+        ApesDb.Domain.Entities.IgdbSync.IgdbSyncStageKind completedStage,
         CancellationToken cancellationToken = default
     );
 

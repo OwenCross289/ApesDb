@@ -1,7 +1,8 @@
 using ApesDb.Api.Features.Notifications.NotificationsStream;
 using ApesDb.Common;
 using ApesDb.Domain;
-using ApesDb.Domain.Entities;
+using ApesDb.Domain.Entities.Notifications;
+using ApesDb.Domain.Entities.Teams;
 using FastEndpoints;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;

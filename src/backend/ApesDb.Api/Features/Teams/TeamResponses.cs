@@ -25,9 +25,9 @@ public static class TeamResponseFactory
         return new TeamProfilePictureResponse("image/webp", data);
     }
 
-    public static string CreateKind(ApesDb.Domain.Entities.TeamKind kind)
+    public static string CreateKind(ApesDb.Domain.Entities.Teams.TeamKind kind)
     {
-        if (kind == ApesDb.Domain.Entities.TeamKind.Solo)
+        if (kind == ApesDb.Domain.Entities.Teams.TeamKind.Solo)
         {
             return "solo";
         }

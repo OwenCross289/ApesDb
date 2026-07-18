@@ -1,4 +1,8 @@
-using ApesDb.Domain.Entities;
+using ApesDb.Domain.Entities.Games;
+using ApesDb.Domain.Entities.IgdbSync;
+using ApesDb.Domain.Entities.Notifications;
+using ApesDb.Domain.Entities.Teams;
+using ApesDb.Domain.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApesDb.Domain;

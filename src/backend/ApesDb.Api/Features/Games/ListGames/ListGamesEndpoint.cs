@@ -2,7 +2,7 @@ using System.ComponentModel;
 using ApesDb.Api.Features.Games.Types;
 using ApesDb.Common;
 using ApesDb.Domain;
-using ApesDb.Domain.Entities;
+using ApesDb.Domain.Entities.Games;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 

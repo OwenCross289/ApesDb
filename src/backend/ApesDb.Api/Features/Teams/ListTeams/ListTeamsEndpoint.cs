@@ -1,6 +1,6 @@
 using ApesDb.Api.Features.Teams;
 using ApesDb.Domain;
-using ApesDb.Domain.Entities;
+using ApesDb.Domain.Entities.Teams;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 

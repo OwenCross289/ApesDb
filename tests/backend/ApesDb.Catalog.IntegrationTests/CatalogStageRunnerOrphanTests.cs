@@ -1,4 +1,5 @@
-using ApesDb.Domain.Entities;
+using ApesDb.Domain.Entities.Games;
+using ApesDb.Domain.Entities.IgdbSync;
 using ApesDb.Igdb.Sdk.Models;
 using Microsoft.EntityFrameworkCore;
 using Xunit;

@@ -1,6 +1,7 @@
 using ApesDb.Common;
 using ApesDb.Domain;
-using ApesDb.Domain.Entities;
+using ApesDb.Domain.Entities.Games;
+using ApesDb.Domain.Entities.IgdbSync;
 using ApesDb.Igdb.Sdk;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;

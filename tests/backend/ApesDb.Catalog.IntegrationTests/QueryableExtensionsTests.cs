@@ -3,7 +3,7 @@ using ApesDb.Api.Features.Games.ListGames;
 using ApesDb.Api.Features.Games.Types;
 using ApesDb.Common;
 using ApesDb.Domain;
-using ApesDb.Domain.Entities;
+using ApesDb.Domain.Entities.Games;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 

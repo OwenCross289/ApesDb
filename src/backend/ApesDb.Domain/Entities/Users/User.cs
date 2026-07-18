@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ApesDb.Domain.Entities;
+namespace ApesDb.Domain.Entities.Users;
 
 public sealed class User
 {
