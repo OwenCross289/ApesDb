@@ -9,11 +9,17 @@ public sealed class ReadNotificationsEndpoint : EndpointWithoutRequest
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly NotificationStreamService _streamService;
 
-    public ReadNotificationsEndpoint(ApplicationDbContext dbContext, IDateTimeProvider dateTimeProvider)
+    public ReadNotificationsEndpoint(
+        ApplicationDbContext dbContext,
+        IDateTimeProvider dateTimeProvider,
+        NotificationStreamService streamService
+    )
     {
         _dbContext = dbContext;
         _dateTimeProvider = dateTimeProvider;
+        _streamService = streamService;
     }
 
     public override void Configure()
@@ -31,6 +37,10 @@ public sealed class ReadNotificationsEndpoint : EndpointWithoutRequest
                 notification.UserId == userId && notification.ResolvedAt == null && notification.ReadAt == null
             )
             .ExecuteUpdateAsync(setters => setters.SetProperty(notification => notification.ReadAt, now), ct);
+        _streamService.Publish(
+            userId,
+            new NotificationStreamEvent(NotificationStreamEventKinds.Read, new NotificationReadEventData(now))
+        );
         await Send.NoContentAsync(ct);
     }
 }

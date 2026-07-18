@@ -23,6 +23,7 @@ public sealed class TeamEndpointTests : IClassFixture<TeamDatabaseFixture>
 
     private readonly TeamDatabaseFixture _database;
     private readonly FixedDateTimeProvider _dateTimeProvider = new(Now);
+    private readonly NotificationStreamService _streamService = new();
 
     public TeamEndpointTests(TeamDatabaseFixture database)
     {
@@ -262,6 +263,112 @@ public sealed class TeamEndpointTests : IClassFixture<TeamDatabaseFixture>
         Assert.Single(await dbContext.Notifications.Where(value => value.UserId == invitee.Id).ToArrayAsync());
     }
 
+    [Fact]
+    public async Task Invite_PublishesCreatedNotificationEventToInvitee()
+    {
+        await _database.ResetAsync();
+        var owner = CreateUser("owner@example.com", "Owner");
+        var invitee = CreateUser("invitee@example.com", "Invitee");
+        var team = CreateTeam(owner.Id);
+        await SeedAsync(owner, invitee, team, CreateAcceptedMembership(team.Id, owner.Id));
+
+        using var subscription = _streamService.Subscribe(invitee.Id);
+        var status = await InviteAsync(owner.Id, team.Id, invitee.Email);
+
+        Assert.Equal(StatusCodes.Status202Accepted, status);
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        var streamEvent = await subscription.Reader.ReadAsync(cts.Token);
+        Assert.Equal(NotificationStreamEventKinds.Created, streamEvent.Kind);
+        var payload = Assert.IsType<NotificationResponse>(streamEvent.Data);
+        await using var dbContext = _database.CreateDbContext();
+        var notification = await dbContext.Notifications.SingleAsync();
+        Assert.Equal(notification.Id, payload.Id);
+        Assert.Equal("TeamInvite", payload.Type);
+        Assert.Equal(notification.ResourceId, payload.ResourceId);
+        Assert.Equal(Now, payload.CreatedAt);
+        Assert.Null(payload.ReadAt);
+        Assert.True(payload.IsUnread);
+        Assert.True(payload.IsActionable);
+    }
+
+    [Fact]
+    public async Task RespondAndRead_PublishResolvedAndReadNotificationEvents()
+    {
+        await _database.ResetAsync();
+        var owner = CreateUser("owner@example.com", "Owner");
+        var invitee = CreateUser("invitee@example.com", "Invitee");
+        var team = CreateTeam(owner.Id);
+        await SeedAsync(owner, invitee, team, CreateAcceptedMembership(team.Id, owner.Id));
+        await InviteAsync(owner.Id, team.Id, invitee.Email);
+        Guid inviteId;
+        await using (var context = _database.CreateDbContext())
+        {
+            inviteId = await context
+                .TeamMemberships.Where(value => value.UserId == invitee.Id)
+                .Select(value => value.Id)
+                .SingleAsync();
+        }
+
+        using var subscription = _streamService.Subscribe(invitee.Id);
+        var respondStatus = await RespondAsync(invitee.Id, inviteId, true);
+        Assert.Equal(StatusCodes.Status204NoContent, respondStatus);
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        var resolvedEvent = await subscription.Reader.ReadAsync(cts.Token);
+        Assert.Equal(NotificationStreamEventKinds.Resolved, resolvedEvent.Kind);
+        var resolvedPayload = Assert.IsType<NotificationResolvedEventData>(resolvedEvent.Data);
+        Assert.Equal(inviteId, resolvedPayload.ResourceId);
+
+        await ReadNotificationsAsync(invitee.Id);
+        var readEvent = await subscription.Reader.ReadAsync(cts.Token);
+        Assert.Equal(NotificationStreamEventKinds.Read, readEvent.Kind);
+        var readPayload = Assert.IsType<NotificationReadEventData>(readEvent.Data);
+        Assert.Equal(Now, readPayload.ReadAt);
+    }
+
+    [Fact]
+    public async Task StreamEndpoint_WritesPublishedEventsAsSseFrames()
+    {
+        var userId = Guid.CreateVersion7();
+        var context = CreateHttpContext(userId);
+        using var cts = new CancellationTokenSource();
+        context.RequestAborted = cts.Token;
+        var endpoint = Factory.Create<NotificationStreamEndpoint>(context, _streamService);
+        var handleTask = endpoint.HandleAsync(CancellationToken.None);
+
+        var body = (MemoryStream)context.Response.Body;
+        for (var attempt = 0; attempt < 50 && body.Length == 0; attempt++)
+        {
+            await Task.Delay(50);
+        }
+
+        Assert.True(body.Length > 0);
+        var connectedLength = body.Length;
+        var notification = new NotificationResponse(
+            Guid.CreateVersion7(),
+            "TeamInvite",
+            Guid.CreateVersion7(),
+            Now,
+            null,
+            true,
+            true
+        );
+        _streamService.Publish(userId, new NotificationStreamEvent(NotificationStreamEventKinds.Created, notification));
+        for (var attempt = 0; attempt < 50 && body.Length == connectedLength; attempt++)
+        {
+            await Task.Delay(50);
+        }
+
+        await cts.CancelAsync();
+        await handleTask;
+
+        body.Position = 0;
+        var content = await new StreamReader(body).ReadToEndAsync();
+        Assert.Equal("text/event-stream", context.Response.ContentType);
+        Assert.Contains(": connected", content);
+        Assert.Contains("event: notification.created", content);
+        Assert.Contains($"\"resourceId\":\"{notification.ResourceId}\"", content);
+    }
+
     private async Task<int> CreateTeamAsync(Guid userId, IFormFile profilePicture)
     {
         await using var dbContext = _database.CreateDbContext();
@@ -280,7 +387,7 @@ public sealed class TeamEndpointTests : IClassFixture<TeamDatabaseFixture>
     {
         await using var dbContext = _database.CreateDbContext();
         var context = CreateHttpContext(userId);
-        var endpoint = Factory.Create<CreateTeamInviteEndpoint>(context, dbContext, _dateTimeProvider);
+        var endpoint = Factory.Create<CreateTeamInviteEndpoint>(context, dbContext, _dateTimeProvider, _streamService);
         await endpoint.HandleAsync(new CreateTeamInviteRequest { TeamId = teamId, Email = email }, default);
         return context.Response.StatusCode;
     }
@@ -325,7 +432,7 @@ public sealed class TeamEndpointTests : IClassFixture<TeamDatabaseFixture>
     {
         await using var dbContext = _database.CreateDbContext();
         var context = CreateHttpContext(userId);
-        var endpoint = Factory.Create<ReadNotificationsEndpoint>(context, dbContext, _dateTimeProvider);
+        var endpoint = Factory.Create<ReadNotificationsEndpoint>(context, dbContext, _dateTimeProvider, _streamService);
         await endpoint.HandleAsync(default);
         Assert.Equal(StatusCodes.Status204NoContent, context.Response.StatusCode);
     }
@@ -334,7 +441,12 @@ public sealed class TeamEndpointTests : IClassFixture<TeamDatabaseFixture>
     {
         await using var dbContext = _database.CreateDbContext();
         var context = CreateHttpContext(userId);
-        var endpoint = Factory.Create<RespondToTeamInviteEndpoint>(context, dbContext, _dateTimeProvider);
+        var endpoint = Factory.Create<RespondToTeamInviteEndpoint>(
+            context,
+            dbContext,
+            _dateTimeProvider,
+            _streamService
+        );
         await endpoint.HandleAsync(new RespondToTeamInviteRequest { InviteId = inviteId, Accept = accept }, default);
         return context.Response.StatusCode;
     }

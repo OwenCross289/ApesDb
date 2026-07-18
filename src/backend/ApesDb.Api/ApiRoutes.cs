@@ -48,5 +48,6 @@ public static class ApiRoutes
     {
         public const string List = "notifications";
         public const string Read = "notifications/read";
+        public const string Stream = "notifications/stream";
     }
 }

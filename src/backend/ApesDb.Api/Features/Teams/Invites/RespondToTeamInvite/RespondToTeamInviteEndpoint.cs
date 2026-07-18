@@ -1,3 +1,4 @@
+using ApesDb.Api.Features.Notifications;
 using ApesDb.Common;
 using ApesDb.Domain;
 using ApesDb.Domain.Entities;
@@ -11,11 +12,17 @@ public sealed class RespondToTeamInviteEndpoint : Endpoint<RespondToTeamInviteRe
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly NotificationStreamService _streamService;
 
-    public RespondToTeamInviteEndpoint(ApplicationDbContext dbContext, IDateTimeProvider dateTimeProvider)
+    public RespondToTeamInviteEndpoint(
+        ApplicationDbContext dbContext,
+        IDateTimeProvider dateTimeProvider,
+        NotificationStreamService streamService
+    )
     {
         _dbContext = dbContext;
         _dateTimeProvider = dateTimeProvider;
+        _streamService = streamService;
     }
 
     public override void Configure()
@@ -98,6 +105,13 @@ public sealed class RespondToTeamInviteEndpoint : Endpoint<RespondToTeamInviteRe
                 ct
             );
         await transaction.CommitAsync(ct);
+        _streamService.Publish(
+            userId,
+            new NotificationStreamEvent(
+                NotificationStreamEventKinds.Resolved,
+                new NotificationResolvedEventData(request.InviteId)
+            )
+        );
         await Send.NoContentAsync(ct);
     }
 }

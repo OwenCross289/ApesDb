@@ -1,3 +1,4 @@
+using ApesDb.Api.Features.Notifications;
 using ApesDb.Common;
 using ApesDb.Domain;
 using ApesDb.Domain.Entities;
@@ -12,11 +13,17 @@ public sealed class CreateTeamInviteEndpoint : Endpoint<CreateTeamInviteRequest>
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly NotificationStreamService _streamService;
 
-    public CreateTeamInviteEndpoint(ApplicationDbContext dbContext, IDateTimeProvider dateTimeProvider)
+    public CreateTeamInviteEndpoint(
+        ApplicationDbContext dbContext,
+        IDateTimeProvider dateTimeProvider,
+        NotificationStreamService streamService
+    )
     {
         _dbContext = dbContext;
         _dateTimeProvider = dateTimeProvider;
+        _streamService = streamService;
     }
 
     public override void Configure()
@@ -99,7 +106,25 @@ public sealed class CreateTeamInviteEndpoint : Endpoint<CreateTeamInviteRequest>
         catch (DbUpdateException exception) when (IsUniqueViolation(exception))
         {
             _dbContext.ChangeTracker.Clear();
+            await Send.StatusCodeAsync(StatusCodes.Status202Accepted, ct);
+            return;
         }
+
+        _streamService.Publish(
+            targetId,
+            new NotificationStreamEvent(
+                NotificationStreamEventKinds.Created,
+                new NotificationResponse(
+                    notification.Id,
+                    notification.Type.ToString(),
+                    notification.ResourceId,
+                    now,
+                    null,
+                    true,
+                    true
+                )
+            )
+        );
 
         await Send.StatusCodeAsync(StatusCodes.Status202Accepted, ct);
     }

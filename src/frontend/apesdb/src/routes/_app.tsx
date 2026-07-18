@@ -21,6 +21,8 @@ import { appName } from "@apesdb/common";
 import { Gamepad2, Home, Settings } from "lucide-react";
 import { useAuth } from "../auth-context";
 import { AccountMenu } from "../account-menu";
+import { NotificationBell } from "../features/notifications/notification-bell";
+import { useNotificationStream } from "../features/notifications/use-notification-stream";
 import { TeamProvider, useActiveTeam } from "../features/teams/team-context";
 import { TeamSwitcher } from "../features/teams/select-team/team-switcher";
 
@@ -40,6 +42,8 @@ export const Route = createFileRoute("/_app")({
 });
 
 function AppLayout() {
+  useNotificationStream();
+
   return (
     <TeamProvider>
       <TooltipProvider>
@@ -50,6 +54,9 @@ function AppLayout() {
               <SidebarTrigger className="-ml-1" />
               <Separator className="h-4" orientation="vertical" />
               <p className="text-sm font-medium">{appName}</p>
+              <div className="ml-auto flex items-center">
+                <NotificationBell />
+              </div>
             </header>
             <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-3">
               <Outlet />
