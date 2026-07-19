@@ -1,0 +1,29 @@
+﻿{
+  Response: {
+    StatusCode: 200,
+    ReasonPhrase: OK,
+    Version: 1.1,
+    Headers: {
+      Cache-Control: [
+        no-store, no-cache
+      ],
+      Pragma: [
+        no-cache
+      ],
+      Set-Cookie: [
+        apesdb.session=; expires={scrubbed}; path=/; secure; samesite=lax; httponly
+      ]
+    },
+    ContentHeaders: {
+      Content-Type: [
+        application/json; charset=utf-8
+      ],
+      Expires: [
+        Thu, 01 Jan 1970 00:00:00 GMT
+      ]
+    }
+  },
+  Content: {
+    LogoutUrl: https://auth.example.test/v2/logout?client_id=apesdb-api-tests&returnTo=https%3A%2F%2Flocalhost%2F
+  }
+}
