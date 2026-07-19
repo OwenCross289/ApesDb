@@ -34,6 +34,11 @@ public sealed record HttpResponseSnapshot(HttpResponseDetails Response, object? 
         return Create(response, snapshotContent);
     }
 
+    public static HttpResponseSnapshot CreateWithoutContent(HttpResponseMessage response)
+    {
+        return Create(response, null);
+    }
+
     public static async Task<HttpResponseDetails[]> CreateAsync(
         HttpResponseMessage firstResponse,
         HttpResponseMessage secondResponse,

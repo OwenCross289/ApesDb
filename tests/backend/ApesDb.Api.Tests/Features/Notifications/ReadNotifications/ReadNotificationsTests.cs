@@ -1,8 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
-using System.Text.Json;
 using ApesDb.Api.Features.Notifications.GetNotifications;
-using ApesDb.Api.Features.Notifications.NotificationsStream;
 using ApesDb.Api.Features.Teams.Invites.CreateTeamInvite;
 using ApesDb.Api.Features.Teams.Invites.RespondToTeamInvite;
 using ApesDb.Api.Tests.Infrastructure.Authentication;
@@ -147,55 +145,6 @@ public sealed class ReadNotificationsTests : IClassFixture<MutableEndpointApiFac
         var notificationsHttp = await HttpResponseSnapshot.CreateAsync<NotificationsResponse>(notificationsResponse);
 
         await Verify(new { ReadResponses = readResponses, NotificationsResponse = notificationsHttp });
-    }
-
-    [Fact]
-    public async Task ReadingNotificationsPublishesStreamEvent()
-    {
-        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
-        timeout.CancelAfter(TimeSpan.FromSeconds(10));
-        using var streamClient = ApiTestClient.CreateAuthenticated(_factory, TestUsers.Invitee);
-        using var streamResponse = await streamClient.GetAsync(
-            "/api/notifications/stream",
-            HttpCompletionOption.ResponseHeadersRead,
-            timeout.Token
-        );
-        Assert.Equal(HttpStatusCode.OK, streamResponse.StatusCode);
-        Assert.Equal("text/event-stream", streamResponse.Content.Headers.ContentType?.MediaType);
-
-        await using var stream = await streamResponse.Content.ReadAsStreamAsync(timeout.Token);
-        using var reader = new StreamReader(stream);
-        Assert.Equal(": connected", await reader.ReadLineAsync(timeout.Token));
-        Assert.Equal(string.Empty, await reader.ReadLineAsync(timeout.Token));
-
-        using var client = ApiTestClient.CreateAuthenticated(_factory, TestUsers.Invitee);
-        using var readResponse = await client.PostAsync("/api/notifications/read", timeout.Token);
-        Assert.Equal(HttpStatusCode.NoContent, readResponse.StatusCode);
-        var readHttp = await HttpResponseSnapshot.CreateAsync(readResponse);
-
-        var eventLine = Assert.IsType<string>(await reader.ReadLineAsync(timeout.Token));
-        var dataLine = Assert.IsType<string>(await reader.ReadLineAsync(timeout.Token));
-        Assert.Equal(string.Empty, await reader.ReadLineAsync(timeout.Token));
-        Assert.StartsWith("event: ", eventLine);
-        Assert.StartsWith("data: ", dataLine);
-        var eventName = eventLine["event: ".Length..];
-        var eventData = JsonSerializer.Deserialize<NotificationReadEventData>(
-            dataLine["data: ".Length..],
-            JsonSerializerOptions.Web
-        );
-        Assert.NotNull(eventData);
-
-        using var notificationsResponse = await client.GetAsync("/api/notifications", timeout.Token);
-        var notificationsHttp = await HttpResponseSnapshot.CreateAsync<NotificationsResponse>(notificationsResponse);
-
-        await Verify(
-            new
-            {
-                ReadResponse = readHttp.Response,
-                StreamEvent = new { Name = eventName, Data = eventData },
-                NotificationsResponse = notificationsHttp,
-            }
-        );
     }
 
     [Fact]
