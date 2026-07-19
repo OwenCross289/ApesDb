@@ -5,17 +5,14 @@ import {
   AvatarImage,
   Button,
   DataViewModeSelector,
-  Popover,
-  PopoverContent,
-  PopoverDescription,
-  PopoverHeader,
-  PopoverTitle,
-  PopoverTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
   SidebarMenuButton,
   ThemeModeSelector,
   useSidebar,
 } from "@apesdb/ui";
-import { LogOut, UserCircle } from "lucide-react";
+import { ChevronsUpDown, LogOut, UserCircle } from "lucide-react";
 
 import type { AuthUser } from "./auth-context";
 import { useDefaultTableViewPreference } from "./lib/table-view-preferences";
@@ -31,24 +28,20 @@ export function AccountMenu({ user, onLogout }: AccountMenuProps) {
   const accountLabel = accountName || "Signed in";
   const accountEmail = user?.email.trim();
   const accountDescription = accountEmail || "Account preferences";
-  const popoverSide = isMobile ? "top" : "right";
+  const menuSide = isMobile ? "top" : "right";
 
   return (
-    <Popover>
-      <AccountMenuButton accountLabel={accountLabel} render={<PopoverTrigger />} user={user} />
-      <PopoverContent side={popoverSide} align="end" sideOffset={8}>
-        <PopoverHeader className="sr-only">
-          <PopoverTitle>{accountLabel}</PopoverTitle>
-          <PopoverDescription>{accountDescription}</PopoverDescription>
-        </PopoverHeader>
+    <DropdownMenu>
+      <AccountMenuButton accountLabel={accountLabel} render={<DropdownMenuTrigger />} user={user} />
+      <DropdownMenuContent align="end" className="w-72 p-2.5" side={menuSide} sideOffset={8}>
         <AccountMenuContent
           accountDescription={accountDescription}
           accountLabel={accountLabel}
           onLogout={onLogout}
           user={user}
         />
-      </PopoverContent>
-    </Popover>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -62,7 +55,12 @@ function AccountMenuButton({
   user: AuthUser | null;
 }) {
   return (
-    <SidebarMenuButton render={render} size="lg" tooltip={accountLabel}>
+    <SidebarMenuButton
+      className="data-popup-open:bg-sidebar-accent data-popup-open:text-sidebar-accent-foreground"
+      render={render}
+      size="lg"
+      tooltip={accountLabel}
+    >
       <Avatar className="size-8 rounded-md">
         <AvatarImage alt={accountLabel} src={user?.pictureUrl ?? undefined} />
         <AvatarFallback className="rounded-md bg-sidebar-accent text-sidebar-foreground">
@@ -72,6 +70,7 @@ function AccountMenuButton({
       <div className="grid flex-1 text-left leading-tight">
         <span className="truncate font-medium">{accountLabel}</span>
       </div>
+      <ChevronsUpDown className="ml-auto size-4" />
     </SidebarMenuButton>
   );
 }
