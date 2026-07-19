@@ -1,0 +1,83 @@
+﻿{
+  Response: {
+    StatusCode: 200,
+    ReasonPhrase: OK,
+    Version: 1.1,
+    ContentHeaders: {
+      Content-Type: [
+        application/json; charset=utf-8
+      ]
+    }
+  },
+  Content: {
+    Items: [
+      {
+        Id: 328866,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9as9.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9as9.jpg,
+        Name: Barcode Battler II: Zelda no Densetsu - Kamigami no Triforce: Bomb,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 328863,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9as6.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9as6.jpg,
+        Name: Barcode Battler II: Zelda no Densetsu - Kamigami no Triforce: Boomerang,
+        Publishers: [
+          Epoch
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 328868,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9ase.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9ase.jpg,
+        Name: Barcode Battler II: Zelda no Densetsu - Kamigami no Triforce: Boots of Pegasus,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 328875,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9aso.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9aso.jpg,
+        Name: Barcode Battler II: Zelda no Densetsu - Kamigami no Triforce: Geldman,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 328870,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9as7.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9as7.jpg,
+        Name: Barcode Battler II: Zelda no Densetsu - Kamigami no Triforce: Heart,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      }
+    ],
+    Total: 225,
+    FilteredTotal: 225,
+    Page: 2,
+    PageSize: 5
+  }
+}

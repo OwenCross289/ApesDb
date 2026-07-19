@@ -1,0 +1,154 @@
+﻿{
+  Response: {
+    StatusCode: 200,
+    ReasonPhrase: OK,
+    Version: 1.1,
+    ContentHeaders: {
+      Content-Type: [
+        application/json; charset=utf-8
+      ]
+    }
+  },
+  Content: {
+    Items: [
+      {
+        Id: 235330,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9smm.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9smm.jpg,
+        Name: Cadence of Hyrule: Crypt of the NecroDancer Featuring the Legend of Zelda - Octavo's Ode,
+        Developers: [
+          Brace Yourself Games
+        ],
+        Publishers: [
+          Nintendo,
+          Spike Chunsoft
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 135912,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2mov.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2mov.jpg,
+        Name: Cadence of Hyrule: Crypt of the NecroDancer Featuring the Legend of Zelda - Symphony of the Mask,
+        Developers: [
+          Brace Yourself Games
+        ],
+        Publishers: [
+          Nintendo,
+          Spike Chunsoft
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 184509,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co7plv.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co7plv.jpg,
+        Name: Hyrule Warriors: Age of Calamity - Wave 1: Pulse of the Ancients,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 184510,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co7plr.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co7plr.jpg,
+        Name: Hyrule Warriors: Age of Calamity - Wave 2: Guardian of Remembrance,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 22141,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/coa5xd.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coa5xd.jpg,
+        Name: Mario Kart 8: DLC Pack One,
+        Developers: [
+          Nintendo EAD Software Development Group No.1
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 133935,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co6sdb.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co6sdb.jpg,
+        Name: Sonic Lost World: The Legend of Zelda Zone,
+        Developers: [
+          Sonic Team
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 41826,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co1ujd.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co1ujd.jpg,
+        Name: The Legend of Zelda: Breath of the Wild - The Champions' Ballad,
+        Developers: [
+          Nintendo EPD Production Group No. 3
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 41825,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co1ujg.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co1ujg.jpg,
+        Name: The Legend of Zelda: Breath of the Wild - The Master Trials,
+        Developers: [
+          Nintendo
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      }
+    ],
+    Total: 225,
+    FilteredTotal: 8,
+    Page: 1,
+    PageSize: 50
+  }
+}

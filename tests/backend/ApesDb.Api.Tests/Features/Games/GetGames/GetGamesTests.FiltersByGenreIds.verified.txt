@@ -1,0 +1,245 @@
+﻿{
+  Response: {
+    StatusCode: 200,
+    ReasonPhrase: OK,
+    Version: 1.1,
+    ContentHeaders: {
+      Content-Type: [
+        application/json; charset=utf-8
+      ]
+    }
+  },
+  Content: {
+    Items: [
+      {
+        Id: 103292,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2oz5.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2oz5.jpg,
+        Name: Gears 5,
+        Developers: [
+          The Coalition
+        ],
+        Publishers: [
+          Xbox Game Studios
+        ],
+        IsCoop: true,
+        IsSteam: true,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 547,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co8rkr.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co8rkr.jpg,
+        Name: Gears of War,
+        Developers: [
+          Epic Games
+        ],
+        Publishers: [
+          Microsoft Game Studios
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 548,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co28gg.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co28gg.jpg,
+        Name: Gears of War 2,
+        Developers: [
+          Epic Games
+        ],
+        Publishers: [
+          Microsoft Game Studios
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 492,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2a21.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2a21.jpg,
+        Name: Gears of War 3,
+        Developers: [
+          Epic Games
+        ],
+        Publishers: [
+          Microsoft Studios
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 11186,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2y29.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2y29.jpg,
+        Name: Gears of War 4,
+        Developers: [
+          The Coalition
+        ],
+        Publishers: [
+          Microsoft Studios
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 305160,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/coc77n.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coc77n.jpg,
+        Name: Gears of War: E-Day,
+        Developers: [
+          The Coalition
+        ],
+        Publishers: [
+          Xbox Game Studios
+        ],
+        IsCoop: true,
+        IsSteam: true,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 1319,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2y2a.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2y2a.jpg,
+        Name: Gears of War: Judgment,
+        Developers: [
+          Epic Games,
+          People Can Fly
+        ],
+        Publishers: [
+          Microsoft Studios
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 342721,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9rr2.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9rr2.jpg,
+        Name: Gears of War: Reloaded,
+        Developers: [
+          The Coalition
+        ],
+        Publishers: [
+          Xbox Game Studios
+        ],
+        IsCoop: true,
+        IsSteam: true,
+        GameType: {
+          Id: 9,
+          Name: Remaster
+        }
+      },
+      {
+        Id: 388464,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/cobft9.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/cobft9.jpg,
+        Name: Horizon Hunters Gathering,
+        Developers: [
+          Guerrilla Games
+        ],
+        Publishers: [
+          Sony Interactive Entertainment
+        ],
+        IsCoop: true,
+        IsSteam: true,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 11156,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2una.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2una.jpg,
+        Name: Horizon Zero Dawn,
+        Developers: [
+          Guerrilla Games
+        ],
+        Publishers: [
+          Sony Interactive Entertainment
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 317103,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co90ti.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co90ti.jpg,
+        Name: Horizon Zero Dawn Remastered,
+        Developers: [
+          Guerrilla Games
+        ],
+        Publishers: [
+          Sony Interactive Entertainment
+        ],
+        IsCoop: false,
+        IsSteam: true,
+        GameType: {
+          Id: 9,
+          Name: Remaster
+        }
+      },
+      {
+        Id: 4973,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co3ocw.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co3ocw.jpg,
+        Name: Link's Crossbow Training,
+        Developers: [
+          Nintendo EAD Software Development Group No.3
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 2172,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co1p9c.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co1p9c.jpg,
+        Name: Nintendo Land,
+        Developers: [
+          Nintendo,
+          Nintendo EAD Software Development Group No.2
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      }
+    ],
+    Total: 225,
+    FilteredTotal: 13,
+    Page: 1,
+    PageSize: 50
+  }
+}

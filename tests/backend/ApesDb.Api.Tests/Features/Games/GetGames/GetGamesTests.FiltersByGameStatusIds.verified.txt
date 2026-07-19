@@ -1,0 +1,754 @@
+﻿{
+  Response: {
+    StatusCode: 200,
+    ReasonPhrase: OK,
+    Version: 1.1,
+    ContentHeaders: {
+      Content-Type: [
+        application/json; charset=utf-8
+      ]
+    }
+  },
+  Content: {
+    Items: [
+      {
+        Id: 354828,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/coadh4.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coadh4.jpg,
+        Name: Animal Crossing-e: D07 - Design Card: Hero's Tunic,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 354829,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/coadgy.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coadgy.jpg,
+        Name: Animal Crossing-e: D08 - Design Card: Triforce Tile,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 354416,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/coa48a.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coa48a.jpg,
+        Name: Animal Crossing-e: PR - Design Card: NES Link,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 328949,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9d1t.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9d1t.jpg,
+        Name: Barcode Battler II: Senyou Card Software - Zelda no Densetsu: Kamigami no Triforce,
+        Developers: [
+          Epoch
+        ],
+        Publishers: [
+          Epoch
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 3,
+          Name: Bundle
+        }
+      },
+      {
+        Id: 328866,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9as9.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9as9.jpg,
+        Name: Barcode Battler II: Zelda no Densetsu - Kamigami no Triforce: Bomb,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 328863,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9as6.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9as6.jpg,
+        Name: Barcode Battler II: Zelda no Densetsu - Kamigami no Triforce: Boomerang,
+        Publishers: [
+          Epoch
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 328868,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9ase.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9ase.jpg,
+        Name: Barcode Battler II: Zelda no Densetsu - Kamigami no Triforce: Boots of Pegasus,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 328875,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9aso.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9aso.jpg,
+        Name: Barcode Battler II: Zelda no Densetsu - Kamigami no Triforce: Geldman,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 328870,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9as7.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9as7.jpg,
+        Name: Barcode Battler II: Zelda no Densetsu - Kamigami no Triforce: Heart,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 328864,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9as8.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9as8.jpg,
+        Name: Barcode Battler II: Zelda no Densetsu - Kamigami no Triforce: Hookshot,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 328867,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9asa.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9asa.jpg,
+        Name: Barcode Battler II: Zelda no Densetsu - Kamigami no Triforce: Kaitengiri,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 328861,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9as5.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9as5.jpg,
+        Name: Barcode Battler II: Zelda no Densetsu - Kamigami no Triforce: Link,
+        Publishers: [
+          Epoch
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 328862,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9asf.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9asf.jpg,
+        Name: Barcode Battler II: Zelda no Densetsu - Kamigami no Triforce: Link (Magic),
+        Developers: [
+          Epoch
+        ],
+        Publishers: [
+          Epoch
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 328869,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9asv.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9asv.jpg,
+        Name: Barcode Battler II: Zelda no Densetsu - Kamigami no Triforce: Magic Cape,
+        Developers: [
+          Epoch
+        ],
+        Publishers: [
+          Epoch
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 328871,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9asd.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9asd.jpg,
+        Name: Barcode Battler II: Zelda no Densetsu - Kamigami no Triforce: Magic Decanter,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 328872,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9asy.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9asy.jpg,
+        Name: Barcode Battler II: Zelda no Densetsu - Kamigami no Triforce: Red Potion,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 328865,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9asx.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9asx.jpg,
+        Name: Barcode Battler II: Zelda no Densetsu - Kamigami no Triforce: Silver Bow & Arrow,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 328873,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9asz.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9asz.jpg,
+        Name: Barcode Battler II: Zelda no Densetsu - Kamigami no Triforce: Spear Trooper,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 328874,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9asq.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9asq.jpg,
+        Name: Barcode Battler II: Zelda no Densetsu - Kamigami no Triforce: Vali,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 328876,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9asp.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9asp.jpg,
+        Name: Barcode Battler II: Zelda no Densetsu - Kamigami no Triforce: Wizzrobe,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 328877,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9asr.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9asr.jpg,
+        Name: Barcode Battler II: Zelda no Densetsu - Kamigami no Triforce: Zora,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 116419,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/cob88s.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/cob88s.jpg,
+        Name: Cadence of Hyrule: Crypt of the NecroDancer Featuring the Legend of Zelda,
+        Developers: [
+          Brace Yourself Games
+        ],
+        Publishers: [
+          Nintendo,
+          Spike Chunsoft
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 141706,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2mot.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2mot.jpg,
+        Name: Cadence of Hyrule: Crypt of the NecroDancer Featuring the Legend of Zelda - Character Pack,
+        Developers: [
+          Brace Yourself Games
+        ],
+        Publishers: [
+          Nintendo,
+          Spike Chunsoft
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 235330,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9smm.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9smm.jpg,
+        Name: Cadence of Hyrule: Crypt of the NecroDancer Featuring the Legend of Zelda - Octavo's Ode,
+        Developers: [
+          Brace Yourself Games
+        ],
+        Publishers: [
+          Nintendo,
+          Spike Chunsoft
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 141742,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2mqg.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2mqg.jpg,
+        Name: Cadence of Hyrule: Crypt of the NecroDancer Featuring the Legend of Zelda - Season Pass,
+        Developers: [
+          Brace Yourself Games
+        ],
+        Publishers: [
+          Nintendo,
+          Spike Chunsoft
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Id: 3,
+          Name: Bundle
+        }
+      },
+      {
+        Id: 135912,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2mov.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2mov.jpg,
+        Name: Cadence of Hyrule: Crypt of the NecroDancer Featuring the Legend of Zelda - Symphony of the Mask,
+        Developers: [
+          Brace Yourself Games
+        ],
+        Publishers: [
+          Nintendo,
+          Spike Chunsoft
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 4746,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2ymw.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2ymw.jpg,
+        Name: Captain Rainbow,
+        Developers: [
+          Skip Ltd.
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 18066,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co5wst.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co5wst.jpg,
+        Name: Classic NES Series: The Legend of Zelda,
+        Developers: [
+          Nintendo R&D4
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 11,
+          Name: Port
+        }
+      },
+      {
+        Id: 136280,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co4kyc.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co4kyc.jpg,
+        Name: Classic NES Series: Zelda II - The Adventure of Link,
+        Developers: [
+          Nintendo
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 11,
+          Name: Port
+        }
+      },
+      {
+        Id: 364442,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/coadi9.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coadi9.jpg,
+        Name: Doubutsu no Mori e+: D02 - Design Card: Yuusha no Fuku,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 11607,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2ymm.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2ymm.jpg,
+        Name: Freshly-Picked Tingle's Rosy Rupeeland,
+        Developers: [
+          Vanpool
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 84643,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co26bj.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co26bj.jpg,
+        Name: Game Boy Camera,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 3,
+          Name: Bundle
+        }
+      },
+      {
+        Id: 152361,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co39zz.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co39zz.jpg,
+        Name: Game & Watch: The Legend of Zelda,
+        Developers: [
+          Nintendo
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 3,
+          Name: Bundle
+        }
+      },
+      {
+        Id: 103292,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2oz5.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2oz5.jpg,
+        Name: Gears 5,
+        Developers: [
+          The Coalition
+        ],
+        Publishers: [
+          Xbox Game Studios
+        ],
+        IsCoop: true,
+        IsSteam: true,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 140517,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2nlg.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2nlg.jpg,
+        Name: Gears 5: Hivebusters,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 2,
+          Name: Expansion
+        }
+      },
+      {
+        Id: 547,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co8rkr.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co8rkr.jpg,
+        Name: Gears of War,
+        Developers: [
+          Epic Games
+        ],
+        Publishers: [
+          Microsoft Game Studios
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 318793,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co8wct.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co8wct.jpg,
+        Name: Gears of War,
+        Developers: [
+          Epic Games
+        ],
+        Publishers: [
+          Microsoft Game Studios
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 10,
+          Name: Expanded Game
+        }
+      },
+      {
+        Id: 548,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co28gg.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co28gg.jpg,
+        Name: Gears of War 2,
+        Developers: [
+          Epic Games
+        ],
+        Publishers: [
+          Microsoft Game Studios
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 299997,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9nyx.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9nyx.jpg,
+        Name: Gears of War 2: Combustible Map Pack,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 23264,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/coaacs.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coaacs.jpg,
+        Name: Gears of War 2: Dark Corners,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 299996,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9nyy.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9nyy.jpg,
+        Name: Gears of War 2: Flashback Map Pack,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 299998,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9nyw.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9nyw.jpg,
+        Name: Gears of War 2: Snowblind Map Pack,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 492,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2a21.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2a21.jpg,
+        Name: Gears of War 3,
+        Developers: [
+          Epic Games
+        ],
+        Publishers: [
+          Microsoft Studios
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 20656,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co30pg.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co30pg.jpg,
+        Name: Gears of War 3: Fenix Rising,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 148248,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co30ph.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co30ph.jpg,
+        Name: Gears of War 3: Forces of Nature,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 21844,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co1tsa.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co1tsa.jpg,
+        Name: Gears of War 3: Raam's Shadow,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 11186,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2y29.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2y29.jpg,
+        Name: Gears of War 4,
+        Developers: [
+          The Coalition
+        ],
+        Publishers: [
+          Microsoft Studios
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 305160,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/coc77n.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coc77n.jpg,
+        Name: Gears of War: E-Day,
+        Developers: [
+          The Coalition
+        ],
+        Publishers: [
+          Xbox Game Studios
+        ],
+        IsCoop: true,
+        IsSteam: true,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 1319,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2y2a.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2y2a.jpg,
+        Name: Gears of War: Judgment,
+        Developers: [
+          Epic Games,
+          People Can Fly
+        ],
+        Publishers: [
+          Microsoft Studios
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 342721,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9rr2.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9rr2.jpg,
+        Name: Gears of War: Reloaded,
+        Developers: [
+          The Coalition
+        ],
+        Publishers: [
+          Xbox Game Studios
+        ],
+        IsCoop: true,
+        IsSteam: true,
+        GameType: {
+          Id: 9,
+          Name: Remaster
+        }
+      }
+    ],
+    Total: 225,
+    FilteredTotal: 161,
+    Page: 1,
+    PageSize: 50
+  }
+}

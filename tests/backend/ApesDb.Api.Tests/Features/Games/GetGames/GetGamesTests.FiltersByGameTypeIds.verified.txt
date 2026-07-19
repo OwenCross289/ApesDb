@@ -1,0 +1,646 @@
+﻿{
+  Response: {
+    StatusCode: 200,
+    ReasonPhrase: OK,
+    Version: 1.1,
+    ContentHeaders: {
+      Content-Type: [
+        application/json; charset=utf-8
+      ]
+    }
+  },
+  Content: {
+    Items: [
+      {
+        Id: 235330,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9smm.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9smm.jpg,
+        Name: Cadence of Hyrule: Crypt of the NecroDancer Featuring the Legend of Zelda - Octavo's Ode,
+        Developers: [
+          Brace Yourself Games
+        ],
+        Publishers: [
+          Nintendo,
+          Spike Chunsoft
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 135912,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2mov.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2mov.jpg,
+        Name: Cadence of Hyrule: Crypt of the NecroDancer Featuring the Legend of Zelda - Symphony of the Mask,
+        Developers: [
+          Brace Yourself Games
+        ],
+        Publishers: [
+          Nintendo,
+          Spike Chunsoft
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 299997,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9nyx.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9nyx.jpg,
+        Name: Gears of War 2: Combustible Map Pack,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 23264,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/coaacs.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coaacs.jpg,
+        Name: Gears of War 2: Dark Corners,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 299996,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9nyy.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9nyy.jpg,
+        Name: Gears of War 2: Flashback Map Pack,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 299998,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9nyw.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9nyw.jpg,
+        Name: Gears of War 2: Snowblind Map Pack,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 20656,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co30pg.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co30pg.jpg,
+        Name: Gears of War 3: Fenix Rising,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 148248,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co30ph.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co30ph.jpg,
+        Name: Gears of War 3: Forces of Nature,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 21844,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co1tsa.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co1tsa.jpg,
+        Name: Gears of War 3: Raam's Shadow,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 184509,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co7plv.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co7plv.jpg,
+        Name: Hyrule Warriors: Age of Calamity - Wave 1: Pulse of the Ancients,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 184510,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co7plr.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co7plr.jpg,
+        Name: Hyrule Warriors: Age of Calamity - Wave 2: Guardian of Remembrance,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 231440,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/cobcft.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/cobcft.jpg,
+        Name: Mario Kart 8 Deluxe: Booster Course Pass - Wave 1,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 231441,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/cobcfu.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/cobcfu.jpg,
+        Name: Mario Kart 8 Deluxe: Booster Course Pass - Wave 2,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 217559,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/cobcfw.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/cobcfw.jpg,
+        Name: Mario Kart 8 Deluxe: Booster Course Pass - Wave 3,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 231442,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/cobcfz.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/cobcfz.jpg,
+        Name: Mario Kart 8 Deluxe: Booster Course Pass - Wave 4,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 231444,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/cobcg0.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/cobcg0.jpg,
+        Name: Mario Kart 8 Deluxe: Booster Course Pass - Wave 5,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 231445,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/cobxrj.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/cobxrj.jpg,
+        Name: Mario Kart 8 Deluxe: Booster Course Pass - Wave 6,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 22141,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/coa5xd.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coa5xd.jpg,
+        Name: Mario Kart 8: DLC Pack One,
+        Developers: [
+          Nintendo EAD Software Development Group No.1
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 22146,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/coa5xe.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coa5xe.jpg,
+        Name: Mario Kart 8: DLC Pack Two,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 399503,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/coc17v.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coc17v.jpg,
+        Name: Mario Kart 8: Mercedez-Benz X Mario Kart 8,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 133935,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co6sdb.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co6sdb.jpg,
+        Name: Sonic Lost World: The Legend of Zelda Zone,
+        Developers: [
+          Sonic Team
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 178321,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co45qg.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co45qg.jpg,
+        Name: Super Smash Bros. for Nintendo 3DS: Bayonetta,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 178323,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co45qc.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co45qc.jpg,
+        Name: Super Smash Bros. for Nintendo 3DS: Cloud,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 178319,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co45qn.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co45qn.jpg,
+        Name: Super Smash Bros. for Nintendo 3DS: Corrin,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 313014,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co8qtz.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co8qtz.jpg,
+        Name: Super Smash Bros. for Nintendo 3DS: Dream Land,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 313017,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co8qtx.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co8qtx.jpg,
+        Name: Super Smash Bros. for Nintendo 3DS: Hyrule Castle,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 178312,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co45qj.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co45qj.jpg,
+        Name: Super Smash Bros. for Nintendo 3DS: Lucas,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 178310,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co45qm.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co45qm.jpg,
+        Name: Super Smash Bros. for Nintendo 3DS: Mewtwo,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 312968,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co8qtu.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co8qtu.jpg,
+        Name: Super Smash Bros. for Nintendo 3DS: Peach's Castle,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 178314,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co45q9.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co45q9.jpg,
+        Name: Super Smash Bros. for Nintendo 3DS: Roy,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 178316,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co45qo.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co45qo.jpg,
+        Name: Super Smash Bros. for Nintendo 3DS: Ryu,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 312965,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co8ngw.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co8ngw.jpg,
+        Name: Super Smash Bros. for Nintendo 3DS: Super Mario Maker,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 178320,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co45qh.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co45qh.jpg,
+        Name: Super Smash Bros. for Wii U: Bayonetta,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 178322,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co45qd.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co45qd.jpg,
+        Name: Super Smash Bros. for Wii U: Cloud,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 178318,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co45qq.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co45qq.jpg,
+        Name: Super Smash Bros. for Wii U: Corrin,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 313015,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co8qu0.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co8qu0.jpg,
+        Name: Super Smash Bros. for Wii U: Dream Land,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 313016,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co8qtw.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co8qtw.jpg,
+        Name: Super Smash Bros. for Wii U: Hyrule Castle,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 178311,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co45qk.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co45qk.jpg,
+        Name: Super Smash Bros. for Wii U: Lucas,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 178309,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co45ql.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co45ql.jpg,
+        Name: Super Smash Bros. for Wii U: Mewtwo,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 312969,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co8qtv.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co8qtv.jpg,
+        Name: Super Smash Bros. for Wii U: Peach's Castle,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 313013,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co8qu1.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co8qu1.jpg,
+        Name: Super Smash Bros. for Wii U: Pirate Ship,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 178313,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co45q8.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co45q8.jpg,
+        Name: Super Smash Bros. for Wii U: Roy,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 178315,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co45qp.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co45qp.jpg,
+        Name: Super Smash Bros. for Wii U: Ryu,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 312966,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co8ngx.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co8ngx.jpg,
+        Name: Super Smash Bros. for Wii U: Super Mario Maker,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 129489,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co60yd.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co60yd.jpg,
+        Name: Super Smash Bros. Ultimate: Challenger Pack 1,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 133840,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co60yn.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co60yn.jpg,
+        Name: Super Smash Bros. Ultimate: Challenger Pack 10,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 133841,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co60yo.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co60yo.jpg,
+        Name: Super Smash Bros. Ultimate: Challenger Pack 11,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 129491,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co60ye.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co60ye.jpg,
+        Name: Super Smash Bros. Ultimate: Challenger Pack 2,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 122260,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co60yf.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co60yf.jpg,
+        Name: Super Smash Bros. Ultimate: Challenger Pack 3,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 122261,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co60yh.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co60yh.jpg,
+        Name: Super Smash Bros. Ultimate: Challenger Pack 4,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      }
+    ],
+    Total: 225,
+    FilteredTotal: 58,
+    Page: 1,
+    PageSize: 50
+  }
+}
