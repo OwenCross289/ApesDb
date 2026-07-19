@@ -24,6 +24,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/backend/ApesDb.Api.Tests/ApesDb.Api.Tests.csproj" />
+    <Project Path="tests/backend/ApesDb.Api.UnitTests/ApesDb.Api.UnitTests.csproj" />
   </Folder>
   <Folder Name="/src/backend/sdks/">
     <Project Path="src/backend/sdks/ApesDb.Igdb.Sdk/ApesDb.Igdb.Sdk.csproj" />
