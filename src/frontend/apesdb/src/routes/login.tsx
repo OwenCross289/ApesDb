@@ -1,16 +1,18 @@
 import { useEffect } from "react";
 import { Link, createFileRoute, useRouter } from "@tanstack/react-router";
-import { Button, ThemeModeSelector, useTheme } from "@apesdb/ui";
+import { Alert, AlertDescription, Button, ThemeModeSelector, useTheme } from "@apesdb/ui";
 import { appName } from "@apesdb/common";
 import { useAuth } from "../auth-context";
 
 type LoginSearch = {
   redirect?: string;
+  error?: "access-denied";
 };
 
 export const Route = createFileRoute("/login")({
   validateSearch: (search: Record<string, unknown>): LoginSearch => ({
     redirect: isLocalReturnUrl(search.redirect) ? search.redirect : undefined,
+    error: search.error === "access-denied" ? search.error : undefined,
   }),
   component: LoginComponent,
 });
@@ -42,7 +44,7 @@ function LoginComponent() {
   const { isAuthenticated, login } = useAuth();
   const { resolvedMode } = useTheme();
   const router = useRouter();
-  const { redirect = "/" } = Route.useSearch();
+  const { redirect = "/", error } = Route.useSearch();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -68,6 +70,11 @@ function LoginComponent() {
             <h1 className="text-3xl font-semibold tracking-tight">Welcome</h1>
             <p className="text-muted-foreground">Log in to {appName} to continue.</p>
           </div>
+          {error === "access-denied" ? (
+            <Alert variant="destructive">
+              <AlertDescription>You do not have access to this app.</AlertDescription>
+            </Alert>
+          ) : null}
           <Button
             className="w-full"
             onClick={() => login({ connection: "google", returnUrl: redirect })}

@@ -37,23 +37,22 @@ ApesDb uses Auth0 for cookie-based session authentication. Google SSO is the onl
    - Allowed Web Origins:
      - `https://localhost:7250`
      - `https://apesdb.owencross.com`
-4. Create a **Post Login** action that reads an `ALLOWED_EMAILS` secret and denies login for unknown emails:
 
-   ```javascript
-   exports.onExecutePostLogin = async (event, api) => {
-     const allowedEmails = event.secrets["ALLOWED_EMAILS"] || "";
-     const allowedList = allowedEmails
-       .split(",")
-       .map((email) => email.trim().toLowerCase())
-       .filter(Boolean);
+The application checks the Auth0 email against the database-backed `AllowedUsers` table during the login callback. An unlisted email is returned to the login page without creating an application user or session. No Auth0 Post Login allowlist action is required.
 
-     const userEmail = (event.user.email || "").toLowerCase();
+### Allowed user management
 
-     if (!allowedList.includes(userEmail)) {
-       api.access.deny("Access denied.");
-     }
-   };
-   ```
+The allowlist starts empty when its migration is applied. Add users from the authenticated TickerQ dashboard by running the manual `add-allowed-user` function with a request such as:
+
+```json
+{
+  "email": "person@example.com"
+}
+```
+
+Emails are trimmed and stored in lowercase. Running the function repeatedly for the same email is safe. Invalid email requests fail the TickerQ run.
+
+For an existing deployment, apply the migration and deploy the API and worker, add every required email through TickerQ, verify a new login, and then remove the old Auth0 Post Login allowlist action. Existing application sessions remain valid until logout or expiry; the database allowlist is checked when a new session is created.
 
 ### Local Auth0 configuration
 

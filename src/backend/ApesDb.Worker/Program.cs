@@ -2,6 +2,7 @@ using ApesDb.Common;
 using ApesDb.Domain;
 using ApesDb.Domain.Options;
 using ApesDb.Igdb.Sdk;
+using ApesDb.Shared;
 using ApesDb.Worker;
 using ApesDb.Worker.Games;
 using ApesDb.Worker.Options;
@@ -23,6 +24,7 @@ var dashboardOptions =
 
 builder.Services.AddApesDbCommon();
 builder.Services.AddApesDbDomain(builder.Configuration);
+builder.Services.AddApesDbShared();
 builder.Services.AddIgdbSdk(builder.Configuration);
 builder.Services.AddScoped<ICatalogSyncOrchestrator, CatalogSyncOrchestrator>();
 builder.Services.AddScoped<ICatalogStageRunner, CatalogStageRunner>();

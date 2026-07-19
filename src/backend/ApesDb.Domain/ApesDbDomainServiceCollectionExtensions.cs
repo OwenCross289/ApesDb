@@ -24,7 +24,6 @@ public static class ApesDbDomainServiceCollectionExtensions
                 options.UseNpgsql(databaseOptions.ConnectionString);
             }
         );
-
         return services;
     }
 }

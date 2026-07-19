@@ -17,5 +17,6 @@
   <ItemGroup>
     <ProjectReference Include="../../../src/backend/ApesDb.Auth/ApesDb.Auth.csproj" />
     <ProjectReference Include="../../../src/backend/ApesDb.Domain/ApesDb.Domain.csproj" />
+    <ProjectReference Include="../../../src/backend/ApesDb.Shared/ApesDb.Shared.csproj" />
   </ItemGroup>
 </Project>

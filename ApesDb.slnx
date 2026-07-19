@@ -19,6 +19,7 @@
     <Project Path="src/backend/ApesDb.Auth/ApesDb.Auth.csproj" />
     <Project Path="src/backend/ApesDb.Api/ApesDb.Api.csproj" />
     <Project Path="src/backend/ApesDb.Domain/ApesDb.Domain.csproj" />
+    <Project Path="src/backend/ApesDb.Shared/ApesDb.Shared.csproj" />
     <Project Path="src/backend/ApesDb.Worker/ApesDb.Worker.csproj" />
   </Folder>
   <Folder Name="/tests/">

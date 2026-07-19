@@ -1,4 +1,5 @@
 export { Button, buttonVariants, type ButtonProps } from "./lib/button";
+export { Alert, AlertAction, AlertDescription, AlertTitle } from "./lib/alert";
 export { Badge, badgeVariants } from "./lib/badge";
 export { Checkbox } from "./lib/checkbox";
 export {
