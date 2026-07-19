@@ -1,0 +1,70 @@
+﻿{
+  Response: {
+    StatusCode: 201,
+    ReasonPhrase: Created,
+    Version: 1.1,
+    Headers: {
+      Location: [
+        /api/teams/019f7c27-9792-7040-8b2a-c2161230dc4c
+      ]
+    },
+    ContentHeaders: {
+      Content-Type: [
+        application/json; charset=utf-8
+      ]
+    }
+  },
+  Content: {
+    Id: Guid_1,
+    Name: Picture Team,
+    Kind: group,
+    CreatedAt: DateTime_1,
+    ProfilePicture: {
+      ContentType: image/webp,
+      Length: 198,
+      Sha256: 3BB8B33C56A3E36C7BFF13D065B71EA0C4A8D6B5E5A5D4064BF1D8FFCE97372E,
+      Format: Webp,
+      Width: 256,
+      Height: 256
+    },
+    Members: [
+      {
+        Id: Guid_2,
+        Name: Olivia Owner,
+        PictureUrl: https://images.apesdb.test/owner.png
+      }
+    ]
+  },
+  StoredTeam: {
+    Id: Guid_1,
+    OwnerUserId: Guid_2,
+    Name: Picture Team,
+    Kind: Group,
+    CreatedAt: DateTime_1,
+    UpdatedAt: DateTime_1,
+    ProfilePicture: {
+      ContentType: image/webp,
+      Length: 198,
+      Sha256: 3BB8B33C56A3E36C7BFF13D065B71EA0C4A8D6B5E5A5D4064BF1D8FFCE97372E,
+      Format: Webp,
+      Width: 256,
+      Height: 256
+    }
+  },
+  StoredMembership: {
+    Id: Guid_3,
+    TeamId: Guid_1,
+    UserId: Guid_2,
+    Status: Accepted,
+    InvitedAt: DateTime_1,
+    AcceptedAt: DateTime_1
+  },
+  Before: {
+    Teams: 5,
+    Memberships: 7
+  },
+  After: {
+    Teams: 6,
+    Memberships: 8
+  }
+}

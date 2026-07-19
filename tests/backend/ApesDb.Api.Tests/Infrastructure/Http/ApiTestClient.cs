@@ -39,6 +39,15 @@ public sealed class ApiTestClient : IDisposable
         return _client.GetAsync(requestUri, cancellationToken);
     }
 
+    public Task<HttpResponseMessage> PostAsync(
+        string requestUri,
+        HttpContent content,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return _client.PostAsync(requestUri, content, cancellationToken);
+    }
+
     public void Dispose()
     {
         _client.Dispose();

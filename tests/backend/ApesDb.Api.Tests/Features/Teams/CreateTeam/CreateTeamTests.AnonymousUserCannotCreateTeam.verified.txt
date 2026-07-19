@@ -1,0 +1,15 @@
+﻿{
+  Response: {
+    StatusCode: 401,
+    ReasonPhrase: Unauthorized,
+    Version: 1.1
+  },
+  Before: {
+    Teams: 5,
+    Memberships: 7
+  },
+  After: {
+    Teams: 5,
+    Memberships: 7
+  }
+}

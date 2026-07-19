@@ -1,0 +1,25 @@
+﻿{
+  Response: {
+    Response: {
+      StatusCode: 400,
+      ReasonPhrase: Bad Request,
+      Version: 1.1,
+      ContentHeaders: {
+        Content-Type: [
+          application/problem+json; charset=utf-8
+        ]
+      }
+    },
+    Content: {
+      ValueKind: Object
+    }
+  },
+  Before: {
+    Teams: 5,
+    Memberships: 7
+  },
+  After: {
+    Teams: 5,
+    Memberships: 7
+  }
+}

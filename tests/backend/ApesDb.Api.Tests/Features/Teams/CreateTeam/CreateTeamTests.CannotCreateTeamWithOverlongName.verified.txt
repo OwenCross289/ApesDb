@@ -1,0 +1,27 @@
+﻿{
+  Response: {
+    StatusCode: 400,
+    ReasonPhrase: Bad Request,
+    Version: 1.1,
+    ContentHeaders: {
+      Content-Type: [
+        application/problem+json; charset=utf-8
+      ]
+    }
+  },
+  Content: {
+    Errors: {
+      name: [
+        The length of 'name' must be 128 characters or fewer. You entered 129 characters.
+      ]
+    }
+  },
+  Before: {
+    Teams: 5,
+    Memberships: 7
+  },
+  After: {
+    Teams: 5,
+    Memberships: 7
+  }
+}
