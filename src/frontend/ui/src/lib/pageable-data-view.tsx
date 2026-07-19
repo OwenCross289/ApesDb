@@ -339,11 +339,11 @@ export function PageableDataView<TData>({
         />
       </div>
       {content}
-      <div className="flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <span className="text-xs text-muted-foreground">
+      <div className="flex shrink-0 items-center justify-between gap-2">
+        <span className="whitespace-nowrap text-xs text-muted-foreground">
           Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
         </span>
-        <Pagination className="mx-0 w-auto justify-start sm:justify-end">
+        <Pagination className="mx-0 w-auto justify-end">
           <PaginationContent>
             <PaginationItem>
               <Button
