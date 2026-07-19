@@ -1,4 +1,4 @@
-using ApesDb.Api.Features.Notifications.ListNotifications;
+using ApesDb.Api.Features.Notifications.GetNotifications;
 using ApesDb.Api.Features.Notifications.NotificationsStream;
 using ApesDb.Common;
 using ApesDb.Domain;
