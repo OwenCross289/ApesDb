@@ -4,6 +4,7 @@ using ApesDb.Api.Features.Teams;
 using ApesDb.Auth;
 using ApesDb.Common;
 using ApesDb.Domain;
+using ApesDb.Shared;
 using FastEndpoints;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,7 @@ builder.Services.AddApesDbCommon();
 builder.Services.AddApesDbCache(builder.Configuration);
 builder.Services.AddApesDbDataProtection();
 builder.Services.AddApesDbDomain(builder.Configuration);
+builder.Services.AddApesDbShared();
 builder.Services.AddApesDbAuth(builder.Configuration);
 
 builder.Services.AddFastEndpoints();

@@ -3,7 +3,7 @@ using ApesDb.Common;
 using ApesDb.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace ApesDb.Auth.Services;
+namespace ApesDb.Auth.Services.UserProvisioning;
 
 public sealed class UserProvisioningService : IUserProvisioningService
 {

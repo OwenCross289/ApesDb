@@ -2,7 +2,8 @@ using System.Security.Claims;
 using ApesDb.Auth.Authentication;
 using ApesDb.Auth.Authorization;
 using ApesDb.Auth.Options;
-using ApesDb.Auth.Services;
+using ApesDb.Auth.Services.UserProvisioning;
+using ApesDb.Auth.Services.UserSignIn;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth.Claims;
@@ -35,6 +36,7 @@ public static class ApesDbAuthServiceCollectionExtensions
         services.AddHttpContextAccessor();
         services.AddScoped<IAuthorizationHandler, FallbackAuthorizationHandler>();
         services.AddScoped<IUserProvisioningService, UserProvisioningService>();
+        services.AddScoped<IUserSignInService, UserSignInService>();
 
         var auth0Options = configuration.GetSection(Auth0Options.SectionName).Get<Auth0Options>()!;
 
@@ -99,15 +101,32 @@ public static class ApesDbAuthServiceCollectionExtensions
                         },
                         OnTicketReceived = async context =>
                         {
-                            var userProvisioningService =
-                                context.HttpContext.RequestServices.GetRequiredService<IUserProvisioningService>();
-                            var provisionedUser = await userProvisioningService.EnsureUserFromPrincipalAsync(
-                                context.Principal!
+                            var userSignInService =
+                                context.HttpContext.RequestServices.GetRequiredService<IUserSignInService>();
+                            var signInResult = await userSignInService.TrySignInAsync(
+                                context.Principal!,
+                                context.HttpContext.RequestAborted
                             );
 
-                            context
-                                .Principal!.Identities.First()
-                                .AddClaim(new Claim("ApesDbUserId", provisionedUser.Id.ToString()));
+                            signInResult.Switch(
+                                _ =>
+                                {
+                                    var query = QueryString.Create("error", "access-denied");
+                                    var returnUrl = context.Properties?.RedirectUri;
+
+                                    if (!string.IsNullOrWhiteSpace(returnUrl))
+                                    {
+                                        query = query.Add("redirect", returnUrl);
+                                    }
+
+                                    context.Response.Redirect($"/login{query}");
+                                    context.HandleResponse();
+                                },
+                                provisionedUser =>
+                                    context
+                                        .Principal!.Identities.First()
+                                        .AddClaim(new Claim("ApesDbUserId", provisionedUser.Id.ToString()))
+                            );
                         },
                     };
                 }

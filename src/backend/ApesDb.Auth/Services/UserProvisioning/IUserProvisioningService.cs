@@ -1,8 +1,6 @@
 using System.Security.Claims;
 
-namespace ApesDb.Auth.Services;
-
-public sealed record ProvisionedUser(Guid Id);
+namespace ApesDb.Auth.Services.UserProvisioning;
 
 public interface IUserProvisioningService
 {
