@@ -14,6 +14,15 @@ public sealed class GetTeamsTests
         _factory = factory;
     }
 
+    [Fact]
+    public async Task AnonymousUserCannotGetTeams()
+    {
+        using var client = ApiTestClient.CreateAnonymous(_factory);
+        using var response = await client.GetAsync("/api/teams", TestContext.Current.CancellationToken);
+
+        await Verify(await HttpResponseSnapshot.CreateAsync<object>(response));
+    }
+
     [Theory]
     [InlineData("owner")]
     [InlineData("member")]
