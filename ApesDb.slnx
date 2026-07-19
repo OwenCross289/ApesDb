@@ -25,6 +25,7 @@
   <Folder Name="/tests/">
     <Project Path="tests/backend/ApesDb.Auth.IntegrationTests/ApesDb.Auth.IntegrationTests.csproj" />
     <Project Path="tests/backend/ApesDb.Catalog.IntegrationTests/ApesDb.Catalog.IntegrationTests.csproj" />
+    <Project Path="tests/backend/ApesDb.GamesLists.IntegrationTests/ApesDb.GamesLists.IntegrationTests.csproj" />
     <Project Path="tests/backend/ApesDb.Igdb.Sdk.Tests/ApesDb.Igdb.Sdk.Tests.csproj" />
     <Project Path="tests/backend/ApesDb.Teams.IntegrationTests/ApesDb.Teams.IntegrationTests.csproj" />
   </Folder>

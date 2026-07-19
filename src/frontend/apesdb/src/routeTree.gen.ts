@@ -19,6 +19,8 @@ import { Route as AppGamesImport } from "./routes/_app.games";
 import { Route as AppGamesIndexImport } from "./routes/_app.games.index";
 import { Route as AppGamesGameIdImport } from "./routes/_app.games.$gameId";
 import { Route as AppTeamsTeamIdManageImport } from "./routes/_app.teams.$teamId.manage";
+import { Route as AppTeamsTeamIdListsIndexImport } from "./routes/_app.teams.$teamId.lists.index";
+import { Route as AppTeamsTeamIdListsListIdImport } from "./routes/_app.teams.$teamId.lists.$listId";
 
 // Create/Update Routes
 
@@ -66,6 +68,18 @@ const AppGamesGameIdRoute = AppGamesGameIdImport.update({
 const AppTeamsTeamIdManageRoute = AppTeamsTeamIdManageImport.update({
   id: "/teams/$teamId/manage",
   path: "/teams/$teamId/manage",
+  getParentRoute: () => AppRoute,
+} as any);
+
+const AppTeamsTeamIdListsIndexRoute = AppTeamsTeamIdListsIndexImport.update({
+  id: "/teams/$teamId/lists/",
+  path: "/teams/$teamId/lists/",
+  getParentRoute: () => AppRoute,
+} as any);
+
+const AppTeamsTeamIdListsListIdRoute = AppTeamsTeamIdListsListIdImport.update({
+  id: "/teams/$teamId/lists/$listId",
+  path: "/teams/$teamId/lists/$listId",
   getParentRoute: () => AppRoute,
 } as any);
 
@@ -129,6 +143,20 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof AppTeamsTeamIdManageImport;
       parentRoute: typeof AppImport;
     };
+    "/_app/teams/$teamId/lists/$listId": {
+      id: "/_app/teams/$teamId/lists/$listId";
+      path: "/teams/$teamId/lists/$listId";
+      fullPath: "/teams/$teamId/lists/$listId";
+      preLoaderRoute: typeof AppTeamsTeamIdListsListIdImport;
+      parentRoute: typeof AppImport;
+    };
+    "/_app/teams/$teamId/lists/": {
+      id: "/_app/teams/$teamId/lists/";
+      path: "/teams/$teamId/lists";
+      fullPath: "/teams/$teamId/lists";
+      preLoaderRoute: typeof AppTeamsTeamIdListsIndexImport;
+      parentRoute: typeof AppImport;
+    };
   }
 }
 
@@ -150,12 +178,16 @@ interface AppRouteChildren {
   AppGamesRoute: typeof AppGamesRouteWithChildren;
   AppIndexRoute: typeof AppIndexRoute;
   AppTeamsTeamIdManageRoute: typeof AppTeamsTeamIdManageRoute;
+  AppTeamsTeamIdListsListIdRoute: typeof AppTeamsTeamIdListsListIdRoute;
+  AppTeamsTeamIdListsIndexRoute: typeof AppTeamsTeamIdListsIndexRoute;
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppGamesRoute: AppGamesRouteWithChildren,
   AppIndexRoute: AppIndexRoute,
   AppTeamsTeamIdManageRoute: AppTeamsTeamIdManageRoute,
+  AppTeamsTeamIdListsListIdRoute: AppTeamsTeamIdListsListIdRoute,
+  AppTeamsTeamIdListsIndexRoute: AppTeamsTeamIdListsIndexRoute,
 };
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren);
@@ -169,6 +201,8 @@ export interface FileRoutesByFullPath {
   "/games/$gameId": typeof AppGamesGameIdRoute;
   "/games/": typeof AppGamesIndexRoute;
   "/teams/$teamId/manage": typeof AppTeamsTeamIdManageRoute;
+  "/teams/$teamId/lists/$listId": typeof AppTeamsTeamIdListsListIdRoute;
+  "/teams/$teamId/lists": typeof AppTeamsTeamIdListsIndexRoute;
 }
 
 export interface FileRoutesByTo {
@@ -178,6 +212,8 @@ export interface FileRoutesByTo {
   "/games/$gameId": typeof AppGamesGameIdRoute;
   "/games": typeof AppGamesIndexRoute;
   "/teams/$teamId/manage": typeof AppTeamsTeamIdManageRoute;
+  "/teams/$teamId/lists/$listId": typeof AppTeamsTeamIdListsListIdRoute;
+  "/teams/$teamId/lists": typeof AppTeamsTeamIdListsIndexRoute;
 }
 
 export interface FileRoutesById {
@@ -190,6 +226,8 @@ export interface FileRoutesById {
   "/_app/games/$gameId": typeof AppGamesGameIdRoute;
   "/_app/games/": typeof AppGamesIndexRoute;
   "/_app/teams/$teamId/manage": typeof AppTeamsTeamIdManageRoute;
+  "/_app/teams/$teamId/lists/$listId": typeof AppTeamsTeamIdListsListIdRoute;
+  "/_app/teams/$teamId/lists/": typeof AppTeamsTeamIdListsIndexRoute;
 }
 
 export interface FileRouteTypes {
@@ -202,9 +240,19 @@ export interface FileRouteTypes {
     | "/"
     | "/games/$gameId"
     | "/games/"
-    | "/teams/$teamId/manage";
+    | "/teams/$teamId/manage"
+    | "/teams/$teamId/lists/$listId"
+    | "/teams/$teamId/lists";
   fileRoutesByTo: FileRoutesByTo;
-  to: "/login" | "/privacy" | "/" | "/games/$gameId" | "/games" | "/teams/$teamId/manage";
+  to:
+    | "/login"
+    | "/privacy"
+    | "/"
+    | "/games/$gameId"
+    | "/games"
+    | "/teams/$teamId/manage"
+    | "/teams/$teamId/lists/$listId"
+    | "/teams/$teamId/lists";
   id:
     | "__root__"
     | "/_app"
@@ -214,7 +262,9 @@ export interface FileRouteTypes {
     | "/_app/"
     | "/_app/games/$gameId"
     | "/_app/games/"
-    | "/_app/teams/$teamId/manage";
+    | "/_app/teams/$teamId/manage"
+    | "/_app/teams/$teamId/lists/$listId"
+    | "/_app/teams/$teamId/lists/";
   fileRoutesById: FileRoutesById;
 }
 
@@ -250,7 +300,9 @@ export const routeTree = rootRoute
       "children": [
         "/_app/games",
         "/_app/",
-        "/_app/teams/$teamId/manage"
+        "/_app/teams/$teamId/manage",
+        "/_app/teams/$teamId/lists/$listId",
+        "/_app/teams/$teamId/lists/"
       ]
     },
     "/login": {
@@ -281,6 +333,14 @@ export const routeTree = rootRoute
     },
     "/_app/teams/$teamId/manage": {
       "filePath": "_app.teams.$teamId.manage.tsx",
+      "parent": "/_app"
+    },
+    "/_app/teams/$teamId/lists/$listId": {
+      "filePath": "_app.teams.$teamId.lists.$listId.tsx",
+      "parent": "/_app"
+    },
+    "/_app/teams/$teamId/lists/": {
+      "filePath": "_app.teams.$teamId.lists.index.tsx",
       "parent": "/_app"
     }
   }

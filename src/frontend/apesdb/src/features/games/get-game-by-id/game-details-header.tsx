@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Badge } from "@apesdb/ui";
-import { Gamepad2, Star } from "lucide-react";
+import { Badge, Button } from "@apesdb/ui";
+import { Gamepad2, ListPlus, Star } from "lucide-react";
 import { formatDate } from "../../../lib/date";
 import { GameStoreLinks } from "./game-store-links";
 import type { GameDetails } from "./game-details.schemas";
 
 type GameDetailsHeaderProps = {
   game: GameDetails;
+  onAddToList: () => void;
 };
 
 function GameCover({ game }: { game: GameDetails }) {
@@ -56,7 +57,7 @@ function CompanySummary({ game }: { game: GameDetails }) {
   );
 }
 
-export function GameDetailsHeader({ game }: GameDetailsHeaderProps) {
+export function GameDetailsHeader({ game, onAddToList }: GameDetailsHeaderProps) {
   return (
     <section className="grid gap-6 md:grid-cols-[14rem_minmax(0,1fr)]">
       <div className="w-full max-w-56 md:max-w-none">
@@ -116,7 +117,13 @@ export function GameDetailsHeader({ game }: GameDetailsHeaderProps) {
           </p>
         )}
 
-        <GameStoreLinks storePages={game.storePages} />
+        <div className="flex flex-wrap items-center gap-2">
+          <Button onClick={onAddToList} type="button" variant="outline">
+            <ListPlus data-icon="inline-start" />
+            Add to list
+          </Button>
+          <GameStoreLinks storePages={game.storePages} />
+        </div>
       </div>
     </section>
   );

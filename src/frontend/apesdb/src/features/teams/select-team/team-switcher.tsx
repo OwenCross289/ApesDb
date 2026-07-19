@@ -54,6 +54,8 @@ export function TeamSwitcher() {
   const matchRoute = useMatchRoute();
   const navigate = useNavigate();
   const managedTeamParams = matchRoute({ to: "/teams/$teamId/manage" });
+  const teamListsParams = matchRoute({ to: "/teams/$teamId/lists" });
+  const teamListDetailsParams = matchRoute({ to: "/teams/$teamId/lists/$listId" });
 
   function handleTeamChange(teamId: string) {
     setActiveTeamId(teamId);
@@ -61,6 +63,22 @@ export function TeamSwitcher() {
     if (managedTeamParams !== false && managedTeamParams.teamId !== teamId) {
       void navigate({
         to: "/teams/$teamId/manage",
+        params: { teamId },
+      });
+      return;
+    }
+
+    if (teamListsParams !== false && teamListsParams.teamId !== teamId) {
+      void navigate({
+        to: "/teams/$teamId/lists",
+        params: { teamId },
+      });
+      return;
+    }
+
+    if (teamListDetailsParams !== false && teamListDetailsParams.teamId !== teamId) {
+      void navigate({
+        to: "/teams/$teamId/lists",
         params: { teamId },
       });
     }

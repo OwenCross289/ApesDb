@@ -31,6 +31,15 @@ public static class ApiRoutes
         public const string RespondToInvite = "teams/invites/{inviteId:guid}/respond";
     }
 
+    public static class GamesLists
+    {
+        public const string List = "teams/{teamId:guid}/games-lists";
+        public const string Create = "teams/{teamId:guid}/games-lists";
+        public const string ById = "teams/{teamId:guid}/games-lists/{listId:guid}";
+        public const string Entries = "teams/{teamId:guid}/games-lists/{listId:guid}/entries";
+        public const string EntryByGame = "teams/{teamId:guid}/games-lists/{listId:guid}/entries/{gameId:long}";
+    }
+
     public static class Auth
     {
         public const string Prefix = "auth";

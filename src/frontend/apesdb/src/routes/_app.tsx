@@ -19,7 +19,7 @@ import {
   TooltipProvider,
 } from "@apesdb/ui";
 import { appName } from "@apesdb/common";
-import { Gamepad2, Home, Settings } from "lucide-react";
+import { Gamepad2, Home, Library, Settings } from "lucide-react";
 import { useAuth } from "../auth-context";
 import { AccountMenu } from "../account-menu";
 import { NotificationBell } from "../features/notifications/notification-bell";
@@ -120,6 +120,23 @@ function AppSidebar() {
           <SidebarGroupLabel className="text-primary">Team</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
+              <SidebarMenuItem>
+                {activeTeam !== null ? (
+                  <SidebarMenuButton
+                    render={<Link params={{ teamId: activeTeam.id }} to="/teams/$teamId/lists" />}
+                    isActive={pathname.startsWith(`/teams/${activeTeam.id}/lists`)}
+                    tooltip="Lists"
+                  >
+                    <Library />
+                    <span>Lists</span>
+                  </SidebarMenuButton>
+                ) : (
+                  <SidebarMenuButton disabled tooltip="Lists">
+                    <Library />
+                    <span>Lists</span>
+                  </SidebarMenuButton>
+                )}
+              </SidebarMenuItem>
               <SidebarMenuItem>
                 {activeTeam !== null ? (
                   <SidebarMenuButton
