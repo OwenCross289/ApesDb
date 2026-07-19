@@ -39,6 +39,20 @@ public sealed class ApiTestClient : IDisposable
         return _client.GetAsync(requestUri, cancellationToken);
     }
 
+    public Task<HttpResponseMessage> GetAsync(
+        string requestUri,
+        HttpCompletionOption completionOption,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return _client.GetAsync(requestUri, completionOption, cancellationToken);
+    }
+
+    public Task<HttpResponseMessage> PostAsync(string requestUri, CancellationToken cancellationToken = default)
+    {
+        return _client.PostAsync(requestUri, null, cancellationToken);
+    }
+
     public Task<HttpResponseMessage> PostAsync(
         string requestUri,
         HttpContent content,
