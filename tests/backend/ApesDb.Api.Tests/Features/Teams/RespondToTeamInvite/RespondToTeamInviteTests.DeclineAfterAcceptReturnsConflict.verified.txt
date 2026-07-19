@@ -1,0 +1,29 @@
+﻿{
+  RespondResponses: [
+    {
+      StatusCode: 204,
+      ReasonPhrase: No Content,
+      Version: 1.1
+    },
+    {
+      StatusCode: 409,
+      ReasonPhrase: Conflict,
+      Version: 1.1
+    }
+  ],
+  NotificationsResponse: {
+    Response: {
+      StatusCode: 200,
+      ReasonPhrase: OK,
+      Version: 1.1,
+      ContentHeaders: {
+        Content-Type: [
+          application/json; charset=utf-8
+        ]
+      }
+    },
+    Content: {
+      Metadata: {}
+    }
+  }
+}
