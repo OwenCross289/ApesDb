@@ -110,7 +110,7 @@ function createIncludeAssets(isLocalServe: boolean) {
     return ["dev-32x32.png"];
   }
 
-  return ["32x32.png", "light-32x32.png", "light-192x192.png", "light-512x512.png"];
+  return ["32x32.png", "light-32x32.png"];
 }
 
 export default defineConfig(({ command }) => {
