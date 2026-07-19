@@ -1,0 +1,86 @@
+﻿{
+  Response: {
+    StatusCode: 200,
+    ReasonPhrase: OK,
+    Version: 1.1,
+    ContentHeaders: {
+      Content-Type: [
+        application/json; charset=utf-8
+      ]
+    }
+  },
+  Content: [
+    {
+      Id: 31,
+      Name: Adventure
+    },
+    {
+      Id: 33,
+      Name: Arcade
+    },
+    {
+      Id: 35,
+      Name: Card & Board Game
+    },
+    {
+      Id: 4,
+      Name: Fighting
+    },
+    {
+      Id: 25,
+      Name: Hack and slash/Beat 'em up
+    },
+    {
+      Id: 7,
+      Name: Music
+    },
+    {
+      Id: 8,
+      Name: Platform
+    },
+    {
+      Id: 2,
+      Name: Point-and-click
+    },
+    {
+      Id: 9,
+      Name: Puzzle
+    },
+    {
+      Id: 26,
+      Name: Quiz/Trivia
+    },
+    {
+      Id: 10,
+      Name: Racing
+    },
+    {
+      Id: 12,
+      Name: Role-playing (RPG)
+    },
+    {
+      Id: 5,
+      Name: Shooter
+    },
+    {
+      Id: 13,
+      Name: Simulator
+    },
+    {
+      Id: 14,
+      Name: Sport
+    },
+    {
+      Id: 15,
+      Name: Strategy
+    },
+    {
+      Id: 24,
+      Name: Tactical
+    },
+    {
+      Id: 16,
+      Name: Turn-based strategy (TBS)
+    }
+  ]
+}

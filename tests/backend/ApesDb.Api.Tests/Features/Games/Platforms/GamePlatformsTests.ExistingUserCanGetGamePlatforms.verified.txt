@@ -1,0 +1,154 @@
+﻿{
+  Response: {
+    StatusCode: 200,
+    ReasonPhrase: OK,
+    Version: 1.1,
+    ContentHeaders: {
+      Content-Type: [
+        application/json; charset=utf-8
+      ]
+    }
+  },
+  Content: [
+    {
+      Id: 416,
+      Name: 64DD
+    },
+    {
+      Id: 34,
+      Name: Android
+    },
+    {
+      Id: 510,
+      Name: e-Reader / Card-e Reader
+    },
+    {
+      Id: 99,
+      Name: Family Computer
+    },
+    {
+      Id: 51,
+      Name: Family Computer Disk System
+    },
+    {
+      Id: 33,
+      Name: Game Boy
+    },
+    {
+      Id: 24,
+      Name: Game Boy Advance
+    },
+    {
+      Id: 22,
+      Name: Game Boy Color
+    },
+    {
+      Id: 307,
+      Name: Game & Watch
+    },
+    {
+      Id: 411,
+      Name: Handheld Electronic LCD
+    },
+    {
+      Id: 39,
+      Name: iOS
+    },
+    {
+      Id: 137,
+      Name: New Nintendo 3DS
+    },
+    {
+      Id: 37,
+      Name: Nintendo 3DS
+    },
+    {
+      Id: 4,
+      Name: Nintendo 64
+    },
+    {
+      Id: 20,
+      Name: Nintendo DS
+    },
+    {
+      Id: 159,
+      Name: Nintendo DSi
+    },
+    {
+      Id: 18,
+      Name: Nintendo Entertainment System
+    },
+    {
+      Id: 21,
+      Name: Nintendo GameCube
+    },
+    {
+      Id: 130,
+      Name: Nintendo Switch
+    },
+    {
+      Id: 508,
+      Name: Nintendo Switch 2
+    },
+    {
+      Id: 6,
+      Name: PC (Microsoft Windows)
+    },
+    {
+      Id: 117,
+      Name: Philips CD-i
+    },
+    {
+      Id: 48,
+      Name: PlayStation 4
+    },
+    {
+      Id: 167,
+      Name: PlayStation 5
+    },
+    {
+      Id: 390,
+      Name: PlayStation VR2
+    },
+    {
+      Id: 377,
+      Name: Plug & Play
+    },
+    {
+      Id: 306,
+      Name: Satellaview
+    },
+    {
+      Id: 58,
+      Name: Super Famicom
+    },
+    {
+      Id: 19,
+      Name: Super Nintendo Entertainment System
+    },
+    {
+      Id: 82,
+      Name: Web browser
+    },
+    {
+      Id: 5,
+      Name: Wii
+    },
+    {
+      Id: 41,
+      Name: Wii U
+    },
+    {
+      Id: 12,
+      Name: Xbox 360
+    },
+    {
+      Id: 49,
+      Name: Xbox One
+    },
+    {
+      Id: 169,
+      Name: Xbox Series X|S
+    }
+  ]
+}

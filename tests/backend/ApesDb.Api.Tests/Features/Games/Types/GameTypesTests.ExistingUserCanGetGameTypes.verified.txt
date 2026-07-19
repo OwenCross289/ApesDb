@@ -1,0 +1,65 @@
+﻿{
+  Response: {
+    StatusCode: 200,
+    ReasonPhrase: OK,
+    Version: 1.1,
+    ContentHeaders: {
+      Content-Type: [
+        application/json; charset=utf-8
+      ]
+    }
+  },
+  Content: [
+    {
+      Id: 3,
+      Name: Bundle
+    },
+    {
+      Id: 1,
+      Name: DLC
+    },
+    {
+      Id: 6,
+      Name: Episode
+    },
+    {
+      Id: 10,
+      Name: Expanded Game
+    },
+    {
+      Id: 2,
+      Name: Expansion
+    },
+    {
+      Name: Main Game
+    },
+    {
+      Id: 5,
+      Name: Mod
+    },
+    {
+      Id: 13,
+      Name: Pack / Addon
+    },
+    {
+      Id: 11,
+      Name: Port
+    },
+    {
+      Id: 8,
+      Name: Remake
+    },
+    {
+      Id: 9,
+      Name: Remaster
+    },
+    {
+      Id: 4,
+      Name: Standalone Expansion
+    },
+    {
+      Id: 14,
+      Name: Update
+    }
+  ]
+}
