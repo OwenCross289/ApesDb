@@ -1,0 +1,160 @@
+﻿{
+  Response: {
+    StatusCode: 200,
+    ReasonPhrase: OK,
+    Version: 1.1,
+    ContentHeaders: {
+      Content-Type: [
+        application/json; charset=utf-8
+      ]
+    }
+  },
+  Content: {
+    Items: [
+      {
+        Id: 112874,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2gvu.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2gvu.jpg,
+        Name: Horizon Forbidden West,
+        Developers: [
+          Guerrilla Games
+        ],
+        Publishers: [
+          Sony Interactive Entertainment
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 228533,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co6a9w.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co6a9w.jpg,
+        Name: Horizon Forbidden West: Burning Shores,
+        Developers: [
+          Guerrilla Games
+        ],
+        Publishers: [
+          Sony Interactive Entertainment
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 2,
+          Name: Expansion
+        }
+      },
+      {
+        Id: 227890,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co5u6k.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co5u6k.jpg,
+        Name: Horizon Forbidden West: Major Update 1.14,
+        Developers: [
+          Guerrilla Games
+        ],
+        Publishers: [
+          Sony Interactive Entertainment
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 14,
+          Name: Update
+        }
+      },
+      {
+        Id: 388464,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/cobft9.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/cobft9.jpg,
+        Name: Horizon Hunters Gathering,
+        Developers: [
+          Guerrilla Games
+        ],
+        Publishers: [
+          Sony Interactive Entertainment
+        ],
+        IsCoop: true,
+        IsSteam: true,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 11156,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2una.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2una.jpg,
+        Name: Horizon Zero Dawn,
+        Developers: [
+          Guerrilla Games
+        ],
+        Publishers: [
+          Sony Interactive Entertainment
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 317103,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co90ti.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co90ti.jpg,
+        Name: Horizon Zero Dawn Remastered,
+        Developers: [
+          Guerrilla Games
+        ],
+        Publishers: [
+          Sony Interactive Entertainment
+        ],
+        IsCoop: false,
+        IsSteam: true,
+        GameType: {
+          Id: 9,
+          Name: Remaster
+        }
+      },
+      {
+        Id: 37083,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co4hjg.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co4hjg.jpg,
+        Name: Horizon Zero Dawn: The Frozen Wilds,
+        Developers: [
+          Guerrilla Games
+        ],
+        Publishers: [
+          Sony Interactive Entertainment
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 2,
+          Name: Expansion
+        }
+      },
+      {
+        Id: 305003,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co8juk.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co8juk.jpg,
+        Name: LEGO Horizon Adventures,
+        Developers: [
+          Guerrilla Games
+        ],
+        Publishers: [
+          Sony Interactive Entertainment
+        ],
+        IsCoop: true,
+        IsSteam: true,
+        GameType: {
+          Name: Main Game
+        }
+      }
+    ],
+    Total: 225,
+    FilteredTotal: 8,
+    Page: 1,
+    PageSize: 50
+  }
+}

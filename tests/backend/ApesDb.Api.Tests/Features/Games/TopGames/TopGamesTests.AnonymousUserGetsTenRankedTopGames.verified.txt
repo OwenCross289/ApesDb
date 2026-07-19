@@ -1,0 +1,144 @@
+﻿{
+  Response: {
+    StatusCode: 200,
+    ReasonPhrase: OK,
+    Version: 1.1,
+    ContentHeaders: {
+      Content-Type: [
+        application/json; charset=utf-8
+      ]
+    }
+  },
+  Content: [
+    {
+      Rank: 1,
+      Id: 89838,
+      Name: Gears of War 4: Collector's Edition - Outsider Variant,
+      Slug: gears-of-war-4-collectors-edition-outsider-variant,
+      Popularity: 0.5
+    },
+    {
+      Rank: 2,
+      Id: 492,
+      Name: Gears of War 3,
+      Slug: gears-of-war-3,
+      Summary: Gears of War 3 is the spectacular conclusion to one of the most memorable and celebrated sagas in videogames. Gears of War 3 plunges players into a harrowing tale of hope, survival and brotherhood. In Gears of War 3, players fight on as Marcus Fenix, the grizzled war hero and leader of Delta Squad. Eighteen months after the fall of the last human city, the war against the Locust rages on. Meanwhile, deep beneath the surface, a fearsome new threat is infecting the planet from within. With survivors scattered and civilization in ruins, time is running out for Marcus and his comrades as they fight to save the human race.,
+      TotalRating: 89.2482,
+      FirstReleaseDate: DateTimeOffset_1,
+      CoverImageId: co2a21,
+      CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2a21.jpg,
+      CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2a21.jpg,
+      Popularity: 0.25
+    },
+    {
+      Rank: 265,
+      Id: 7346,
+      Name: The Legend of Zelda: Breath of the Wild,
+      Slug: the-legend-of-zelda-breath-of-the-wild,
+      Summary: The Legend of Zelda: Breath of the Wild is the first 3D open-world game in the Zelda series. Link can travel anywhere and be equipped with weapons and armor found throughout the world to grant him various bonuses. Unlike many games in the series, Breath of the Wild does not impose a specific order in which quests or dungeons must be completed. While the game still has environmental obstacles such as weather effects, inhospitable lands, or powerful enemies, many of them can be overcome using the right method. A lot of critics ranked Breath of the Wild as one of the best video games of all time.,
+      TotalRating: 95.0452,
+      FirstReleaseDate: DateTimeOffset_2,
+      CoverImageId: co3p2d,
+      CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co3p2d.jpg,
+      CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co3p2d.jpg,
+      Popularity: 0.00030550092605
+    },
+    {
+      Rank: 339,
+      Id: 119388,
+      Name: The Legend of Zelda: Tears of the Kingdom,
+      Slug: the-legend-of-zelda-tears-of-the-kingdom,
+      Summary:
+An epic adventure across the land and skies of Hyrule awaits in The Legend of Zelda: Tears of the Kingdom for Nintendo Switch. The adventure is yours to create in a world fueled by your imagination.
+
+In this sequel to The Legend of Zelda: Breath of the Wild, you'll decide your own path through the sprawling landscapes of Hyrule and the mysterious islands floating in the vast skies above. Can you harness the power of Link's new abilities to fight back against the malevolent forces that threaten the kingdom?,
+      TotalRating: 94.09,
+      FirstReleaseDate: DateTimeOffset_3,
+      CoverImageId: co5vmg,
+      CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co5vmg.jpg,
+      CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co5vmg.jpg,
+      Popularity: 0.000248219502415
+    },
+    {
+      Rank: 417,
+      Id: 1029,
+      Name: The Legend of Zelda: Ocarina of Time,
+      Slug: the-legend-of-zelda-ocarina-of-time,
+      Summary: The Legend of Zelda: Ocarina of Time is the fifth main installment of The Legend of Zelda series and the first to be released for the Nintendo 64. It was one of the most highly anticipated games of its age, and is listed among the greatest video games ever created by numerous websites and magazines. The gameplay of Ocarina of Time was revolutionary for its time, it has arguably made more of an impact on later games in the series than any of its predecessors even though they had the same cores of exploration, dungeons, puzzles and item usage. Among the gameplay mechanics, one of the most noteworthy is the time-traveling system. The game begins with the player controlling the child Link, but later on an adult Link becomes a playable character as well and each of them has certain unique abilities. Ocarina of Time also introduces the use of music to solve puzzles: as new songs are learned, they can be used to solve puzzles, gain access to new areas and warp to different locations. Dungeon exploration is somewhat more puzzle-oriented than in earlier games but they are not too complex.,
+      TotalRating: 91.5336,
+      FirstReleaseDate: DateTimeOffset_4,
+      CoverImageId: co3nnx,
+      CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co3nnx.jpg,
+      CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co3nnx.jpg,
+      Popularity: 0.000214805338629
+    },
+    {
+      Rank: 429,
+      Id: 90101,
+      Name: Super Smash Bros. Ultimate,
+      Slug: super-smash-bros-ultimate,
+      Summary: Super Smash Bros. Ultimate is a crossover fighting game for the Nintendo Switch and the fifth main entry in the series. It features every playable fighter from previous installments alongside new additions such as Inkling and Ridley. The game includes faster combat, new items, and expanded defensive mechanics. Modes include local and online multiplayer, a single-player adventure mode called World of Light, and various casual and competitive rulesets.,
+      TotalRating: 86.5726,
+      FirstReleaseDate: DateTimeOffset_5,
+      CoverImageId: co2255,
+      CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2255.jpg,
+      CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2255.jpg,
+      Popularity: 0.000210031886659
+    },
+    {
+      Rank: 585,
+      Id: 1026,
+      Name: The Legend of Zelda: A Link to the Past,
+      Slug: the-legend-of-zelda-a-link-to-the-past,
+      Summary:
+Venture back to Hyrule and an age of magic and heroes. The predecessors of Link and Zelda face monsters on the march when a menacing magician takes over the kingdom. Only you can prevent his evil plot from shattering the land of Hyrule.
+
+In your quest, you'll venture into twisting mazes, dungeons, palaces and shadowy forests. Test your mettle with mighty swords and magical weapons. Or heft a boulder and hurl it at your enemies. If the going gets tough, dive into a river - you can swim to escape! Learn powerful spells, locate magical artifacts and solve the mysteries of the evil magician and the hidden realm of Hyrule.,
+      TotalRating: 95.9738,
+      FirstReleaseDate: DateTimeOffset_6,
+      CoverImageId: co3vzn,
+      CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co3vzn.jpg,
+      CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co3vzn.jpg,
+      Popularity: 0.000171844270903
+    },
+    {
+      Rank: 759,
+      Id: 1022,
+      Name: The Legend of Zelda,
+      Slug: the-legend-of-zelda,
+      Summary: The Legend of Zelda is the first title in the Zelda series, it has marked the history of video games particularly for it's game mechanics and universe. The player controls Link and must make his way through the forests, graveyards, plains and deserts of the Otherworld to find the secret entrances to the eight dungeons and try to restore the broken Triforce. Among the game's mechanics, it was the first time we saw a continuous world that could be freely explored, power-ups that permanently enhanced the main character's abilities and a battery save feature that allowed players to keep their progress instead of having to start over. The gameplay balanced action sequences with discovery, secrets and exploration.,
+      TotalRating: 80.5224,
+      FirstReleaseDate: DateTimeOffset_7,
+      CoverImageId: co1uii,
+      CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co1uii.jpg,
+      CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co1uii.jpg,
+      Popularity: 0.000143203559086
+    },
+    {
+      Rank: 899,
+      Id: 26764,
+      Name: Mario Kart 8 Deluxe,
+      Slug: mario-kart-8-deluxe,
+      Summary: Hit the road with the definitive version of Mario Kart 8 and play anytime, anywhere! Race your friends or battle them in a revised battle mode on new and returning battle courses. Play locally in up to 4-player multiplayer in 1080p while playing in TV Mode. Every track from the Wii U version, including DLC, makes a glorious return. Plus, the Inklings appear as all-new guest characters, along with returning favorites, such as King Boo, Dry Bones, and Bowser Jr.!,
+      TotalRating: 88.5532,
+      FirstReleaseDate: DateTimeOffset_8,
+      CoverImageId: co213p,
+      CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co213p.jpg,
+      CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co213p.jpg,
+      Popularity: 0.000128883203177
+    },
+    {
+      Rank: 962,
+      Id: 11156,
+      Name: Horizon Zero Dawn,
+      Slug: horizon-zero-dawn,
+      Summary: Welcome to a vibrant world rich with the beauty of nature – but inhabited by awe-inspiring, highly advanced machines. As a young machine hunter named Aloy, you must unravel the mysteries of this world and find your own destiny.,
+      TotalRating: 88.1369,
+      FirstReleaseDate: DateTimeOffset_9,
+      CoverImageId: co2una,
+      CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2una.jpg,
+      CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2una.jpg,
+      Popularity: 0.000124109751208
+    }
+  ]
+}

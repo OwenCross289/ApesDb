@@ -1,0 +1,16 @@
+﻿{
+  Response: {
+    StatusCode: 302,
+    ReasonPhrase: Found,
+    Version: 1.1,
+    Headers: {
+      Location: [
+        https://auth.example.test/authorize?client_id=apesdb-api-tests&redirect_uri=https%3A%2F%2Flocalhost%2Fapi%2Fauth%2Fcallback&response_type=code&scope=openid%20profile%20email&code_challenge={scrubbed}&code_challenge_method=S256&response_mode=form_post&nonce={scrubbed}&state={scrubbed}&x-client-SKU=ID_NET9_0&x-client-ver=8.0.1.0
+      ],
+      Set-Cookie: [
+        .AspNetCore.OpenIdConnect.Nonce.{scrubbed}={scrubbed}; expires={scrubbed}; path=/api/auth/callback; secure; samesite=none; httponly,
+        .AspNetCore.Correlation.{scrubbed}={scrubbed}; expires={scrubbed}; path=/api/auth/callback; secure; samesite=none; httponly
+      ]
+    }
+  }
+}

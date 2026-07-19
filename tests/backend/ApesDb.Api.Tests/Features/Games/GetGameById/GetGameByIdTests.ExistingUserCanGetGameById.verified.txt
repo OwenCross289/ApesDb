@@ -1,0 +1,200 @@
+﻿{
+  Response: {
+    StatusCode: 200,
+    ReasonPhrase: OK,
+    Version: 1.1,
+    ContentHeaders: {
+      Content-Type: [
+        application/json; charset=utf-8
+      ]
+    }
+  },
+  Content: {
+    Id: 11156,
+    Name: Horizon Zero Dawn,
+    Slug: horizon-zero-dawn,
+    Description: Welcome to a vibrant world rich with the beauty of nature – but inhabited by awe-inspiring, highly advanced machines. As a young machine hunter named Aloy, you must unravel the mysteries of this world and find your own destiny.,
+    Storyline: In a far-future world where primitive human tribes coexist with enormous robotic machines, a young outcast named Aloy sets out to uncover the truth behind her mysterious origins. Raised in exile from the Nora tribe, she ventures beyond her homeland into a vast and dangerous land, seeking answers about her past and the ancient civilisation whose ruins litter the landscape.,
+    ReleaseDate: DateTime_1,
+    TotalRating: 88.1369,
+    TotalRatingCount: 2419,
+    IgdbUrl: https://www.igdb.com/games/horizon-zero-dawn,
+    GameType: {
+      Name: Main Game
+    },
+    Cover: {
+      ImageId: co2una,
+      Width: 1035,
+      Height: 1380,
+      SmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2una.jpg,
+      LargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2una.jpg
+    },
+    Popularity: {
+      Rank: 962,
+      SourceRank: 963,
+      Score: 0.000124109751208000,
+      Type: {
+        Id: 1,
+        Name: Visits
+      },
+      CalculatedAt: DateTime_2
+    },
+    Developers: [
+      {
+        Id: 1843,
+        Name: Guerrilla Games
+      }
+    ],
+    Publishers: [
+      {
+        Id: 10100,
+        Name: Sony Interactive Entertainment
+      }
+    ],
+    StorePages: [
+      {
+        Id: 2175619,
+        Source: {
+          Id: 36,
+          Name: Playstation Store US
+        },
+        ExternalId: 221727,
+        Name: Horizon Zero Dawn,
+        Url: https://store.playstation.com/en-us/concept/221727
+      },
+      {
+        Id: 2016764,
+        Source: {
+          Id: 1,
+          Name: Steam
+        },
+        ExternalId: 1151640,
+        Name: Horizon Zero Dawn Complete Edition,
+        Url: https://store.steampowered.com/app/1151640,
+        Year: 2020
+      }
+    ],
+    Editions: [
+      {
+        Id: 72870,
+        Name: Horizon Zero Dawn: Complete Edition,
+        Description:
+In an era where machines roam the land and mankind is no longer the dominant species, a young hunter named Aloy embarks on a journey to discover her destiny. Explore a vibrant and lush world inhabited by mysterious mechanized creatures. Embark on a compelling, emotional journey and unravel mysteries of tribal societies, ancient artefacts and enhanced technologies that will determine the fate of this planet and of life itself.
+
+Horizon: Zero Dawn Complete Edition includes Horizon Zero Dawn and the frozen wilds expansion.,
+        ReleaseDate: DateTime_3,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2tem.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2tem.jpg
+      },
+      {
+        Id: 42920,
+        Name: Horizon Zero Dawn: Collector's Edition,
+        Description: The plot revolves around Aloy, a hunter and archer living in a world overrun by robots. Having been cloistered her whole life, she sets out to discover the dangers that kept her sheltered. The character makes use of ranged, melee weapons and stealth tactics to combat the mechanised creatures, whose remains can also be looted for resources. A skill tree facilitates gameplay improvements. The game features an open world environment for Aloy to explore, divided into tribes that hold side quests to undertake, while the main story guides her throughout the whole world.,
+        ReleaseDate: DateTime_4,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2taw.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2taw.jpg
+      },
+      {
+        Id: 136150,
+        Name: Horizon Zero Dawn: Limited Edition,
+        Description: The Limited Edition comes in a sturdy paper case with a nice artwork on the front showing the main character Aloy and one of the robotic beasts roaming the world.,
+        ReleaseDate: DateTime_5,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2sw2.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2sw2.jpg
+      },
+      {
+        Id: 168554,
+        Name: Horizon: Zero Dawn - Thunderjaw Collector's Edition,
+        Description: This edition includes the following Premium Packaging, Premium Thunderjaw Statue, Aloy's "Focus" Earpiece, Exclusive Litographs, and Exclusive World Map,
+        ReleaseDate: DateTime_5,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co4yy0.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co4yy0.jpg
+      }
+    ],
+    Addons: [
+      {
+        Type: Expansion,
+        Id: 37083,
+        Name: Horizon Zero Dawn: The Frozen Wilds,
+        Description: The Frozen Wilds contains additional content for Horizon Zero Dawn, including new storylines, characters and experiences in a beautiful but unforgiving new area.,
+        ReleaseDate: DateTime_6,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co4hjg.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co4hjg.jpg
+      }
+    ],
+    Genres: [
+      {
+        Id: 31,
+        Name: Adventure
+      },
+      {
+        Id: 12,
+        Name: Role-playing (RPG)
+      },
+      {
+        Id: 5,
+        Name: Shooter
+      }
+    ],
+    Themes: [
+      {
+        Id: 1,
+        Name: Action
+      },
+      {
+        Id: 31,
+        Name: Drama
+      },
+      {
+        Id: 38,
+        Name: Open world
+      },
+      {
+        Id: 18,
+        Name: Science fiction
+      },
+      {
+        Id: 23,
+        Name: Stealth
+      }
+    ],
+    GameModes: [
+      {
+        Id: 1,
+        Name: Single player
+      }
+    ],
+    PlayerPerspectives: [
+      {
+        Id: 2,
+        Name: Third person
+      }
+    ],
+    Platforms: [
+      {
+        Id: 6,
+        Name: PC (Microsoft Windows)
+      },
+      {
+        Id: 48,
+        Name: PlayStation 4
+      },
+      {
+        Id: 167,
+        Name: PlayStation 5
+      }
+    ],
+    Collections: [
+      {
+        Id: 6304,
+        Name: Horizon
+      }
+    ],
+    Franchises: [
+      {
+        Id: 2000,
+        Name: Horizon
+      }
+    ]
+  }
+}

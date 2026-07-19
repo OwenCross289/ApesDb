@@ -1,0 +1,13 @@
+﻿{
+  Response: {
+    StatusCode: 200,
+    ReasonPhrase: OK,
+    Version: 1.1,
+    ContentHeaders: {
+      Content-Type: [
+        application/json; charset=utf-8
+      ]
+    }
+  },
+  Content: {"id":"01910000-0000-7000-8000-000000001001","email":"owner@apesdb.test","name":"Olivia Owner","pictureUrl":"https://images.apesdb.test/owner.png"}
+}

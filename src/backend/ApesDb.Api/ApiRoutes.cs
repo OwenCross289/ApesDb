@@ -9,7 +9,7 @@ public static class ApiRoutes
 
     public static class Games
     {
-        public const string List = "games";
+        public const string Get = "games";
         public const string ById = "games/{id:long}";
         public const string Top = "games/top";
         public const string Types = "games/types";
@@ -23,7 +23,7 @@ public static class ApiRoutes
 
     public static class Teams
     {
-        public const string List = "teams";
+        public const string Get = "teams";
         public const string Create = "teams";
         public const string ById = "teams/{teamId:guid}";
         public const string Invites = "teams/{teamId:guid}/invites";
@@ -41,7 +41,7 @@ public static class ApiRoutes
 
     public static class Notifications
     {
-        public const string List = "notifications";
+        public const string Get = "notifications";
         public const string Read = "notifications/read";
         public const string Stream = "notifications/stream";
     }

@@ -1,0 +1,8 @@
+﻿{
+  CurrentUserStreamEvent: {
+    Name: notification.read,
+    Data: {
+      ReadAt: DateTime_1
+    }
+  }
+}

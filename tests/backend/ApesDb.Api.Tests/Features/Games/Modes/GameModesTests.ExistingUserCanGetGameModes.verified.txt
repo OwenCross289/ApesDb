@@ -1,0 +1,34 @@
+﻿{
+  Response: {
+    StatusCode: 200,
+    ReasonPhrase: OK,
+    Version: 1.1,
+    ContentHeaders: {
+      Content-Type: [
+        application/json; charset=utf-8
+      ]
+    }
+  },
+  Content: [
+    {
+      Id: 3,
+      Name: Co-operative
+    },
+    {
+      Id: 5,
+      Name: Massively Multiplayer Online (MMO)
+    },
+    {
+      Id: 2,
+      Name: Multiplayer
+    },
+    {
+      Id: 1,
+      Name: Single player
+    },
+    {
+      Id: 4,
+      Name: Split screen
+    }
+  ]
+}

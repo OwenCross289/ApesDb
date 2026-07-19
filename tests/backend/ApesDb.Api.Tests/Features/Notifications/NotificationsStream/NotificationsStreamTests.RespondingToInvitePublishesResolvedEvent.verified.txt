@@ -1,0 +1,8 @@
+﻿{
+  StreamEvent: {
+    Name: notification.resolved,
+    Data: {
+      ResourceId: Guid_1
+    }
+  }
+}

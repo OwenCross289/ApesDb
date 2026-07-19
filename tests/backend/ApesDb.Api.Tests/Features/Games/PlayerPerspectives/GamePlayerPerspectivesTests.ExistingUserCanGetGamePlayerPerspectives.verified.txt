@@ -1,0 +1,38 @@
+﻿{
+  Response: {
+    StatusCode: 200,
+    ReasonPhrase: OK,
+    Version: 1.1,
+    ContentHeaders: {
+      Content-Type: [
+        application/json; charset=utf-8
+      ]
+    }
+  },
+  Content: [
+    {
+      Id: 3,
+      Name: Bird view / Isometric
+    },
+    {
+      Id: 1,
+      Name: First person
+    },
+    {
+      Id: 4,
+      Name: Side view
+    },
+    {
+      Id: 5,
+      Name: Text
+    },
+    {
+      Id: 2,
+      Name: Third person
+    },
+    {
+      Id: 7,
+      Name: Virtual Reality
+    }
+  ]
+}

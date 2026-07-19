@@ -1,0 +1,936 @@
+﻿{
+  Response: {
+    StatusCode: 200,
+    ReasonPhrase: OK,
+    Version: 1.1,
+    ContentHeaders: {
+      Content-Type: [
+        application/json; charset=utf-8
+      ]
+    }
+  },
+  Content: {
+    Items: [
+      {
+        Id: 4746,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2ymw.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2ymw.jpg,
+        Name: Captain Rainbow,
+        Developers: [
+          Skip Ltd.
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 103292,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2oz5.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2oz5.jpg,
+        Name: Gears 5,
+        Developers: [
+          The Coalition
+        ],
+        Publishers: [
+          Xbox Game Studios
+        ],
+        IsCoop: true,
+        IsSteam: true,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 547,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co8rkr.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co8rkr.jpg,
+        Name: Gears of War,
+        Developers: [
+          Epic Games
+        ],
+        Publishers: [
+          Microsoft Game Studios
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 318793,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co8wct.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co8wct.jpg,
+        Name: Gears of War,
+        Developers: [
+          Epic Games
+        ],
+        Publishers: [
+          Microsoft Game Studios
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 10,
+          Name: Expanded Game
+        }
+      },
+      {
+        Id: 548,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co28gg.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co28gg.jpg,
+        Name: Gears of War 2,
+        Developers: [
+          Epic Games
+        ],
+        Publishers: [
+          Microsoft Game Studios
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 492,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2a21.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2a21.jpg,
+        Name: Gears of War 3,
+        Developers: [
+          Epic Games
+        ],
+        Publishers: [
+          Microsoft Studios
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 11186,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2y29.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2y29.jpg,
+        Name: Gears of War 4,
+        Developers: [
+          The Coalition
+        ],
+        Publishers: [
+          Microsoft Studios
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 1319,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2y2a.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2y2a.jpg,
+        Name: Gears of War: Judgment,
+        Developers: [
+          Epic Games,
+          People Can Fly
+        ],
+        Publishers: [
+          Microsoft Studios
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 342721,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9rr2.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9rr2.jpg,
+        Name: Gears of War: Reloaded,
+        Developers: [
+          The Coalition
+        ],
+        Publishers: [
+          Xbox Game Studios
+        ],
+        IsCoop: true,
+        IsSteam: true,
+        GameType: {
+          Id: 9,
+          Name: Remaster
+        }
+      },
+      {
+        Id: 112874,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2gvu.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2gvu.jpg,
+        Name: Horizon Forbidden West,
+        Developers: [
+          Guerrilla Games
+        ],
+        Publishers: [
+          Sony Interactive Entertainment
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 228533,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co6a9w.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co6a9w.jpg,
+        Name: Horizon Forbidden West: Burning Shores,
+        Developers: [
+          Guerrilla Games
+        ],
+        Publishers: [
+          Sony Interactive Entertainment
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 2,
+          Name: Expansion
+        }
+      },
+      {
+        Id: 227890,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co5u6k.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co5u6k.jpg,
+        Name: Horizon Forbidden West: Major Update 1.14,
+        Developers: [
+          Guerrilla Games
+        ],
+        Publishers: [
+          Sony Interactive Entertainment
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 14,
+          Name: Update
+        }
+      },
+      {
+        Id: 388464,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/cobft9.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/cobft9.jpg,
+        Name: Horizon Hunters Gathering,
+        Developers: [
+          Guerrilla Games
+        ],
+        Publishers: [
+          Sony Interactive Entertainment
+        ],
+        IsCoop: true,
+        IsSteam: true,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 377555,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/coau96.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coau96.jpg,
+        Name: Horizon Steel Frontiers,
+        Developers: [
+          NCSOFT
+        ],
+        Publishers: [
+          NCSOFT,
+          Sony Interactive Entertainment
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 11156,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2una.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2una.jpg,
+        Name: Horizon Zero Dawn,
+        Developers: [
+          Guerrilla Games
+        ],
+        Publishers: [
+          Sony Interactive Entertainment
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 317103,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co90ti.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co90ti.jpg,
+        Name: Horizon Zero Dawn Remastered,
+        Developers: [
+          Guerrilla Games
+        ],
+        Publishers: [
+          Sony Interactive Entertainment
+        ],
+        IsCoop: false,
+        IsSteam: true,
+        GameType: {
+          Id: 9,
+          Name: Remaster
+        }
+      },
+      {
+        Id: 37083,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co4hjg.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co4hjg.jpg,
+        Name: Horizon Zero Dawn: The Frozen Wilds,
+        Developers: [
+          Guerrilla Games
+        ],
+        Publishers: [
+          Sony Interactive Entertainment
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 2,
+          Name: Expansion
+        }
+      },
+      {
+        Id: 5314,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co3p0r.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co3p0r.jpg,
+        Name: Hyrule Warriors,
+        Developers: [
+          Omega Force,
+          Team NINJA
+        ],
+        Publishers: [
+          Koei Tecmo Games,
+          Nintendo
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 138343,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/cob22n.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/cob22n.jpg,
+        Name: Hyrule Warriors: Age of Calamity,
+        Developers: [
+          Omega Force
+        ],
+        Publishers: [
+          Koei Tecmo,
+          Nintendo
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 143618,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/coa4nb.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coa4nb.jpg,
+        Name: Hyrule Warriors: Age of Calamity - Expansion Pass,
+        Developers: [
+          Omega Force
+        ],
+        Publishers: [
+          Koei Tecmo,
+          Nintendo
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Id: 3,
+          Name: Bundle
+        }
+      },
+      {
+        Id: 293728,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/coayhn.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coayhn.jpg,
+        Name: Hyrule Warriors: Age of Calamity + Expansion Pass Bundle,
+        Developers: [
+          Omega Force
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Id: 3,
+          Name: Bundle
+        }
+      },
+      {
+        Id: 184509,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co7plv.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co7plv.jpg,
+        Name: Hyrule Warriors: Age of Calamity - Wave 1: Pulse of the Ancients,
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 338085,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/cob9n1.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/cob9n1.jpg,
+        Name: Hyrule Warriors: Age of Imprisonment,
+        Developers: [
+          AAA Games Studio,
+          Koei Tecmo Games
+        ],
+        Publishers: [
+          Koei Tecmo Games,
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 95047,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co4l6i.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co4l6i.jpg,
+        Name: Hyrule Warriors: A Link Between Worlds Pack,
+        Developers: [
+          Omega Force,
+          Team NINJA
+        ],
+        Publishers: [
+          Koei Tecmo Games,
+          Nintendo
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 95042,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co4ks1.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co4ks1.jpg,
+        Name: Hyrule Warriors: Boss Pack,
+        Developers: [
+          Omega Force,
+          Team NINJA
+        ],
+        Publishers: [
+          Nintendo,
+          Tecmo Koei Games
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 81147,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/cob2j6.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/cob2j6.jpg,
+        Name: Hyrule Warriors: Definitive Edition,
+        Developers: [
+          Koei Tecmo Games,
+          Omega Force,
+          Team NINJA
+        ],
+        Publishers: [
+          Nintendo,
+          Nintendo of America,
+          Nintendo of Europe
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Id: 10,
+          Name: Expanded Game
+        }
+      },
+      {
+        Id: 95043,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co4mua.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co4mua.jpg,
+        Name: Hyrule Warriors: Hero of Hyrule Pack,
+        Developers: [
+          Omega Force,
+          Team NINJA
+        ],
+        Publishers: [
+          Koei Tecmo Games,
+          Nintendo
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 11193,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co5j9o.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co5j9o.jpg,
+        Name: Hyrule Warriors: Legends,
+        Developers: [
+          Koei Tecmo Games,
+          Omega Force,
+          Team NINJA
+        ],
+        Publishers: [
+          Koei Tecmo Games,
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 10,
+          Name: Expanded Game
+        }
+      },
+      {
+        Id: 95044,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co4kna.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co4kna.jpg,
+        Name: Hyrule Warriors: Legends Character Pack,
+        Developers: [
+          Omega Force,
+          Team NINJA
+        ],
+        Publishers: [
+          Koei Tecmo Games,
+          Nintendo
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 95048,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co4mxs.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co4mxs.jpg,
+        Name: Hyrule Warriors: Legends of Hyrule Pack,
+        Developers: [
+          Omega Force,
+          Team NINJA
+        ],
+        Publishers: [
+          Koei Tecmo Games,
+          Nintendo
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 95045,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co4kpb.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co4kpb.jpg,
+        Name: Hyrule Warriors: Link's Awakening Pack,
+        Developers: [
+          Omega Force,
+          Team NINJA
+        ],
+        Publishers: [
+          Koei Tecmo Games,
+          Nintendo
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 95041,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co4kt7.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co4kt7.jpg,
+        Name: Hyrule Warriors: Majora's Mask Pack,
+        Developers: [
+          Omega Force,
+          Team NINJA
+        ],
+        Publishers: [
+          Nintendo,
+          Tecmo Koei Games
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 23825,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co4kzb.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co4kzb.jpg,
+        Name: Hyrule Warriors: Master Quest Pack,
+        Developers: [
+          Omega Force,
+          Team NINJA
+        ],
+        Publishers: [
+          Koei Tecmo Games,
+          Nintendo
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 95046,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co4lec.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co4lec.jpg,
+        Name: Hyrule Warriors: Phantom Hourglass & Spirit Tracks Pack,
+        Developers: [
+          Omega Force,
+          Team NINJA
+        ],
+        Publishers: [
+          Koei Tecmo Games,
+          Nintendo
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 95040,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co4kn9.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co4kn9.jpg,
+        Name: Hyrule Warriors: Twilight Princess Pack,
+        Developers: [
+          Omega Force,
+          Team NINJA
+        ],
+        Publishers: [
+          Koei Tecmo Games,
+          Nintendo
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Id: 13,
+          Name: Pack / Addon
+        }
+      },
+      {
+        Id: 4973,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co3ocw.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co3ocw.jpg,
+        Name: Link's Crossbow Training,
+        Developers: [
+          Nintendo EAD Software Development Group No.3
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 2350,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co213q.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co213q.jpg,
+        Name: Mario Kart 8,
+        Developers: [
+          Nintendo EAD Software Development Group No.1,
+          Nintendo Entertainment Analysis & Development,
+          Nintendo Entertainment Planning & Development
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 26764,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co213p.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co213p.jpg,
+        Name: Mario Kart 8 Deluxe,
+        Developers: [
+          Nintendo Entertainment Planning & Development,
+          Nintendo EPD Production Group No. 9
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 10,
+          Name: Expanded Game
+        }
+      },
+      {
+        Id: 22141,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/coa5xd.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coa5xd.jpg,
+        Name: Mario Kart 8: DLC Pack One,
+        Developers: [
+          Nintendo EAD Software Development Group No.1
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 6401,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2qtl.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2qtl.jpg,
+        Name: NES Remix,
+        Developers: [
+          indieszero Co., Ltd.,
+          Nintendo,
+          Nintendo EAD Tokyo Software Development Group No.1
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 6402,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2qtn.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2qtn.jpg,
+        Name: NES Remix 2,
+        Developers: [
+          indieszero Co., Ltd.,
+          Nintendo,
+          Nintendo EAD Tokyo Software Development Group No.1
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 2172,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co1p9c.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co1p9c.jpg,
+        Name: Nintendo Land,
+        Developers: [
+          Nintendo,
+          Nintendo EAD Software Development Group No.2
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: true,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 133935,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co6sdb.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co6sdb.jpg,
+        Name: Sonic Lost World: The Legend of Zelda Zone,
+        Developers: [
+          Sonic Team
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 227987,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co61zk.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co61zk.jpg,
+        Name: SoulCalibur II,
+        Developers: [
+          Project Soul
+        ],
+        Publishers: [
+          Namco
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 10,
+          Name: Expanded Game
+        }
+      },
+      {
+        Id: 2909,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co3p0j.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co3p0j.jpg,
+        Name: The Legend of Zelda: A Link Between Worlds,
+        Developers: [
+          Nintendo EAD Software Development Group No.3
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 7346,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co3p2d.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co3p2d.jpg,
+        Name: The Legend of Zelda: Breath of the Wild,
+        Developers: [
+          Nintendo EPD Production Group No. 3
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 41829,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/coa24j.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coa24j.jpg,
+        Name: The Legend of Zelda: Breath of the Wild - Expansion Pass,
+        Developers: [
+          Nintendo EPD Production Group No. 3
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 3,
+          Name: Bundle
+        }
+      },
+      {
+        Id: 338072,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/cob9oy.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/cob9oy.jpg,
+        Name: The Legend of Zelda: Breath of the Wild - Nintendo Switch 2 Edition,
+        Developers: [
+          Nintendo EPD Production Group No. 3
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 10,
+          Name: Expanded Game
+        }
+      },
+      {
+        Id: 41826,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co1ujd.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co1ujd.jpg,
+        Name: The Legend of Zelda: Breath of the Wild - The Champions' Ballad,
+        Developers: [
+          Nintendo EPD Production Group No. 3
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      },
+      {
+        Id: 41825,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co1ujg.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co1ujg.jpg,
+        Name: The Legend of Zelda: Breath of the Wild - The Master Trials,
+        Developers: [
+          Nintendo
+        ],
+        Publishers: [
+          Nintendo
+        ],
+        IsCoop: false,
+        IsSteam: false,
+        GameType: {
+          Id: 1,
+          Name: DLC
+        }
+      }
+    ],
+    Total: 225,
+    FilteredTotal: 69,
+    Page: 1,
+    PageSize: 50
+  }
+}

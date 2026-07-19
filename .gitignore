@@ -19,6 +19,7 @@ out/
 
 # Test results
 TestResults/
+*.received.txt
 
 # NuGet
 *.nupkg

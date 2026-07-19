@@ -1,0 +1,25 @@
+﻿{
+  Response: {
+    StatusCode: 200,
+    ReasonPhrase: OK,
+    Version: 1.1,
+    ContentHeaders: {
+      Content-Type: [
+        application/json; charset=utf-8
+      ]
+    }
+  },
+  Content: [
+    {
+      Id: 6,
+      Name: Cancelled
+    },
+    {
+      Id: 8,
+      Name: Delisted
+    },
+    {
+      Name: Released
+    }
+  ]
+}

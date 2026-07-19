@@ -1,0 +1,141 @@
+﻿{
+  Response: {
+    StatusCode: 200,
+    ReasonPhrase: OK,
+    Version: 1.1,
+    ContentHeaders: {
+      Content-Type: [
+        application/json; charset=utf-8
+      ]
+    }
+  },
+  Content: {
+    Items: [
+      {
+        Id: 103292,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co2oz5.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co2oz5.jpg,
+        Name: Gears 5,
+        Developers: [
+          The Coalition
+        ],
+        Publishers: [
+          Xbox Game Studios
+        ],
+        IsCoop: true,
+        IsSteam: true,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 305160,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/coc77n.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/coc77n.jpg,
+        Name: Gears of War: E-Day,
+        Developers: [
+          The Coalition
+        ],
+        Publishers: [
+          Xbox Game Studios
+        ],
+        IsCoop: true,
+        IsSteam: true,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 342721,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co9rr2.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co9rr2.jpg,
+        Name: Gears of War: Reloaded,
+        Developers: [
+          The Coalition
+        ],
+        Publishers: [
+          Xbox Game Studios
+        ],
+        IsCoop: true,
+        IsSteam: true,
+        GameType: {
+          Id: 9,
+          Name: Remaster
+        }
+      },
+      {
+        Id: 103291,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co1uzk.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co1uzk.jpg,
+        Name: Gears Tactics,
+        Developers: [
+          Splash Damage
+        ],
+        Publishers: [
+          Xbox Game Studios
+        ],
+        IsCoop: false,
+        IsSteam: true,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 388464,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/cobft9.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/cobft9.jpg,
+        Name: Horizon Hunters Gathering,
+        Developers: [
+          Guerrilla Games
+        ],
+        Publishers: [
+          Sony Interactive Entertainment
+        ],
+        IsCoop: true,
+        IsSteam: true,
+        GameType: {
+          Name: Main Game
+        }
+      },
+      {
+        Id: 317103,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co90ti.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co90ti.jpg,
+        Name: Horizon Zero Dawn Remastered,
+        Developers: [
+          Guerrilla Games
+        ],
+        Publishers: [
+          Sony Interactive Entertainment
+        ],
+        IsCoop: false,
+        IsSteam: true,
+        GameType: {
+          Id: 9,
+          Name: Remaster
+        }
+      },
+      {
+        Id: 305003,
+        CoverSmallUrl: https://images.igdb.com/igdb/image/upload/t_cover_small_2x/co8juk.jpg,
+        CoverLargeUrl: https://images.igdb.com/igdb/image/upload/t_cover_big_2x/co8juk.jpg,
+        Name: LEGO Horizon Adventures,
+        Developers: [
+          Guerrilla Games
+        ],
+        Publishers: [
+          Sony Interactive Entertainment
+        ],
+        IsCoop: true,
+        IsSteam: true,
+        GameType: {
+          Name: Main Game
+        }
+      }
+    ],
+    Total: 225,
+    FilteredTotal: 7,
+    Page: 1,
+    PageSize: 50
+  }
+}

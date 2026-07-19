@@ -23,10 +23,8 @@
     <Project Path="src/backend/ApesDb.Worker/ApesDb.Worker.csproj" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/backend/ApesDb.Auth.IntegrationTests/ApesDb.Auth.IntegrationTests.csproj" />
-    <Project Path="tests/backend/ApesDb.Catalog.IntegrationTests/ApesDb.Catalog.IntegrationTests.csproj" />
-    <Project Path="tests/backend/ApesDb.Igdb.Sdk.Tests/ApesDb.Igdb.Sdk.Tests.csproj" />
-    <Project Path="tests/backend/ApesDb.Teams.IntegrationTests/ApesDb.Teams.IntegrationTests.csproj" />
+    <Project Path="tests/backend/ApesDb.Api.Tests/ApesDb.Api.Tests.csproj" />
+    <Project Path="tests/backend/ApesDb.Api.UnitTests/ApesDb.Api.UnitTests.csproj" />
   </Folder>
   <Folder Name="/src/backend/sdks/">
     <Project Path="src/backend/sdks/ApesDb.Igdb.Sdk/ApesDb.Igdb.Sdk.csproj" />

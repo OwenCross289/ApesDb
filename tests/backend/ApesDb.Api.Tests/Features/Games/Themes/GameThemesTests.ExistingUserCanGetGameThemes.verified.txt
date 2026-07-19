@@ -1,0 +1,74 @@
+﻿{
+  Response: {
+    StatusCode: 200,
+    ReasonPhrase: OK,
+    Version: 1.1,
+    ContentHeaders: {
+      Content-Type: [
+        application/json; charset=utf-8
+      ]
+    }
+  },
+  Content: [
+    {
+      Id: 1,
+      Name: Action
+    },
+    {
+      Id: 27,
+      Name: Comedy
+    },
+    {
+      Id: 31,
+      Name: Drama
+    },
+    {
+      Id: 17,
+      Name: Fantasy
+    },
+    {
+      Id: 22,
+      Name: Historical
+    },
+    {
+      Id: 19,
+      Name: Horror
+    },
+    {
+      Id: 35,
+      Name: Kids
+    },
+    {
+      Id: 38,
+      Name: Open world
+    },
+    {
+      Id: 40,
+      Name: Party
+    },
+    {
+      Id: 44,
+      Name: Romance
+    },
+    {
+      Id: 33,
+      Name: Sandbox
+    },
+    {
+      Id: 18,
+      Name: Science fiction
+    },
+    {
+      Id: 23,
+      Name: Stealth
+    },
+    {
+      Id: 21,
+      Name: Survival
+    },
+    {
+      Id: 39,
+      Name: Warfare
+    }
+  ]
+}
