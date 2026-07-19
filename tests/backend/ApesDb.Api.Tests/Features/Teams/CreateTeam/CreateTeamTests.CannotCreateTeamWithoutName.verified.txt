@@ -1,17 +1,19 @@
 ﻿{
   Response: {
-    Response: {
-      StatusCode: 400,
-      ReasonPhrase: Bad Request,
-      Version: 1.1,
-      ContentHeaders: {
-        Content-Type: [
-          application/problem+json; charset=utf-8
-        ]
-      }
-    },
-    Content: {
-      ValueKind: Object
+    StatusCode: 400,
+    ReasonPhrase: Bad Request,
+    Version: 1.1,
+    ContentHeaders: {
+      Content-Type: [
+        application/problem+json; charset=utf-8
+      ]
+    }
+  },
+  Content: {
+    Errors: {
+      name: [
+        'name' must not be empty.
+      ]
     }
   },
   Before: {

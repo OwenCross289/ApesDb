@@ -3,11 +3,7 @@
     StatusCode: 201,
     ReasonPhrase: Created,
     Version: 1.1,
-    Headers: {
-      Location: [
-        /api/teams/019f7c27-9792-7040-8b2a-c2161230dc4c
-      ]
-    },
+    Location: /api/teams/{teamId},
     ContentHeaders: {
       Content-Type: [
         application/json; charset=utf-8

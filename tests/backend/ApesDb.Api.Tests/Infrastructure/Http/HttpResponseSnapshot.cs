@@ -34,6 +34,24 @@ public sealed record HttpResponseSnapshot(HttpResponseDetails Response, object? 
         return Create(response, snapshotContent);
     }
 
+    public static async Task<HttpResponseDetails[]> CreateAsync(
+        HttpResponseMessage firstResponse,
+        HttpResponseMessage secondResponse,
+        params HttpResponseMessage[] additionalResponses
+    )
+    {
+        var snapshots = new HttpResponseDetails[additionalResponses.Length + 2];
+        snapshots[0] = (await CreateAsync(firstResponse)).Response;
+        snapshots[1] = (await CreateAsync(secondResponse)).Response;
+
+        for (var index = 0; index < additionalResponses.Length; index++)
+        {
+            snapshots[index + 2] = (await CreateAsync(additionalResponses[index])).Response;
+        }
+
+        return snapshots;
+    }
+
     private static HttpResponseSnapshot Create(HttpResponseMessage response, object? content)
     {
         var details = new HttpResponseDetails(
