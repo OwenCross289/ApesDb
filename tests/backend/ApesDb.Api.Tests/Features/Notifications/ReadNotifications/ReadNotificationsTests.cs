@@ -1,4 +1,3 @@
-using System.Net;
 using System.Net.Http.Json;
 using ApesDb.Api.Features.Notifications.GetNotifications;
 using ApesDb.Api.Features.Teams.Invites.CreateTeamInvite;
@@ -38,7 +37,6 @@ public sealed class ReadNotificationsTests : IClassFixture<MutableEndpointApiFac
             TestContext.Current.CancellationToken
         );
 
-        Assert.Equal(HttpStatusCode.NoContent, readResponse.StatusCode);
         var readHttp = await HttpResponseSnapshot.CreateAsync(readResponse);
         using var notificationsResponse = await client.GetAsync(
             "/api/notifications",
@@ -59,14 +57,13 @@ public sealed class ReadNotificationsTests : IClassFixture<MutableEndpointApiFac
             inviteContent,
             TestContext.Current.CancellationToken
         );
-        Assert.Equal(HttpStatusCode.Accepted, inviteResponse.StatusCode);
+        var inviteHttp = await HttpResponseSnapshot.CreateAsync(inviteResponse);
 
         using var inviteeClient = ApiTestClient.CreateAuthenticated(_factory, TestUsers.Invitee);
         using var readResponse = await inviteeClient.PostAsync(
             "/api/notifications/read",
             TestContext.Current.CancellationToken
         );
-        Assert.Equal(HttpStatusCode.NoContent, readResponse.StatusCode);
         var readHttp = await HttpResponseSnapshot.CreateAsync(readResponse);
 
         using var inviteeNotificationsResponse = await inviteeClient.GetAsync(
@@ -88,6 +85,7 @@ public sealed class ReadNotificationsTests : IClassFixture<MutableEndpointApiFac
         await Verify(
             new
             {
+                InviteResponse = inviteHttp.Response,
                 ReadResponse = readHttp.Response,
                 CurrentUserNotificationsResponse = inviteeNotificationsHttp,
                 OtherUserNotificationsResponse = outsiderNotificationsHttp,
@@ -105,13 +103,12 @@ public sealed class ReadNotificationsTests : IClassFixture<MutableEndpointApiFac
             respondContent,
             TestContext.Current.CancellationToken
         );
-        Assert.Equal(HttpStatusCode.NoContent, respondResponse.StatusCode);
+        var respondHttp = await HttpResponseSnapshot.CreateAsync(respondResponse);
 
         using var readResponse = await client.PostAsync(
             "/api/notifications/read",
             TestContext.Current.CancellationToken
         );
-        Assert.Equal(HttpStatusCode.NoContent, readResponse.StatusCode);
         var readHttp = await HttpResponseSnapshot.CreateAsync(readResponse);
         using var notificationsResponse = await client.GetAsync(
             "/api/notifications",
@@ -119,7 +116,14 @@ public sealed class ReadNotificationsTests : IClassFixture<MutableEndpointApiFac
         );
         var notificationsHttp = await HttpResponseSnapshot.CreateAsync<NotificationsResponse>(notificationsResponse);
 
-        await Verify(new { ReadResponse = readHttp.Response, NotificationsResponse = notificationsHttp });
+        await Verify(
+            new
+            {
+                RespondResponse = respondHttp.Response,
+                ReadResponse = readHttp.Response,
+                NotificationsResponse = notificationsHttp,
+            }
+        );
     }
 
     [Fact]
@@ -135,8 +139,6 @@ public sealed class ReadNotificationsTests : IClassFixture<MutableEndpointApiFac
             TestContext.Current.CancellationToken
         );
 
-        Assert.Equal(HttpStatusCode.NoContent, firstResponse.StatusCode);
-        Assert.Equal(HttpStatusCode.NoContent, secondResponse.StatusCode);
         var readResponses = await HttpResponseSnapshot.CreateAsync(firstResponse, secondResponse);
         using var notificationsResponse = await client.GetAsync(
             "/api/notifications",
@@ -156,7 +158,6 @@ public sealed class ReadNotificationsTests : IClassFixture<MutableEndpointApiFac
             TestContext.Current.CancellationToken
         );
 
-        Assert.Equal(HttpStatusCode.Unauthorized, readResponse.StatusCode);
         var readHttp = await HttpResponseSnapshot.CreateAsync(readResponse);
         using var inviteeClient = ApiTestClient.CreateAuthenticated(_factory, TestUsers.Invitee);
         using var notificationsResponse = await inviteeClient.GetAsync(

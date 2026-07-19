@@ -1,6 +1,6 @@
-using System.Net;
 using System.Net.Http.Json;
 using ApesDb.Api.Features.Notifications.GetNotifications;
+using ApesDb.Api.Features.Teams;
 using ApesDb.Api.Features.Teams.Invites.RespondToTeamInvite;
 using ApesDb.Api.Tests.Infrastructure.Authentication;
 using ApesDb.Api.Tests.Infrastructure.Factories;
@@ -36,11 +36,18 @@ public sealed class RespondToTeamInviteTests : IClassFixture<MutableEndpointApiF
         using var client = ApiTestClient.CreateAuthenticated(_factory, TestUsers.Invitee);
         using var response = await PostResponseAsync(client, BaseTestData.PendingInviteId, true);
 
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         var http = await HttpResponseSnapshot.CreateAsync(response);
         var notificationsResponse = await GetNotificationsAsync(TestUsers.Invitee);
+        var teamResponse = await GetTeamAsync();
 
-        await Verify(new { RespondResponse = http.Response, NotificationsResponse = notificationsResponse });
+        await Verify(
+            new
+            {
+                RespondResponse = http.Response,
+                NotificationsResponse = notificationsResponse,
+                TeamResponse = teamResponse,
+            }
+        );
     }
 
     [Fact]
@@ -49,11 +56,18 @@ public sealed class RespondToTeamInviteTests : IClassFixture<MutableEndpointApiF
         using var client = ApiTestClient.CreateAuthenticated(_factory, TestUsers.Invitee);
         using var response = await PostResponseAsync(client, BaseTestData.PendingInviteId, false);
 
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         var http = await HttpResponseSnapshot.CreateAsync(response);
         var notificationsResponse = await GetNotificationsAsync(TestUsers.Invitee);
+        var teamResponse = await GetTeamAsync();
 
-        await Verify(new { RespondResponse = http.Response, NotificationsResponse = notificationsResponse });
+        await Verify(
+            new
+            {
+                RespondResponse = http.Response,
+                NotificationsResponse = notificationsResponse,
+                TeamResponse = teamResponse,
+            }
+        );
     }
 
     [Fact]
@@ -63,12 +77,18 @@ public sealed class RespondToTeamInviteTests : IClassFixture<MutableEndpointApiF
         using var firstResponse = await PostResponseAsync(client, BaseTestData.PendingInviteId, true);
         using var secondResponse = await PostResponseAsync(client, BaseTestData.PendingInviteId, true);
 
-        Assert.Equal(HttpStatusCode.NoContent, firstResponse.StatusCode);
-        Assert.Equal(HttpStatusCode.NoContent, secondResponse.StatusCode);
         var responses = await HttpResponseSnapshot.CreateAsync(firstResponse, secondResponse);
         var notificationsResponse = await GetNotificationsAsync(TestUsers.Invitee);
+        var teamResponse = await GetTeamAsync();
 
-        await Verify(new { RespondResponses = responses, NotificationsResponse = notificationsResponse });
+        await Verify(
+            new
+            {
+                RespondResponses = responses,
+                NotificationsResponse = notificationsResponse,
+                TeamResponse = teamResponse,
+            }
+        );
     }
 
     [Fact]
@@ -78,12 +98,18 @@ public sealed class RespondToTeamInviteTests : IClassFixture<MutableEndpointApiF
         using var acceptResponse = await PostResponseAsync(client, BaseTestData.PendingInviteId, true);
         using var declineResponse = await PostResponseAsync(client, BaseTestData.PendingInviteId, false);
 
-        Assert.Equal(HttpStatusCode.NoContent, acceptResponse.StatusCode);
-        Assert.Equal(HttpStatusCode.Conflict, declineResponse.StatusCode);
         var responses = await HttpResponseSnapshot.CreateAsync(acceptResponse, declineResponse);
         var notificationsResponse = await GetNotificationsAsync(TestUsers.Invitee);
+        var teamResponse = await GetTeamAsync();
 
-        await Verify(new { RespondResponses = responses, NotificationsResponse = notificationsResponse });
+        await Verify(
+            new
+            {
+                RespondResponses = responses,
+                NotificationsResponse = notificationsResponse,
+                TeamResponse = teamResponse,
+            }
+        );
     }
 
     [Fact]
@@ -92,11 +118,18 @@ public sealed class RespondToTeamInviteTests : IClassFixture<MutableEndpointApiF
         using var client = ApiTestClient.CreateAuthenticated(_factory, TestUsers.Outsider);
         using var response = await PostResponseAsync(client, BaseTestData.PendingInviteId, true);
 
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         var http = await HttpResponseSnapshot.CreateAsync(response);
         var notificationsResponse = await GetNotificationsAsync(TestUsers.Invitee);
+        var teamResponse = await GetTeamAsync();
 
-        await Verify(new { RespondResponse = http.Response, NotificationsResponse = notificationsResponse });
+        await Verify(
+            new
+            {
+                RespondResponse = http.Response,
+                NotificationsResponse = notificationsResponse,
+                TeamResponse = teamResponse,
+            }
+        );
     }
 
     [Fact]
@@ -105,11 +138,18 @@ public sealed class RespondToTeamInviteTests : IClassFixture<MutableEndpointApiF
         using var client = ApiTestClient.CreateAuthenticated(_factory, TestUsers.Invitee);
         using var response = await PostResponseAsync(client, UnknownInviteId, true);
 
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         var http = await HttpResponseSnapshot.CreateAsync(response);
         var notificationsResponse = await GetNotificationsAsync(TestUsers.Invitee);
+        var teamResponse = await GetTeamAsync();
 
-        await Verify(new { RespondResponse = http.Response, NotificationsResponse = notificationsResponse });
+        await Verify(
+            new
+            {
+                RespondResponse = http.Response,
+                NotificationsResponse = notificationsResponse,
+                TeamResponse = teamResponse,
+            }
+        );
     }
 
     [Fact]
@@ -118,11 +158,18 @@ public sealed class RespondToTeamInviteTests : IClassFixture<MutableEndpointApiF
         using var client = ApiTestClient.CreateAnonymous(_factory);
         using var response = await PostResponseAsync(client, BaseTestData.PendingInviteId, true);
 
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         var http = await HttpResponseSnapshot.CreateAsync(response);
         var notificationsResponse = await GetNotificationsAsync(TestUsers.Invitee);
+        var teamResponse = await GetTeamAsync();
 
-        await Verify(new { RespondResponse = http.Response, NotificationsResponse = notificationsResponse });
+        await Verify(
+            new
+            {
+                RespondResponse = http.Response,
+                NotificationsResponse = notificationsResponse,
+                TeamResponse = teamResponse,
+            }
+        );
     }
 
     private async Task<HttpResponseSnapshot> GetNotificationsAsync(TestUser user)
@@ -130,6 +177,16 @@ public sealed class RespondToTeamInviteTests : IClassFixture<MutableEndpointApiF
         using var client = ApiTestClient.CreateAuthenticated(_factory, user);
         using var response = await client.GetAsync("/api/notifications", TestContext.Current.CancellationToken);
         return await HttpResponseSnapshot.CreateAsync<NotificationsResponse>(response);
+    }
+
+    private async Task<HttpResponseSnapshot> GetTeamAsync()
+    {
+        using var client = ApiTestClient.CreateAuthenticated(_factory, TestUsers.Invitee);
+        using var response = await client.GetAsync(
+            $"/api/teams/{BaseTestData.SharedTeamId}",
+            TestContext.Current.CancellationToken
+        );
+        return await HttpResponseSnapshot.CreateAsync<TeamResponse>(response);
     }
 
     private static async Task<HttpResponseMessage> PostResponseAsync(ApiTestClient client, Guid inviteId, bool accept)

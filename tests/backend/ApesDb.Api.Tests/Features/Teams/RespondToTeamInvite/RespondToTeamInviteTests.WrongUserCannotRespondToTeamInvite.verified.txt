@@ -33,5 +33,12 @@
         AttentionCount: 1
       }
     }
+  },
+  TeamResponse: {
+    Response: {
+      StatusCode: 404,
+      ReasonPhrase: Not Found,
+      Version: 1.1
+    }
   }
 }

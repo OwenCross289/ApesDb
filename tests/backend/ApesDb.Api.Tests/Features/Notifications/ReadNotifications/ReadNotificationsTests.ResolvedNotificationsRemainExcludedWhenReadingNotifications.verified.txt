@@ -1,4 +1,9 @@
 ﻿{
+  RespondResponse: {
+    StatusCode: 204,
+    ReasonPhrase: No Content,
+    Version: 1.1
+  },
   ReadResponse: {
     StatusCode: 204,
     ReasonPhrase: No Content,

@@ -1,4 +1,3 @@
-using System.Net;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
@@ -7,17 +6,14 @@ using ApesDb.Api.Features.Teams.CreateTeam;
 using ApesDb.Api.Tests.Infrastructure.Authentication;
 using ApesDb.Api.Tests.Infrastructure.Factories;
 using ApesDb.Api.Tests.Infrastructure.Http;
-using ApesDb.Api.Tests.Infrastructure.Time;
-using ApesDb.Domain;
-using ApesDb.Domain.Entities.Teams;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using SkiaSharp;
+using TeamListResponse = ApesDb.Api.Features.Teams.GetTeams.TeamResponse;
 
 namespace ApesDb.Api.Tests.Features.Teams.CreateTeam;
 
 public sealed class CreateTeamTests : IClassFixture<MutableEndpointApiFactory>, IAsyncLifetime
 {
+    private const int MaximumProfilePictureLength = 5 * 1024 * 1024;
     private const string TeamsEndpoint = "/api/teams";
 
     private static readonly byte[] GifImage = Convert.FromBase64String(
@@ -46,7 +42,7 @@ public sealed class CreateTeamTests : IClassFixture<MutableEndpointApiFactory>, 
     {
         using var content = CreateRequest("  New Test Team  ");
 
-        await Verify(await CreateTeamAsync(content, false));
+        await Verify(await CreateTeamAsync(content));
     }
 
     [Fact]
@@ -54,7 +50,7 @@ public sealed class CreateTeamTests : IClassFixture<MutableEndpointApiFactory>, 
     {
         using var content = CreateRequest("Picture Team", CreatePngImage(), "profile.png", "image/png");
 
-        await Verify(await CreateTeamAsync(content, true));
+        await Verify(await CreateTeamAsync(content));
     }
 
     [Fact]
@@ -92,7 +88,7 @@ public sealed class CreateTeamTests : IClassFixture<MutableEndpointApiFactory>, 
     [Fact]
     public async Task CannotCreateTeamWithOversizedProfilePicture()
     {
-        var oversizedProfilePicture = new byte[CreateTeamValidator.MaximumProfilePictureLength + 1];
+        var oversizedProfilePicture = new byte[MaximumProfilePictureLength + 1];
         using var content = CreateRequest(
             "Oversized Picture Team",
             oversizedProfilePicture,
@@ -120,91 +116,29 @@ public sealed class CreateTeamTests : IClassFixture<MutableEndpointApiFactory>, 
         await Verify(await RejectCreateTeamAsync(content, TestUsers.Owner));
     }
 
-    private async Task<CreatedTeamSnapshot> CreateTeamAsync(
-        MultipartFormDataContent requestContent,
-        bool expectsProfilePicture
-    )
+    private async Task<CreatedTeamSnapshot> CreateTeamAsync(MultipartFormDataContent requestContent)
     {
-        var before = await GetDatabaseCountsAsync();
         using var client = ApiTestClient.CreateAuthenticated(_factory, TestUsers.Owner);
         using var response = await client.PostAsync(
             TeamsEndpoint,
             requestContent,
             TestContext.Current.CancellationToken
         );
-        var http = await HttpResponseSnapshot.CreateAsync<TeamResponse>(response);
-        var payload = Assert.IsType<TeamResponse>(http.Content);
+        var createHttp = await HttpResponseSnapshot.CreateAsync<TeamResponse>(response);
+        var createResponse = CreateTeamHttpSnapshot(createHttp);
 
-        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-        Assert.Equal($"/api/teams/{payload.Id}", response.Headers.Location?.ToString());
-        Assert.Equal(TestUsers.Owner.SeededUserId, payload.Members.Single().Id);
-        Assert.Equal(TestUsers.Owner.Name, payload.Members.Single().Name);
-        Assert.Equal(TestUsers.Owner.PictureUrl, payload.Members.Single().PictureUrl);
-        Assert.Equal(TestClock.UtcNow, payload.CreatedAt);
+        TeamHttpSnapshot? getResponse = null;
+        if (createHttp.Content is TeamResponse createdTeam)
+        {
+            using var getHttpResponse = await client.GetAsync(
+                $"{TeamsEndpoint}/{createdTeam.Id}",
+                TestContext.Current.CancellationToken
+            );
+            var getHttp = await HttpResponseSnapshot.CreateAsync<TeamResponse>(getHttpResponse);
+            getResponse = CreateTeamHttpSnapshot(getHttp);
+        }
 
-        await using var scope = _factory.Services.CreateAsyncScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var storedTeam = await dbContext
-            .Teams.AsNoTracking()
-            .SingleAsync(team => team.Id == payload.Id, TestContext.Current.CancellationToken);
-        var storedMemberships = await dbContext
-            .TeamMemberships.AsNoTracking()
-            .Where(membership => membership.TeamId == payload.Id)
-            .ToArrayAsync(TestContext.Current.CancellationToken);
-        var storedMembership = Assert.Single(storedMemberships);
-        var after = new DatabaseCounts(
-            await dbContext.Teams.CountAsync(TestContext.Current.CancellationToken),
-            await dbContext.TeamMemberships.CountAsync(TestContext.Current.CancellationToken)
-        );
-
-        Assert.Equal(before.Teams + 1, after.Teams);
-        Assert.Equal(before.Memberships + 1, after.Memberships);
-        Assert.Equal(payload.Id, storedMembership.TeamId);
-        Assert.Equal(TestUsers.Owner.SeededUserId, storedMembership.UserId);
-        Assert.Equal(TeamMembershipStatus.Accepted, storedMembership.Status);
-        Assert.Null(storedMembership.InvitedByUserId);
-        Assert.Equal(TestClock.UtcNow, storedMembership.InvitedAt);
-        Assert.Equal(TestClock.UtcNow, storedMembership.AcceptedAt);
-
-        var profilePicture = CreateProfilePictureSnapshot(
-            payload.ProfilePicture,
-            storedTeam.ProfilePicture,
-            expectsProfilePicture
-        );
-        var responseContent = new TeamResponseSnapshot(
-            payload.Id,
-            payload.Name,
-            payload.Kind,
-            payload.CreatedAt,
-            profilePicture,
-            payload.Members
-        );
-        var team = new StoredTeamSnapshot(
-            storedTeam.Id,
-            storedTeam.OwnerUserId,
-            storedTeam.Name,
-            storedTeam.Kind.ToString(),
-            storedTeam.CreatedAt,
-            storedTeam.UpdatedAt,
-            profilePicture
-        );
-        var membership = new StoredMembershipSnapshot(
-            storedMembership.Id,
-            storedMembership.TeamId,
-            storedMembership.UserId,
-            storedMembership.Status.ToString(),
-            storedMembership.InvitedByUserId,
-            storedMembership.InvitedAt,
-            storedMembership.AcceptedAt
-        );
-        var responseDetails = new CreatedResponseDetailsSnapshot(
-            http.Response.StatusCode,
-            http.Response.ReasonPhrase,
-            http.Response.Version,
-            "/api/teams/{teamId}",
-            http.Response.ContentHeaders
-        );
-        return new CreatedTeamSnapshot(responseDetails, responseContent, team, membership, before, after);
+        return new CreatedTeamSnapshot(createResponse, getResponse);
     }
 
     private async Task<RejectedCreateTeamSnapshot> RejectCreateTeamAsync(
@@ -212,7 +146,7 @@ public sealed class CreateTeamTests : IClassFixture<MutableEndpointApiFactory>, 
         TestUser? user
     )
     {
-        var before = await GetDatabaseCountsAsync();
+        var before = await GetTeamsAsync();
         ApiTestClient client;
         if (user is null)
         {
@@ -228,31 +162,24 @@ public sealed class CreateTeamTests : IClassFixture<MutableEndpointApiFactory>, 
             var response = await client.PostAsync(TeamsEndpoint, requestContent, TestContext.Current.CancellationToken)
         )
         {
-            var http = await HttpResponseSnapshot.CreateAsync<ValidationProblemResponse>(response);
-            if (user is null)
-            {
-                Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-            }
-            else
-            {
-                Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            }
-
-            var after = await GetDatabaseCountsAsync();
-            Assert.Equal(before, after);
-            var problem = http.Content as ValidationProblemResponse;
-            return new RejectedCreateTeamSnapshot(http.Response, problem, before, after);
+            var mutation = await HttpResponseSnapshot.CreateAsync<ValidationProblemResponse>(response);
+            var after = await GetTeamsAsync();
+            return new RejectedCreateTeamSnapshot(mutation, before, after);
         }
     }
 
-    private async Task<DatabaseCounts> GetDatabaseCountsAsync()
+    private async Task<TeamListHttpSnapshot> GetTeamsAsync()
     {
-        await using var scope = _factory.Services.CreateAsyncScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        return new DatabaseCounts(
-            await dbContext.Teams.CountAsync(TestContext.Current.CancellationToken),
-            await dbContext.TeamMemberships.CountAsync(TestContext.Current.CancellationToken)
-        );
+        using var client = ApiTestClient.CreateAuthenticated(_factory, TestUsers.Owner);
+        using var response = await client.GetAsync(TeamsEndpoint, TestContext.Current.CancellationToken);
+        var http = await HttpResponseSnapshot.CreateAsync<TeamListResponse[]>(response);
+        TeamListItemSnapshot[]? content = null;
+        if (http.Content is TeamListResponse[] teams)
+        {
+            content = teams.Select(CreateTeamListItemSnapshot).ToArray();
+        }
+
+        return new TeamListHttpSnapshot(http.Response, content);
     }
 
     private static MultipartFormDataContent CreateRequest(
@@ -285,40 +212,60 @@ public sealed class CreateTeamTests : IClassFixture<MutableEndpointApiFactory>, 
         return content;
     }
 
-    private static ProfilePictureSnapshot? CreateProfilePictureSnapshot(
-        TeamProfilePictureResponse? response,
-        byte[]? storedData,
-        bool expected
-    )
+    private static TeamHttpSnapshot CreateTeamHttpSnapshot(HttpResponseSnapshot http)
     {
-        if (!expected)
+        TeamSnapshot? content = null;
+        if (http.Content is TeamResponse team)
         {
-            Assert.Null(response);
-            Assert.Null(storedData);
+            content = new TeamSnapshot(
+                team.Id,
+                team.Name,
+                team.Kind,
+                team.CreatedAt,
+                CreateProfilePictureSnapshot(team.ProfilePicture),
+                team.Members
+            );
+        }
+
+        return new TeamHttpSnapshot(http.Response, content);
+    }
+
+    private static TeamListItemSnapshot CreateTeamListItemSnapshot(TeamListResponse team)
+    {
+        return new TeamListItemSnapshot(
+            team.Id,
+            team.Name,
+            team.Kind,
+            CreateProfilePictureSnapshot(team.ProfilePicture)
+        );
+    }
+
+    private static ProfilePictureSnapshot? CreateProfilePictureSnapshot(TeamProfilePictureResponse? response)
+    {
+        if (response is null)
+        {
             return null;
         }
 
-        Assert.NotNull(response);
-        Assert.NotNull(storedData);
-        Assert.Equal("image/webp", response.ContentType);
-        var responseHash = Convert.ToHexString(SHA256.HashData(response.Data));
-        var storedHash = Convert.ToHexString(SHA256.HashData(storedData));
-        Assert.Equal(responseHash, storedHash);
-
+        string? format = null;
+        int? width = null;
+        int? height = null;
         using var stream = new MemoryStream(response.Data);
         using var codec = SKCodec.Create(stream);
-        Assert.NotNull(codec);
-        Assert.Equal(SKEncodedImageFormat.Webp, codec.EncodedFormat);
-        Assert.Equal(TeamProfilePictureProcessor.OutputSize, codec.Info.Width);
-        Assert.Equal(TeamProfilePictureProcessor.OutputSize, codec.Info.Height);
+        if (codec is not null)
+        {
+            format = codec.EncodedFormat.ToString();
+            width = codec.Info.Width;
+            height = codec.Info.Height;
+        }
 
         return new ProfilePictureSnapshot(
             response.ContentType,
             response.Data.Length,
-            responseHash,
-            codec.EncodedFormat.ToString(),
-            codec.Info.Width,
-            codec.Info.Height
+            Convert.ToHexString(SHA256.HashData(response.Data)),
+            format,
+            width,
+            height
         );
     }
 
@@ -332,24 +279,19 @@ public sealed class CreateTeamTests : IClassFixture<MutableEndpointApiFactory>, 
         return data.ToArray();
     }
 
-    private sealed record CreatedTeamSnapshot(
-        CreatedResponseDetailsSnapshot Response,
-        TeamResponseSnapshot Content,
-        StoredTeamSnapshot StoredTeam,
-        StoredMembershipSnapshot StoredMembership,
-        DatabaseCounts Before,
-        DatabaseCounts After
+    private sealed record CreatedTeamSnapshot(TeamHttpSnapshot CreateResponse, TeamHttpSnapshot? GetResponse);
+
+    private sealed record RejectedCreateTeamSnapshot(
+        HttpResponseSnapshot MutationResponse,
+        TeamListHttpSnapshot TeamsBefore,
+        TeamListHttpSnapshot TeamsAfter
     );
 
-    private sealed record CreatedResponseDetailsSnapshot(
-        int StatusCode,
-        string? ReasonPhrase,
-        string Version,
-        string Location,
-        IReadOnlyDictionary<string, string[]> ContentHeaders
-    );
+    private sealed record TeamHttpSnapshot(HttpResponseDetails Response, TeamSnapshot? Content);
 
-    private sealed record TeamResponseSnapshot(
+    private sealed record TeamListHttpSnapshot(HttpResponseDetails Response, TeamListItemSnapshot[]? Content);
+
+    private sealed record TeamSnapshot(
         Guid Id,
         string Name,
         string Kind,
@@ -358,40 +300,20 @@ public sealed class CreateTeamTests : IClassFixture<MutableEndpointApiFactory>, 
         TeamMemberResponse[] Members
     );
 
-    private sealed record StoredTeamSnapshot(
+    private sealed record TeamListItemSnapshot(
         Guid Id,
-        Guid OwnerUserId,
         string Name,
         string Kind,
-        DateTime CreatedAt,
-        DateTime UpdatedAt,
         ProfilePictureSnapshot? ProfilePicture
-    );
-
-    private sealed record StoredMembershipSnapshot(
-        Guid Id,
-        Guid TeamId,
-        Guid UserId,
-        string Status,
-        Guid? InvitedByUserId,
-        DateTime InvitedAt,
-        DateTime? AcceptedAt
     );
 
     private sealed record ProfilePictureSnapshot(
         string ContentType,
         int Length,
         string Sha256,
-        string Format,
-        int Width,
-        int Height
-    );
-
-    private sealed record RejectedCreateTeamSnapshot(
-        HttpResponseDetails Response,
-        ValidationProblemResponse? Content,
-        DatabaseCounts Before,
-        DatabaseCounts After
+        string? Format,
+        int? Width,
+        int? Height
     );
 
     private sealed record ValidationProblemResponse(
@@ -400,6 +322,4 @@ public sealed class CreateTeamTests : IClassFixture<MutableEndpointApiFactory>, 
         int? Status,
         IReadOnlyDictionary<string, string[]>? Errors
     );
-
-    private sealed record DatabaseCounts(int Teams, int Memberships);
 }

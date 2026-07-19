@@ -1,15 +1,57 @@
 ﻿{
-  Response: {
-    StatusCode: 401,
-    ReasonPhrase: Unauthorized,
-    Version: 1.1
+  MutationResponse: {
+    Response: {
+      StatusCode: 401,
+      ReasonPhrase: Unauthorized,
+      Version: 1.1
+    }
   },
-  Before: {
-    Teams: 5,
-    Memberships: 7
+  TeamsBefore: {
+    Response: {
+      StatusCode: 200,
+      ReasonPhrase: OK,
+      Version: 1.1,
+      ContentHeaders: {
+        Content-Type: [
+          application/json; charset=utf-8
+        ]
+      }
+    },
+    Content: [
+      {
+        Id: Guid_1,
+        Name: Owner's Team,
+        Kind: solo
+      },
+      {
+        Id: Guid_2,
+        Name: Shared Test Team,
+        Kind: group
+      }
+    ]
   },
-  After: {
-    Teams: 5,
-    Memberships: 7
+  TeamsAfter: {
+    Response: {
+      StatusCode: 200,
+      ReasonPhrase: OK,
+      Version: 1.1,
+      ContentHeaders: {
+        Content-Type: [
+          application/json; charset=utf-8
+        ]
+      }
+    },
+    Content: [
+      {
+        Id: Guid_1,
+        Name: Owner's Team,
+        Kind: solo
+      },
+      {
+        Id: Guid_2,
+        Name: Shared Test Team,
+        Kind: group
+      }
+    ]
   }
 }

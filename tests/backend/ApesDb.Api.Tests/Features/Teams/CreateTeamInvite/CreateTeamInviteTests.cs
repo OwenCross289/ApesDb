@@ -1,4 +1,3 @@
-using System.Net;
 using System.Net.Http.Json;
 using ApesDb.Api.Features.Notifications.GetNotifications;
 using ApesDb.Api.Features.Teams.Invites.CreateTeamInvite;
@@ -47,13 +46,7 @@ public sealed class CreateTeamInviteTests : IClassFixture<MutableEndpointApiFact
     public async Task AnonymousUserCannotCreateTeamInvite()
     {
         await Verify(
-            await CreateNoOpInviteAsync(
-                null,
-                BaseTestData.SharedTeamId,
-                TestUsers.Outsider.Email,
-                HttpStatusCode.Unauthorized,
-                TestUsers.Outsider
-            )
+            await CreateNoOpInviteAsync(null, BaseTestData.SharedTeamId, TestUsers.Outsider.Email, TestUsers.Outsider)
         );
     }
 
@@ -65,7 +58,6 @@ public sealed class CreateTeamInviteTests : IClassFixture<MutableEndpointApiFact
                 TestUsers.Invitee,
                 BaseTestData.SharedTeamId,
                 TestUsers.Outsider.Email,
-                HttpStatusCode.NotFound,
                 TestUsers.Outsider
             )
         );
@@ -79,7 +71,6 @@ public sealed class CreateTeamInviteTests : IClassFixture<MutableEndpointApiFact
                 TestUsers.Outsider,
                 BaseTestData.SharedTeamId,
                 TestUsers.Member.Email,
-                HttpStatusCode.NotFound,
                 TestUsers.Member
             )
         );
@@ -89,13 +80,7 @@ public sealed class CreateTeamInviteTests : IClassFixture<MutableEndpointApiFact
     public async Task CannotCreateInviteForSoloTeam()
     {
         await Verify(
-            await CreateNoOpInviteAsync(
-                TestUsers.Owner,
-                OwnerSoloTeamId,
-                TestUsers.Outsider.Email,
-                HttpStatusCode.NotFound,
-                TestUsers.Outsider
-            )
+            await CreateNoOpInviteAsync(TestUsers.Owner, OwnerSoloTeamId, TestUsers.Outsider.Email, TestUsers.Outsider)
         );
     }
 
@@ -103,13 +88,7 @@ public sealed class CreateTeamInviteTests : IClassFixture<MutableEndpointApiFact
     public async Task CannotCreateInviteForUnknownTeam()
     {
         await Verify(
-            await CreateNoOpInviteAsync(
-                TestUsers.Owner,
-                UnknownTeamId,
-                TestUsers.Outsider.Email,
-                HttpStatusCode.NotFound,
-                TestUsers.Outsider
-            )
+            await CreateNoOpInviteAsync(TestUsers.Owner, UnknownTeamId, TestUsers.Outsider.Email, TestUsers.Outsider)
         );
     }
 
@@ -121,7 +100,6 @@ public sealed class CreateTeamInviteTests : IClassFixture<MutableEndpointApiFact
                 TestUsers.Owner,
                 BaseTestData.SharedTeamId,
                 TestUsers.Owner.Email,
-                HttpStatusCode.Accepted,
                 TestUsers.Owner
             )
         );
@@ -135,7 +113,6 @@ public sealed class CreateTeamInviteTests : IClassFixture<MutableEndpointApiFact
                 TestUsers.Owner,
                 BaseTestData.SharedTeamId,
                 "unknown@apesdb.test",
-                HttpStatusCode.Accepted,
                 TestUsers.Owner
             )
         );
@@ -149,7 +126,6 @@ public sealed class CreateTeamInviteTests : IClassFixture<MutableEndpointApiFact
                 TestUsers.Owner,
                 BaseTestData.SharedTeamId,
                 TestUsers.Member.Email,
-                HttpStatusCode.Accepted,
                 TestUsers.Member
             )
         );
@@ -163,7 +139,6 @@ public sealed class CreateTeamInviteTests : IClassFixture<MutableEndpointApiFact
                 TestUsers.Owner,
                 BaseTestData.SharedTeamId,
                 TestUsers.Invitee.Email,
-                HttpStatusCode.Accepted,
                 TestUsers.Invitee
             )
         );
@@ -176,8 +151,6 @@ public sealed class CreateTeamInviteTests : IClassFixture<MutableEndpointApiFact
         using var firstResponse = await PostInviteAsync(client, BaseTestData.SharedTeamId, TestUsers.Outsider.Email);
         using var secondResponse = await PostInviteAsync(client, BaseTestData.SharedTeamId, TestUsers.Outsider.Email);
 
-        Assert.Equal(HttpStatusCode.Accepted, firstResponse.StatusCode);
-        Assert.Equal(HttpStatusCode.Accepted, secondResponse.StatusCode);
         var responses = await HttpResponseSnapshot.CreateAsync(firstResponse, secondResponse);
         var notificationsResponse = await GetNotificationsAsync(TestUsers.Outsider);
 
@@ -195,8 +168,6 @@ public sealed class CreateTeamInviteTests : IClassFixture<MutableEndpointApiFact
         using var firstResponse = await firstTask;
         using var secondResponse = await secondTask;
 
-        Assert.Equal(HttpStatusCode.Accepted, firstResponse.StatusCode);
-        Assert.Equal(HttpStatusCode.Accepted, secondResponse.StatusCode);
         var responses = await HttpResponseSnapshot.CreateAsync(firstResponse, secondResponse);
         var notificationsResponse = await GetNotificationsAsync(TestUsers.Outsider);
 
@@ -208,7 +179,6 @@ public sealed class CreateTeamInviteTests : IClassFixture<MutableEndpointApiFact
         using var client = ApiTestClient.CreateAuthenticated(_factory, inviter);
         using var response = await PostInviteAsync(client, BaseTestData.SharedTeamId, email);
 
-        Assert.Equal(HttpStatusCode.Accepted, response.StatusCode);
         var http = await HttpResponseSnapshot.CreateAsync(response);
         var notificationsResponse = await GetNotificationsAsync(TestUsers.Outsider);
         return new { InviteResponse = http.Response, NotificationsResponse = notificationsResponse };
@@ -218,7 +188,6 @@ public sealed class CreateTeamInviteTests : IClassFixture<MutableEndpointApiFact
         TestUser? inviter,
         Guid teamId,
         string email,
-        HttpStatusCode expectedStatus,
         TestUser notificationsUser
     )
     {
@@ -235,7 +204,6 @@ public sealed class CreateTeamInviteTests : IClassFixture<MutableEndpointApiFact
         using (client)
         using (var response = await PostInviteAsync(client, teamId, email))
         {
-            Assert.Equal(expectedStatus, response.StatusCode);
             var http = await HttpResponseSnapshot.CreateAsync(response);
             var notificationsHttp = await GetNotificationsAsync(notificationsUser);
 

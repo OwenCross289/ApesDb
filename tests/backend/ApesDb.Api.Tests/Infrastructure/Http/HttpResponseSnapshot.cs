@@ -99,10 +99,17 @@ public sealed record HttpResponseSnapshot(HttpResponseDetails Response, object? 
 
     private static string NormalizeLocation(string value)
     {
-        return Regex.Replace(
+        var normalized = Regex.Replace(
             value,
             "([?&](?:nonce|state|code_challenge)=)[^&]+",
             "$1{scrubbed}",
+            RegexOptions.IgnoreCase
+        );
+
+        return Regex.Replace(
+            normalized,
+            "(?<=/)[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?=/|$|[?#])",
+            "{guid}",
             RegexOptions.IgnoreCase
         );
     }

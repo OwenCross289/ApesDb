@@ -1,4 +1,9 @@
 ﻿{
+  InviteResponse: {
+    StatusCode: 202,
+    ReasonPhrase: Accepted,
+    Version: 1.1
+  },
   ReadResponse: {
     StatusCode: 204,
     ReasonPhrase: No Content,
