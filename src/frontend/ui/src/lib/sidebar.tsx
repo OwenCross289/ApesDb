@@ -4,6 +4,7 @@ import * as React from "react";
 import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
 import { cva, type VariantProps } from "class-variance-authority";
+import { animate, motion, useMotionValue, type PanInfo } from "motion/react";
 
 import { useIsMobile } from "@apesdb/ui/hooks/use-mobile";
 import { cn } from "@apesdb/ui/lib/utils";
@@ -27,6 +28,10 @@ const SIDEBAR_WIDTH = "16rem";
 const SIDEBAR_WIDTH_MOBILE = "18rem";
 const SIDEBAR_WIDTH_ICON = "3rem";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
+const SIDEBAR_SWIPE_OPEN_DISTANCE = 64;
+const SIDEBAR_SWIPE_OPEN_FLICK_DISTANCE = 16;
+const SIDEBAR_SWIPE_OPEN_VELOCITY = 500;
+const SIDEBAR_SWIPE_MAX_DRAG = 96;
 
 type SidebarContextProps = {
   state: "expanded" | "collapsed";
@@ -148,6 +153,7 @@ function Sidebar({
   side = "left",
   variant = "sidebar",
   collapsible = "offcanvas",
+  mobileSwipeToOpen = true,
   className,
   children,
   dir,
@@ -156,6 +162,7 @@ function Sidebar({
   side?: "left" | "right";
   variant?: "sidebar" | "floating" | "inset";
   collapsible?: "offcanvas" | "icon" | "none";
+  mobileSwipeToOpen?: boolean;
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
 
@@ -177,6 +184,9 @@ function Sidebar({
   if (isMobile) {
     return (
       <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
+        {mobileSwipeToOpen && !openMobile && (
+          <SidebarSwipeArea side={side} onOpen={() => setOpenMobile(true)} />
+        )}
         <SheetContent
           dir={dir}
           data-sidebar="sidebar"
@@ -243,6 +253,54 @@ function Sidebar({
         </div>
       </div>
     </div>
+  );
+}
+
+function SidebarSwipeArea({ side, onOpen }: { side: "left" | "right"; onOpen: () => void }) {
+  const x = useMotionValue(0);
+  const direction = side === "left" ? 1 : -1;
+  const dragConstraints =
+    side === "left"
+      ? { left: 0, right: SIDEBAR_SWIPE_MAX_DRAG }
+      : { left: -SIDEBAR_SWIPE_MAX_DRAG, right: 0 };
+
+  const handleDragEnd = React.useCallback(
+    (_event: PointerEvent, info: PanInfo) => {
+      const distance = info.offset.x * direction;
+      const velocity = info.velocity.x * direction;
+      const passedDistanceThreshold = distance >= SIDEBAR_SWIPE_OPEN_DISTANCE;
+      const passedVelocityThreshold =
+        distance >= SIDEBAR_SWIPE_OPEN_FLICK_DISTANCE && velocity >= SIDEBAR_SWIPE_OPEN_VELOCITY;
+
+      if (passedDistanceThreshold || passedVelocityThreshold) {
+        onOpen();
+      }
+
+      void animate(x, 0, {
+        type: "spring",
+        stiffness: 900,
+        damping: 80,
+      });
+    },
+    [direction, onOpen, x],
+  );
+
+  return (
+    <motion.div
+      aria-hidden="true"
+      data-slot="sidebar-swipe-area"
+      drag="x"
+      dragConstraints={dragConstraints}
+      dragElastic={0}
+      dragMomentum={false}
+      onDragEnd={handleDragEnd}
+      style={{ x, touchAction: "pan-y" }}
+      className={cn(
+        "fixed inset-y-0 z-40 w-5",
+        side === "left" && "left-0",
+        side === "right" && "right-0",
+      )}
+    />
   );
 }
 
