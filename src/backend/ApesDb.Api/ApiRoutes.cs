@@ -31,6 +31,12 @@ public static class ApiRoutes
         public const string RespondToInvite = "teams/invites/{inviteId:guid}/respond";
     }
 
+    public static class Profiles
+    {
+        public const string Get = "profiles";
+        public const string ById = "profiles/{id:guid}";
+    }
+
     public static class Auth
     {
         public const string Prefix = "auth";

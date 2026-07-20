@@ -1,0 +1,27 @@
+﻿{
+  Response: {
+    StatusCode: 200,
+    ReasonPhrase: OK,
+    Version: 1.1,
+    ContentHeaders: {
+      Content-Type: [
+        application/json; charset=utf-8
+      ]
+    }
+  },
+  Content: {
+    Items: [
+      {
+        Id: Guid_1,
+        Name: Mason Member,
+        PictureUrl: https://images.apesdb.test/member.png,
+        AboutMe: Co-op strategist and achievement hunter.,
+        IsPublic: true
+      }
+    ],
+    Total: 3,
+    FilteredTotal: 3,
+    Page: 2,
+    PageSize: 1
+  }
+}
