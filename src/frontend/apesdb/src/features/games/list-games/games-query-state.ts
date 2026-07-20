@@ -7,7 +7,7 @@ import {
 } from "nuqs";
 
 const idArrayParser = parseAsArrayOf(parseAsInteger).withDefault([]);
-const defaultGameTypeIdsParser = parseAsArrayOf(parseAsInteger).withDefault([0, 9]);
+const defaultGameTypeIdsParser = parseAsArrayOf(parseAsInteger).withDefault([0, 9, 10]);
 
 export const gameFilterParsers = {
   search: parseAsString.withDefault(""),
@@ -54,7 +54,7 @@ export function hasGameFilters(filters: GameFilters): boolean {
 }
 
 export const defaultAdvancedFilters: GameFilterPatch = {
-  gameTypeIds: [0, 9],
+  gameTypeIds: [0, 9, 10],
   gameStatusIds: [],
   genreIds: [],
   themeIds: [],
