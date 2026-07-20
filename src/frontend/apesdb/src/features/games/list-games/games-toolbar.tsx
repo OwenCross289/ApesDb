@@ -1,4 +1,4 @@
-import { Badge, Button, Field, FieldLabel, Switch } from "@apesdb/ui";
+import { Badge, Button } from "@apesdb/ui";
 import { ListFilter, Search } from "lucide-react";
 import type { GameFilterPatch, GameFilters } from "./games-query-state";
 import { DebouncedFilterInput } from "./debounced-filter-input";
@@ -17,7 +17,7 @@ export function GamesToolbar({
   onOpenAdvancedFilters,
 }: GamesToolbarProps) {
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+    <div className="flex items-center gap-2">
       <div className="relative min-w-0 flex-1 sm:max-w-md">
         <Search className="pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 text-muted-foreground" />
         <DebouncedFilterInput
@@ -28,26 +28,18 @@ export function GamesToolbar({
           onValueChange={(search) => onFiltersChange({ search })}
         />
       </div>
-      <div className="flex items-center gap-3">
-        <Field orientation="horizontal" className="w-auto">
-          <Switch
-            id="games-coop-filter"
-            checked={filters.isCoop}
-            onCheckedChange={(isCoop) => onFiltersChange({ isCoop })}
-          />
-          <FieldLabel htmlFor="games-coop-filter">Co-op only</FieldLabel>
-        </Field>
-        <Button
-          type="button"
-          variant={advancedFilterCount > 0 ? "secondary" : "outline"}
-          size="lg"
-          onClick={onOpenAdvancedFilters}
-        >
-          <ListFilter />
-          Advanced
-          {advancedFilterCount > 0 && <Badge>{advancedFilterCount}</Badge>}
-        </Button>
-      </div>
+      <Button
+        aria-label="Advanced filters"
+        className="shrink-0"
+        type="button"
+        variant={advancedFilterCount > 0 ? "secondary" : "outline"}
+        size="lg"
+        onClick={onOpenAdvancedFilters}
+      >
+        <ListFilter />
+        <span className="hidden sm:inline">Advanced</span>
+        {advancedFilterCount > 0 && <Badge>{advancedFilterCount}</Badge>}
+      </Button>
     </div>
   );
 }

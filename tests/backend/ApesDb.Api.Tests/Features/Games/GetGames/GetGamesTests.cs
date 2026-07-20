@@ -106,18 +106,6 @@ public sealed class GetGamesTests
     }
 
     [Fact]
-    public async Task FiltersByCoopGames()
-    {
-        await Verify(await GetGamesAsync(("IsCoop", "true")));
-    }
-
-    [Fact]
-    public async Task FiltersByNonCoopGames()
-    {
-        await Verify(await GetGamesAsync(("IsCoop", "false")));
-    }
-
-    [Fact]
     public async Task FiltersBySteamGames()
     {
         await Verify(await GetGamesAsync(("IsSteam", "true")));

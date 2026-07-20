@@ -39,10 +39,6 @@ export function createGamesRequestUrl(filters: GameFilters): string {
   appendText(params, "franchise", filters.franchise);
   appendText(params, "search", filters.search);
 
-  if (filters.isCoop) {
-    params.set("isCoop", "true");
-  }
-
   if (filters.isSteam) {
     params.set("isSteam", "true");
   }
