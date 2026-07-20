@@ -28,9 +28,9 @@ const SIDEBAR_WIDTH = "16rem";
 const SIDEBAR_WIDTH_MOBILE = "18rem";
 const SIDEBAR_WIDTH_ICON = "3rem";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
-const SIDEBAR_SWIPE_OPEN_DISTANCE = 64;
-const SIDEBAR_SWIPE_OPEN_FLICK_DISTANCE = 16;
-const SIDEBAR_SWIPE_OPEN_VELOCITY = 500;
+const SIDEBAR_SWIPE_DISTANCE = 64;
+const SIDEBAR_SWIPE_FLICK_DISTANCE = 16;
+const SIDEBAR_SWIPE_VELOCITY = 500;
 const SIDEBAR_SWIPE_MAX_DRAG = 96;
 
 type SidebarContextProps = {
@@ -154,6 +154,7 @@ function Sidebar({
   variant = "sidebar",
   collapsible = "offcanvas",
   mobileSwipeToOpen = true,
+  mobileSwipeToClose = true,
   className,
   children,
   dir,
@@ -163,6 +164,7 @@ function Sidebar({
   variant?: "sidebar" | "floating" | "inset";
   collapsible?: "offcanvas" | "icon" | "none";
   mobileSwipeToOpen?: boolean;
+  mobileSwipeToClose?: boolean;
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
 
@@ -185,7 +187,7 @@ function Sidebar({
     return (
       <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
         {mobileSwipeToOpen && !openMobile && (
-          <SidebarSwipeArea side={side} onOpen={() => setOpenMobile(true)} />
+          <SidebarSwipeArea action="open" side={side} onSwipe={() => setOpenMobile(true)} />
         )}
         <SheetContent
           dir={dir}
@@ -205,6 +207,9 @@ function Sidebar({
             <SheetDescription>Displays the mobile sidebar.</SheetDescription>
           </SheetHeader>
           <div className="flex h-full w-full flex-col">{children}</div>
+          {mobileSwipeToClose && (
+            <SidebarSwipeArea action="close" side={side} onSwipe={() => setOpenMobile(false)} />
+          )}
         </SheetContent>
       </Sheet>
     );
@@ -256,11 +261,23 @@ function Sidebar({
   );
 }
 
-function SidebarSwipeArea({ side, onOpen }: { side: "left" | "right"; onOpen: () => void }) {
+function SidebarSwipeArea({
+  action,
+  side,
+  onSwipe,
+}: {
+  action: "open" | "close";
+  side: "left" | "right";
+  onSwipe: () => void;
+}) {
   const x = useMotionValue(0);
-  const direction = side === "left" ? 1 : -1;
+  let direction = side === "left" ? 1 : -1;
+  if (action === "close") {
+    direction *= -1;
+  }
+
   const dragConstraints =
-    side === "left"
+    direction > 0
       ? { left: 0, right: SIDEBAR_SWIPE_MAX_DRAG }
       : { left: -SIDEBAR_SWIPE_MAX_DRAG, right: 0 };
 
@@ -268,12 +285,12 @@ function SidebarSwipeArea({ side, onOpen }: { side: "left" | "right"; onOpen: ()
     (_event: PointerEvent, info: PanInfo) => {
       const distance = info.offset.x * direction;
       const velocity = info.velocity.x * direction;
-      const passedDistanceThreshold = distance >= SIDEBAR_SWIPE_OPEN_DISTANCE;
+      const passedDistanceThreshold = distance >= SIDEBAR_SWIPE_DISTANCE;
       const passedVelocityThreshold =
-        distance >= SIDEBAR_SWIPE_OPEN_FLICK_DISTANCE && velocity >= SIDEBAR_SWIPE_OPEN_VELOCITY;
+        distance >= SIDEBAR_SWIPE_FLICK_DISTANCE && velocity >= SIDEBAR_SWIPE_VELOCITY;
 
       if (passedDistanceThreshold || passedVelocityThreshold) {
-        onOpen();
+        onSwipe();
       }
 
       void animate(x, 0, {
@@ -282,12 +299,13 @@ function SidebarSwipeArea({ side, onOpen }: { side: "left" | "right"; onOpen: ()
         damping: 80,
       });
     },
-    [direction, onOpen, x],
+    [direction, onSwipe, x],
   );
 
   return (
     <motion.div
       aria-hidden="true"
+      data-action={action}
       data-slot="sidebar-swipe-area"
       drag="x"
       dragConstraints={dragConstraints}
@@ -296,9 +314,13 @@ function SidebarSwipeArea({ side, onOpen }: { side: "left" | "right"; onOpen: ()
       onDragEnd={handleDragEnd}
       style={{ x, touchAction: "pan-y" }}
       className={cn(
-        "fixed inset-y-0 z-40 w-5",
-        side === "left" && "left-0",
-        side === "right" && "right-0",
+        "inset-y-0 z-40 w-5",
+        action === "open" && "fixed",
+        action === "close" && "absolute",
+        action === "open" && side === "left" && "left-0",
+        action === "open" && side === "right" && "right-0",
+        action === "close" && side === "left" && "right-0",
+        action === "close" && side === "right" && "left-0",
       )}
     />
   );
