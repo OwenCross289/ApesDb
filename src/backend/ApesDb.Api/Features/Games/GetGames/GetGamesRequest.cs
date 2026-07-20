@@ -26,8 +26,6 @@ public sealed class GetGamesRequest
 
     public string? Search { get; init; }
 
-    public bool? IsCoop { get; init; }
-
     public bool? IsSteam { get; init; }
 
     public int Page { get; init; } = 1;

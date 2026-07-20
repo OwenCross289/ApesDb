@@ -88,13 +88,6 @@ public sealed class GetGamesEndpoint : Endpoint<GetGamesRequest, Pagable<GetGame
             )
             .WhereContains(request.Search, game => game.Name)
             .WhereEqual(
-                request.IsCoop,
-                game =>
-                    _dbContext.GameGameModes.Any(link =>
-                        link.GameId == game.Id && link.GameMode.Slug == CoopGameModeSlug
-                    )
-            )
-            .WhereEqual(
                 request.IsSteam,
                 game =>
                     _dbContext.ExternalGames.Any(identifier =>

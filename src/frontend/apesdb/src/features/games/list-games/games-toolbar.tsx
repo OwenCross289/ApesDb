@@ -1,4 +1,4 @@
-import { Badge, Button, Toggle } from "@apesdb/ui";
+import { Badge, Button } from "@apesdb/ui";
 import { ListFilter, Search } from "lucide-react";
 import type { GameFilterPatch, GameFilters } from "./games-query-state";
 import { DebouncedFilterInput } from "./debounced-filter-input";
@@ -28,16 +28,6 @@ export function GamesToolbar({
           onValueChange={(search) => onFiltersChange({ search })}
         />
       </div>
-      <Toggle
-        aria-label="Show co-op games only"
-        className="shrink-0"
-        pressed={filters.isCoop}
-        size="lg"
-        variant="outline"
-        onPressedChange={(isCoop) => onFiltersChange({ isCoop })}
-      >
-        Co-op
-      </Toggle>
       <Button
         aria-label="Advanced filters"
         className="shrink-0"

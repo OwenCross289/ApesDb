@@ -11,7 +11,6 @@ const defaultGameTypeIdsParser = parseAsArrayOf(parseAsInteger).withDefault([0, 
 
 export const gameFilterParsers = {
   search: parseAsString.withDefault(""),
-  isCoop: parseAsBoolean.withDefault(false),
   page: parseAsInteger.withDefault(1),
   gameTypeIds: defaultGameTypeIdsParser,
   gameStatusIds: idArrayParser,
@@ -50,7 +49,7 @@ export function countAdvancedFilters(filters: GameFilters): number {
 }
 
 export function hasGameFilters(filters: GameFilters): boolean {
-  return filters.search.trim().length > 0 || filters.isCoop || countAdvancedFilters(filters) > 0;
+  return filters.search.trim().length > 0 || countAdvancedFilters(filters) > 0;
 }
 
 export const defaultAdvancedFilters: GameFilterPatch = {
