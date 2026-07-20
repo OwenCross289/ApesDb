@@ -27,16 +27,19 @@ import {
   SidebarTrigger,
   TooltipProvider,
 } from "@apesdb/ui";
-import { appName } from "@apesdb/common";
 import { ArrowLeft, Gamepad2, Home, Settings } from "lucide-react";
 import { useAuth } from "../auth-context";
 import { AccountMenu } from "../account-menu";
+import { AppBreadcrumbs } from "../app-breadcrumbs";
 import { NotificationBell } from "../features/notifications/notification-bell";
 import { useNotificationStream } from "../features/notifications/use-notification-stream";
 import { TeamProvider, useActiveTeam } from "../features/teams/team-context";
 import { TeamSwitcher } from "../features/teams/select-team/team-switcher";
 
 export const Route = createFileRoute("/_app")({
+  staticData: {
+    breadcrumbs: [{ label: "Home", to: "/" }],
+  },
   beforeLoad: ({ context, location }) => {
     if (!context.auth.isAuthenticated) {
       throw redirect({
@@ -68,7 +71,7 @@ function AppLayout() {
             <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
               <SidebarTrigger className="-ml-1" />
               <Separator className="h-4" orientation="vertical" />
-              <p className="text-sm font-medium">{appName}</p>
+              <AppBreadcrumbs />
               <div className="ml-auto flex items-center">
                 <NotificationBell open={notificationsOpen} onOpenChange={setNotificationsOpen} />
               </div>
