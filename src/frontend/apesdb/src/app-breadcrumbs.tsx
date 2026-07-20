@@ -77,7 +77,7 @@ export function AppBreadcrumbs() {
           if (breadcrumb.icon === "home") {
             content = (
               <>
-                <HomeIcon aria-hidden className="size-3.5" />
+                <HomeIcon aria-hidden className="size-4" />
                 <span className="sr-only">{breadcrumb.label}</span>
               </>
             );
