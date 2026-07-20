@@ -50,12 +50,7 @@ export function GamesPage() {
 
   return (
     <div className="mx-auto flex h-full min-h-0 w-full max-w-7xl flex-col gap-4 overflow-hidden">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Games</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Browse and filter the synchronized game catalog.
-        </p>
-      </div>
+      <h1 className="text-2xl font-semibold tracking-tight">Games</h1>
       <GamesTable
         data={games.data}
         error={games.error}
