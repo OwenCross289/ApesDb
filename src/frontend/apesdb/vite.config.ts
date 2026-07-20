@@ -1,15 +1,15 @@
 import tailwindcss from "@tailwindcss/vite";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { fileURLToPath, URL } from "node:url";
 import { defineConfig, type HtmlTagDescriptor } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 const appName = "ApesDb";
 const darkThemeColor = "#171717";
-const pwaDevTempDir = fileURLToPath(
-  new URL("../../../node_modules/.vite/apesdb-pwa-dev", import.meta.url),
-);
+const pwaDevTempDir = join(tmpdir(), "apesdb-pwa-dev");
 
 function createFaviconTags(isLocalServe: boolean): HtmlTagDescriptor[] {
   if (isLocalServe) {
@@ -115,6 +115,7 @@ function createIncludeAssets(isLocalServe: boolean) {
 
 export default defineConfig(({ command }) => {
   const isLocalServe = command === "serve";
+  const isPwaDevEnabled = isLocalServe && process.env.APESDB_PWA_DEV === "true";
 
   return {
     plugins: [
@@ -131,7 +132,7 @@ export default defineConfig(({ command }) => {
         registerType: "prompt",
         includeAssets: createIncludeAssets(isLocalServe),
         devOptions: {
-          enabled: isLocalServe,
+          enabled: isPwaDevEnabled,
           resolveTempFolder: () => pwaDevTempDir,
           type: "module",
         },
@@ -149,7 +150,7 @@ export default defineConfig(({ command }) => {
         workbox: {
           cleanupOutdatedCaches: true,
           globIgnores: ["**/*-login-banner.png"], // cache limit is 2mb these are bigger get them from server its cheaper.
-          globPatterns: ["**/*.{js,css,html,png,svg,woff2}"],
+          globPatterns: isLocalServe ? [] : ["**/*.{js,css,html,png,svg,woff2}"],
           navigateFallback: "/index.html",
           navigateFallbackDenylist: [/^\/api\//],
         },
