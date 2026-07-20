@@ -1,6 +1,15 @@
-import { Link, Outlet, createFileRoute, redirect, useRouterState } from "@tanstack/react-router";
+import {
+  Link,
+  Outlet,
+  createFileRoute,
+  redirect,
+  useCanGoBack,
+  useNavigate,
+  useRouterState,
+} from "@tanstack/react-router";
 import { useCallback, useState } from "react";
 import {
+  Button,
   Separator,
   Sidebar,
   SidebarContent,
@@ -19,7 +28,7 @@ import {
   TooltipProvider,
 } from "@apesdb/ui";
 import { appName } from "@apesdb/common";
-import { Gamepad2, Home, Settings } from "lucide-react";
+import { ArrowLeft, Gamepad2, Home, Settings } from "lucide-react";
 import { useAuth } from "../auth-context";
 import { AccountMenu } from "../account-menu";
 import { NotificationBell } from "../features/notifications/notification-bell";
@@ -65,12 +74,40 @@ function AppLayout() {
               </div>
             </header>
             <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-3">
-              <Outlet />
+              <AppBackButton />
+              <div className="min-h-0 flex-1">
+                <Outlet />
+              </div>
             </div>
           </SidebarInset>
         </SidebarProvider>
       </TooltipProvider>
     </TeamProvider>
+  );
+}
+
+function AppBackButton() {
+  const canGoBack = useCanGoBack();
+  const navigate = useNavigate();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const goBack = useCallback(() => {
+    if (canGoBack) {
+      window.history.back();
+      return;
+    }
+
+    void navigate({ to: "/", replace: true });
+  }, [canGoBack, navigate]);
+
+  if (pathname === "/") {
+    return null;
+  }
+
+  return (
+    <Button className="mb-3 shrink-0 self-start" type="button" variant="ghost" onClick={goBack}>
+      <ArrowLeft />
+      Back
+    </Button>
   );
 }
 

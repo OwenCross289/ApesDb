@@ -1,6 +1,5 @@
-import { Link } from "@tanstack/react-router";
 import { Button, Item, ItemContent, ItemDescription, ItemTitle, Skeleton } from "@apesdb/ui";
-import { ArrowLeft, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { GameDetailsHeader } from "./game-details-header";
 import { GameDetailsSections } from "./game-details-sections";
 import { useGameDetails } from "./use-game-details";
@@ -8,15 +7,6 @@ import { useGameDetails } from "./use-game-details";
 type GameDetailsPageProps = {
   gameId: number;
 };
-
-function BackToGamesButton() {
-  return (
-    <Button render={<Link search to="/games" />} variant="ghost">
-      <ArrowLeft />
-      Back to games
-    </Button>
-  );
-}
 
 function GameDetailsSkeleton() {
   return (
@@ -83,10 +73,5 @@ export function GameDetailsPage({ gameId }: GameDetailsPageProps) {
     content = null;
   }
 
-  return (
-    <div className="mx-auto w-full max-w-7xl space-y-4">
-      <BackToGamesButton />
-      {content}
-    </div>
-  );
+  return <div className="mx-auto w-full max-w-7xl">{content}</div>;
 }
