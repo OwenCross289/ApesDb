@@ -30,14 +30,15 @@ export type GameFilters = inferParserType<typeof gameFilterParsers>;
 export type GameFilterPatch = Partial<GameFilters>;
 
 export function countAdvancedFilters(filters: GameFilters): number {
+  const idFilterCount =
+    filters.gameTypeIds.length +
+    filters.gameStatusIds.length +
+    filters.genreIds.length +
+    filters.themeIds.length +
+    filters.gameModeIds.length +
+    filters.playerPerspectiveIds.length +
+    filters.platformIds.length;
   const values = [
-    filters.gameTypeIds.length > 0,
-    filters.gameStatusIds.length > 0,
-    filters.genreIds.length > 0,
-    filters.themeIds.length > 0,
-    filters.gameModeIds.length > 0,
-    filters.playerPerspectiveIds.length > 0,
-    filters.platformIds.length > 0,
     filters.developer.trim().length > 0,
     filters.publisher.trim().length > 0,
     filters.collection.trim().length > 0,
@@ -45,7 +46,7 @@ export function countAdvancedFilters(filters: GameFilters): number {
     filters.isSteam,
   ];
 
-  return values.filter(Boolean).length;
+  return idFilterCount + values.filter(Boolean).length;
 }
 
 export function hasGameFilters(filters: GameFilters): boolean {
