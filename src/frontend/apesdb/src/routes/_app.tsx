@@ -90,6 +90,7 @@ function AppBackButton() {
   const canGoBack = useCanGoBack();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const pathSegments = pathname.split("/").filter(Boolean);
   const goBack = useCallback(() => {
     if (canGoBack) {
       window.history.back();
@@ -99,7 +100,7 @@ function AppBackButton() {
     void navigate({ to: "/", replace: true });
   }, [canGoBack, navigate]);
 
-  if (pathname === "/") {
+  if (pathSegments.length <= 1) {
     return null;
   }
 
