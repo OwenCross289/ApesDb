@@ -55,6 +55,13 @@ public sealed class UserProvisioningService : IUserProvisioningService
                     ON CONFLICT DO NOTHING
                     RETURNING "Id", "OwnerUserId"
                 ),
+                "inserted_if_not_exists_profile" AS (
+                    INSERT INTO "public"."Profiles" ("UserId")
+                    SELECT "Id"
+                    FROM "upserted_user"
+                    ON CONFLICT ("UserId") DO NOTHING
+                    RETURNING "UserId"
+                ),
                 "solo_team" AS (
                     SELECT "Id", "OwnerUserId" FROM "inserted_if_not_exists_team"
                     UNION ALL

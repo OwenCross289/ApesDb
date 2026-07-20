@@ -21,6 +21,7 @@ public sealed class BaseTestData
         var allowedUsers = AllowedUserTestData.Create();
         var users = UserTestData.Create();
         var usersById = users.ToDictionary(user => user.Id);
+        var profiles = ProfileTestData.Create(usersById);
         var teams = TeamTestData.Create();
         var teamsById = teams.ToDictionary(team => team.Id);
         var teamMemberships = TeamMembershipTestData.Create(teams, teamsById, usersById);
@@ -57,6 +58,7 @@ public sealed class BaseTestData
         var entities = new List<object>();
         entities.AddRange(allowedUsers);
         entities.AddRange(users);
+        entities.AddRange(profiles);
         entities.AddRange(teams);
         entities.AddRange(teamMemberships);
         entities.AddRange(notifications);

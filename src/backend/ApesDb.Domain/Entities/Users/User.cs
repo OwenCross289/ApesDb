@@ -15,6 +15,8 @@ public sealed class User
 
     public string? PictureUrl { get; set; }
 
+    public Profile? Profile { get; set; }
+
     public DateTime CreatedAt { get; init; }
 
     public DateTime UpdatedAt { get; set; }

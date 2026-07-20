@@ -1,0 +1,22 @@
+﻿{
+  Response: {
+    StatusCode: 400,
+    ReasonPhrase: Bad Request,
+    Version: 1.1,
+    ContentHeaders: {
+      Content-Type: [
+        application/problem+json; charset=utf-8
+      ]
+    }
+  },
+  Content: {
+    Errors: {
+      page: [
+        'page' must be greater than or equal to '1'.
+      ],
+      pageSize: [
+        'page Size' must be between 1 and 100. You entered 101.
+      ]
+    }
+  }
+}

@@ -14,6 +14,8 @@ public sealed class ApplicationDbContext : DbContext
 
     public DbSet<User> Users => Set<User>();
 
+    public DbSet<Profile> Profiles => Set<Profile>();
+
     public DbSet<AllowedUser> AllowedUsers => Set<AllowedUser>();
 
     public DbSet<Team> Teams => Set<Team>();
