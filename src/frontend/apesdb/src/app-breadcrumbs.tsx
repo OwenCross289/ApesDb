@@ -8,10 +8,13 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@apesdb/ui";
+import { HomeIcon } from "lucide-react";
 
 type BreadcrumbDestination = "/" | "/games";
+type BreadcrumbIcon = "home";
 
 type BreadcrumbLabelSegment = {
+  icon?: BreadcrumbIcon;
   label: string;
   to?: BreadcrumbDestination;
 };
@@ -23,6 +26,7 @@ type BreadcrumbParamSegment = {
 type BreadcrumbSegment = BreadcrumbLabelSegment | BreadcrumbParamSegment;
 
 type ResolvedBreadcrumb = {
+  icon?: BreadcrumbIcon;
   label: string;
   to?: BreadcrumbDestination;
   truncate?: boolean;
@@ -62,11 +66,21 @@ export function AppBreadcrumbs() {
         {breadcrumbs.map((breadcrumb, index) => {
           const isCurrent = index === breadcrumbs.length - 1;
           let itemClassName = "shrink-0";
-          let labelClassName = "whitespace-nowrap";
+          let labelClassName = "inline-flex items-center whitespace-nowrap";
 
           if (breadcrumb.truncate) {
             itemClassName = "min-w-0";
             labelClassName = "block max-w-24 truncate sm:max-w-72";
+          }
+
+          let content = <>{breadcrumb.label}</>;
+          if (breadcrumb.icon === "home") {
+            content = (
+              <>
+                <HomeIcon aria-hidden className="size-3.5" />
+                <span className="sr-only">{breadcrumb.label}</span>
+              </>
+            );
           }
 
           return (
@@ -75,7 +89,7 @@ export function AppBreadcrumbs() {
               <BreadcrumbItem className={itemClassName}>
                 {isCurrent ? (
                   <BreadcrumbPage className={labelClassName} title={breadcrumb.label}>
-                    {breadcrumb.label}
+                    {content}
                   </BreadcrumbPage>
                 ) : breadcrumb.to ? (
                   <BreadcrumbLink
@@ -83,11 +97,11 @@ export function AppBreadcrumbs() {
                     render={<Link activeOptions={{ exact: true }} to={breadcrumb.to} />}
                     title={breadcrumb.label}
                   >
-                    {breadcrumb.label}
+                    {content}
                   </BreadcrumbLink>
                 ) : (
                   <span className={labelClassName} title={breadcrumb.label}>
-                    {breadcrumb.label}
+                    {content}
                   </span>
                 )}
               </BreadcrumbItem>

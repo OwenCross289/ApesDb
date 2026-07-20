@@ -38,7 +38,7 @@ import { TeamSwitcher } from "../features/teams/select-team/team-switcher";
 
 export const Route = createFileRoute("/_app")({
   staticData: {
-    breadcrumbs: [{ label: "Home", to: "/" }],
+    breadcrumbs: [{ icon: "home", label: "Home", to: "/" }],
   },
   beforeLoad: ({ context, location }) => {
     if (!context.auth.isAuthenticated) {
@@ -69,7 +69,10 @@ function AppLayout() {
           <AppSidebar />
           <SidebarInset>
             <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
-              <SidebarTrigger className="-ml-1" />
+              <SidebarTrigger
+                className="-ml-1 text-muted-foreground hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent"
+                size="icon-lg"
+              />
               <Separator className="h-4" orientation="vertical" />
               <AppBreadcrumbs />
               <div className="ml-auto flex items-center">
