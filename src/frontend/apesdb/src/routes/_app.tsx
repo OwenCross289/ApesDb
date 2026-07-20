@@ -69,7 +69,7 @@ function AppLayout() {
           <AppSidebar />
           <SidebarInset>
             <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
-              <SidebarTrigger className="-ml-1 cursor-pointer" size="icon-lg" />
+              <SidebarTrigger className="-ml-1" size="icon-lg" />
               <Separator className="h-4" orientation="vertical" />
               <AppBreadcrumbs />
               <div className="ml-auto flex items-center">

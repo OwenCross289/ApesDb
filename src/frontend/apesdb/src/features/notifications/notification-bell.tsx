@@ -160,7 +160,7 @@ export function NotificationBell({ open, onOpenChange }: NotificationBellProps) 
         render={
           <Button
             aria-label={`Notifications${attentionCount > 0 ? ` (${attentionCount} need attention)` : ""}`}
-            className="relative cursor-pointer"
+            className="relative"
             size="icon-lg"
             type="button"
             variant="ghost"
