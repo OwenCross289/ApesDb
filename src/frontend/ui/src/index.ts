@@ -1,6 +1,15 @@
 export { Button, buttonVariants, type ButtonProps } from "./lib/button";
 export { Alert, AlertAction, AlertDescription, AlertTitle } from "./lib/alert";
 export { Badge, badgeVariants } from "./lib/badge";
+export {
+  Breadcrumb,
+  BreadcrumbEllipsis,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "./lib/breadcrumb";
 export { Checkbox } from "./lib/checkbox";
 export {
   Card,
