@@ -31,6 +31,7 @@ public sealed class BaseTestData
         var genres = GenreTestData.Create();
         var themes = ThemeTestData.Create();
         var gameModes = GameModeTestData.Create();
+        var gameEngines = GameEngineTestData.Create();
         var playerPerspectives = PlayerPerspectiveTestData.Create();
         var platformTypes = PlatformTypeTestData.Create();
         var websiteTypes = WebsiteTypeTestData.Create();
@@ -45,6 +46,7 @@ public sealed class BaseTestData
         var gameGenres = GameGenreTestData.Create(games, genres);
         var gameThemes = GameThemeTestData.Create(games, themes);
         var gameGameModes = GameGameModeTestData.Create(games, gameModes);
+        var gameGameEngines = GameGameEngineTestData.Create(games, gameEngines);
         var gamePlayerPerspectives = GamePlayerPerspectiveTestData.Create(games, playerPerspectives);
         var gamePlatforms = GamePlatformTestData.Create(games, platforms);
         var gameCollections = GameCollectionTestData.Create(games, collections);
@@ -65,6 +67,7 @@ public sealed class BaseTestData
         entities.AddRange(genres.Values);
         entities.AddRange(themes.Values);
         entities.AddRange(gameModes.Values);
+        entities.AddRange(gameEngines.Values);
         entities.AddRange(playerPerspectives.Values);
         entities.AddRange(platformTypes.Values);
         entities.AddRange(websiteTypes.Values);
@@ -79,6 +82,7 @@ public sealed class BaseTestData
         entities.AddRange(gameGenres);
         entities.AddRange(gameThemes);
         entities.AddRange(gameGameModes);
+        entities.AddRange(gameGameEngines);
         entities.AddRange(gamePlayerPerspectives);
         entities.AddRange(gamePlatforms);
         entities.AddRange(gameCollections);

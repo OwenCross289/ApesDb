@@ -16,7 +16,7 @@ internal sealed class IgdbService : IIgdbService
         "id,name,slug,summary,storyline,total_rating,total_rating_count,first_release_date,url,"
         + "game_type,game_status,version_parent,"
         + CoverFields
-        + ",dlcs,expansions,standalone_expansions,genres,themes,game_modes,player_perspectives,"
+        + ",dlcs,expansions,standalone_expansions,genres,themes,game_modes,game_engines,player_perspectives,"
         + "platforms,collections,franchise,franchises,checksum,updated_at";
 
     private readonly IIgdbClient _client;
@@ -130,6 +130,27 @@ internal sealed class IgdbService : IIgdbService
                 resource.Name,
                 resource.Slug,
                 resource.Url,
+                resource.Checksum,
+                ToDateTimeOffset(resource.UpdatedAt)
+            ),
+            cancellationToken
+        );
+    }
+
+    public Task<IReadOnlyList<IgdbGameEngine>> FetchGameEnginesPageAsync(
+        long afterId,
+        IgdbSyncWindow? window = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return FetchPageAsync<IgdbNamedResource, IgdbGameEngine>(
+            "game_engines",
+            "id,name,checksum,updated_at",
+            afterId,
+            window,
+            resource => new IgdbGameEngine(
+                resource.Id,
+                resource.Name,
                 resource.Checksum,
                 ToDateTimeOffset(resource.UpdatedAt)
             ),
@@ -539,6 +560,7 @@ internal sealed class IgdbService : IIgdbService
             NormalizeIds(resource.GenreIds),
             NormalizeIds(resource.ThemeIds),
             NormalizeIds(resource.GameModeIds),
+            NormalizeIds(resource.GameEngineIds),
             NormalizeIds(resource.PlayerPerspectiveIds),
             NormalizeIds(resource.PlatformIds),
             NormalizeIds(resource.CollectionIds),

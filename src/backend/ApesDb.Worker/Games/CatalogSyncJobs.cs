@@ -63,6 +63,12 @@ public sealed class CatalogSyncJobs
         CancellationToken cancellationToken
     ) => RunAsync(context, IgdbSyncStageKind.GameModes, cancellationToken);
 
+    [TickerFunction(CatalogSyncFunctions.GameEngines, maxConcurrency: 1)]
+    public Task SyncGameEnginesAsync(
+        TickerFunctionContext<CatalogSyncJobRequest> context,
+        CancellationToken cancellationToken
+    ) => RunAsync(context, IgdbSyncStageKind.GameEngines, cancellationToken);
+
     [TickerFunction(CatalogSyncFunctions.PlayerPerspectives, maxConcurrency: 1)]
     public Task SyncPlayerPerspectivesAsync(
         TickerFunctionContext<CatalogSyncJobRequest> context,

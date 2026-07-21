@@ -87,6 +87,7 @@ function CategoriesSection({ game }: { game: GameDetails }) {
     game.genres.length > 0 ||
     game.themes.length > 0 ||
     game.gameModes.length > 0 ||
+    game.gameEngines.length > 0 ||
     game.playerPerspectives.length > 0 ||
     game.platforms.length > 0 ||
     game.collections.length > 0 ||
@@ -103,6 +104,7 @@ function CategoriesSection({ game }: { game: GameDetails }) {
         <ReferenceGroup label="Genres" values={game.genres} />
         <ReferenceGroup label="Themes" values={game.themes} />
         <ReferenceGroup label="Game modes" values={game.gameModes} />
+        <ReferenceGroup label="Game engines" values={game.gameEngines} />
         <ReferenceGroup label="Player perspectives" values={game.playerPerspectives} />
         <ReferenceGroup label="Collections" values={game.collections} />
         <ReferenceGroup label="Franchises" values={game.franchises} />

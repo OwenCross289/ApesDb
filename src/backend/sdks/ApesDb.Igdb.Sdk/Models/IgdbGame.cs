@@ -22,6 +22,7 @@ internal sealed record IgdbGameResource(
     [property: JsonPropertyName("genres")] IReadOnlyList<long>? GenreIds,
     [property: JsonPropertyName("themes")] IReadOnlyList<long>? ThemeIds,
     [property: JsonPropertyName("game_modes")] IReadOnlyList<long>? GameModeIds,
+    [property: JsonPropertyName("game_engines")] IReadOnlyList<long>? GameEngineIds,
     [property: JsonPropertyName("player_perspectives")] IReadOnlyList<long>? PlayerPerspectiveIds,
     [property: JsonPropertyName("platforms")] IReadOnlyList<long>? PlatformIds,
     [property: JsonPropertyName("collections")] IReadOnlyList<long>? CollectionIds,

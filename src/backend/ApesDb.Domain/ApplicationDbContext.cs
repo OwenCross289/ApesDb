@@ -46,6 +46,10 @@ public sealed class ApplicationDbContext : DbContext
 
     public DbSet<GameGameMode> GameGameModes => Set<GameGameMode>();
 
+    public DbSet<GameEngine> GameEngines => Set<GameEngine>();
+
+    public DbSet<GameGameEngine> GameGameEngines => Set<GameGameEngine>();
+
     public DbSet<PlayerPerspective> PlayerPerspectives => Set<PlayerPerspective>();
 
     public DbSet<GamePlayerPerspective> GamePlayerPerspectives => Set<GamePlayerPerspective>();

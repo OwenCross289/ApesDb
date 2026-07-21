@@ -11,6 +11,7 @@ public enum IgdbSyncStageKind
     Genres,
     Themes,
     GameModes,
+    GameEngines,
     PlayerPerspectives,
     PlatformTypes,
     WebsiteTypes,
