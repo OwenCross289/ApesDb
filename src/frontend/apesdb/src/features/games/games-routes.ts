@@ -1,7 +1,7 @@
 import { createRoute, lazyRouteComponent } from "@tanstack/react-router";
 import { appRoute } from "../app-shell/app-shell-routes";
 
-export const gamesRoute = createRoute({
+const gamesRoute = createRoute({
   getParentRoute: () => appRoute,
   path: "games",
   component: lazyRouteComponent(() => import("./games-layout"), "GamesLayout"),
@@ -10,13 +10,13 @@ export const gamesRoute = createRoute({
   },
 });
 
-export const gamesIndexRoute = createRoute({
+const gamesIndexRoute = createRoute({
   getParentRoute: () => gamesRoute,
   path: "/",
   component: lazyRouteComponent(() => import("./list-games/games-page"), "GamesPage"),
 });
 
-export const gameDetailsRoute = createRoute({
+const gameDetailsRoute = createRoute({
   getParentRoute: () => gamesRoute,
   path: "$gameId",
   component: lazyRouteComponent(
@@ -27,3 +27,7 @@ export const gameDetailsRoute = createRoute({
     breadcrumbs: [{ param: "gameId" }],
   },
 });
+
+export function addGamesRoutes() {
+  return gamesRoute.addChildren([gamesIndexRoute, gameDetailsRoute]);
+}
