@@ -75,6 +75,7 @@ export const gameDetailsSchema = z.object({
   genres: z.array(gameReferenceSchema),
   themes: z.array(gameReferenceSchema),
   gameModes: z.array(gameReferenceSchema),
+  gameEngines: z.array(gameReferenceSchema),
   playerPerspectives: z.array(gameReferenceSchema),
   platforms: z.array(gameReferenceSchema),
   collections: z.array(gameReferenceSchema),

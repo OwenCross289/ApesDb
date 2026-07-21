@@ -1,4 +1,4 @@
-﻿{
+{
   Response: {
     StatusCode: 200,
     ReasonPhrase: OK,
@@ -162,6 +162,16 @@ Horizon: Zero Dawn Complete Edition includes Horizon Zero Dawn and the frozen wi
       {
         Id: 1,
         Name: Single player
+      }
+    ],
+    GameEngines: [
+      {
+        Id: 1,
+        Name: Decima
+      },
+      {
+        Id: 2,
+        Name: Havok
       }
     ],
     PlayerPerspectives: [

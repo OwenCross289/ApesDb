@@ -34,6 +34,12 @@ public interface IIgdbService
         CancellationToken cancellationToken = default
     );
 
+    Task<IReadOnlyList<IgdbGameEngine>> FetchGameEnginesPageAsync(
+        long afterId,
+        IgdbSyncWindow? window = null,
+        CancellationToken cancellationToken = default
+    );
+
     Task<IReadOnlyList<IgdbPlayerPerspective>> FetchPlayerPerspectivesPageAsync(
         long afterId,
         IgdbSyncWindow? window = null,

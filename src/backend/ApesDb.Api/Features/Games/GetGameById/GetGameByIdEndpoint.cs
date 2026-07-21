@@ -198,6 +198,16 @@ public sealed class GetGameByIdEndpoint : Endpoint<GetGameByIdRequest, GetGameBy
                 link => link.GameModeId
             )
             .Select(link => new GameReferenceResponse(link.GameModeId, link.GameMode.Name));
+        var gameEngines = _dbContext
+            .GameGameEngines.AsNoTracking()
+            .Where(link => link.GameId == request.Id)
+            .SortBy(
+                ListSortDirection.Ascending,
+                link => link.GameEngine.Name.ToLower(),
+                link => link.GameEngine.Name,
+                link => link.GameEngineId
+            )
+            .Select(link => new GameReferenceResponse(link.GameEngineId, link.GameEngine.Name));
         var playerPerspectives = _dbContext
             .GamePlayerPerspectives.AsNoTracking()
             .Where(link => link.GameId == request.Id)
@@ -273,12 +283,13 @@ public sealed class GetGameByIdEndpoint : Endpoint<GetGameByIdRequest, GetGameBy
                 genres.ToArray(),
                 themes.ToArray(),
                 gameModes.ToArray(),
+                gameEngines.ToArray(),
                 playerPerspectives.ToArray(),
                 gamePlatforms.ToArray(),
                 collections.ToArray(),
                 franchises.ToArray()
             ));
-        var game = await _cache.GetOrSetAsync($"game:{request.Id}", gameQuery.SingleOrDefaultAsync, token: ct);
+        var game = await _cache.GetOrSetAsync($"game:v2:{request.Id}", gameQuery.SingleOrDefaultAsync, token: ct);
 
         if (game is null)
         {

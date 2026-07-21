@@ -209,6 +209,27 @@ public sealed class CatalogStageRunner : ICatalogStageRunner
                     cancellationToken
                 );
                 break;
+            case IgdbSyncStageKind.GameEngines:
+                await SyncEntitiesAsync(
+                    run,
+                    stage,
+                    _igdbService.FetchGameEnginesPageAsync,
+                    value => value.Id,
+                    (value, now) =>
+                        new GameEngine
+                        {
+                            Id = value.Id,
+                            Name = Required(value.Name, nameof(IgdbGameEngine), value.Id),
+                            Checksum = value.Checksum,
+                            IgdbUpdatedAt = ToUtcDateTime(value.UpdatedAt),
+                            CreatedAt = now,
+                            UpdatedAt = now,
+                            LastSyncedAt = now,
+                        },
+                    window,
+                    cancellationToken
+                );
+                break;
             case IgdbSyncStageKind.PlayerPerspectives:
                 await SyncEntitiesAsync(
                     run,
@@ -920,6 +941,13 @@ public sealed class CatalogStageRunner : ICatalogStageRunner
                 )
                 .DistinctBy(value => (value.GameId, value.GameModeId))
                 .ToList();
+            var gameEngines = page.SelectMany(value =>
+                    value
+                        .GameEngineIds.Distinct()
+                        .Select(id => new GameGameEngine { GameId = value.Id, GameEngineId = id })
+                )
+                .DistinctBy(value => (value.GameId, value.GameEngineId))
+                .ToList();
             var perspectives = page.SelectMany(value =>
                     value
                         .PlayerPerspectiveIds.Distinct()
@@ -973,6 +1001,7 @@ public sealed class CatalogStageRunner : ICatalogStageRunner
             await BulkInsertAsync(gameGenres, cancellationToken);
             await BulkInsertAsync(gameThemes, cancellationToken);
             await BulkInsertAsync(gameModes, cancellationToken);
+            await BulkInsertAsync(gameEngines, cancellationToken);
             await BulkInsertAsync(perspectives, cancellationToken);
             await BulkInsertAsync(gamePlatforms, cancellationToken);
             await BulkInsertAsync(gameCollections, cancellationToken);
@@ -1060,6 +1089,9 @@ public sealed class CatalogStageRunner : ICatalogStageRunner
             .ExecuteDeleteAsync(cancellationToken);
         await _dbContext
             .GameGameModes.Where(value => gameIds.Contains(value.GameId))
+            .ExecuteDeleteAsync(cancellationToken);
+        await _dbContext
+            .GameGameEngines.Where(value => gameIds.Contains(value.GameId))
             .ExecuteDeleteAsync(cancellationToken);
         await _dbContext
             .GamePlayerPerspectives.Where(value => gameIds.Contains(value.GameId))

@@ -11,6 +11,7 @@ internal static class CatalogSyncFunctions
     public const string Genres = "sync-igdb-genres";
     public const string Themes = "sync-igdb-themes";
     public const string GameModes = "sync-igdb-game-modes";
+    public const string GameEngines = "sync-igdb-game-engines";
     public const string PlayerPerspectives = "sync-igdb-player-perspectives";
     public const string PlatformTypes = "sync-igdb-platform-types";
     public const string WebsiteTypes = "sync-igdb-website-types";
@@ -38,6 +39,7 @@ internal static class CatalogSyncFunctions
             IgdbSyncStageKind.Genres => Genres,
             IgdbSyncStageKind.Themes => Themes,
             IgdbSyncStageKind.GameModes => GameModes,
+            IgdbSyncStageKind.GameEngines => GameEngines,
             IgdbSyncStageKind.PlayerPerspectives => PlayerPerspectives,
             IgdbSyncStageKind.PlatformTypes => PlatformTypes,
             IgdbSyncStageKind.WebsiteTypes => WebsiteTypes,

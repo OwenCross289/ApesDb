@@ -24,6 +24,7 @@ public sealed class CatalogSyncOrchestrator : ICatalogSyncOrchestrator
         IgdbSyncStageKind.Genres,
         IgdbSyncStageKind.Themes,
         IgdbSyncStageKind.GameModes,
+        IgdbSyncStageKind.GameEngines,
         IgdbSyncStageKind.PlayerPerspectives,
         IgdbSyncStageKind.PlatformTypes,
         IgdbSyncStageKind.WebsiteTypes,
@@ -49,6 +50,7 @@ public sealed class CatalogSyncOrchestrator : ICatalogSyncOrchestrator
         IgdbSyncStageKind.Genres,
         IgdbSyncStageKind.Themes,
         IgdbSyncStageKind.GameModes,
+        IgdbSyncStageKind.GameEngines,
         IgdbSyncStageKind.PlayerPerspectives,
         IgdbSyncStageKind.PlatformTypes,
         IgdbSyncStageKind.WebsiteTypes,
@@ -142,6 +144,15 @@ public sealed class CatalogSyncOrchestrator : ICatalogSyncOrchestrator
         if (unfinished is not null)
         {
             await EnsureRunScheduledAsync(unfinished, cancellationToken);
+            return;
+        }
+
+        if (await RequiresGameEngineBackfillAsync(cancellationToken))
+        {
+            _logger.LogWarning(
+                "Incremental IGDB synchronization is paused because the existing game catalog has no game engine "
+                    + "baseline. Run the full IGDB synchronization to backfill game engines."
+            );
             return;
         }
 
@@ -294,6 +305,17 @@ public sealed class CatalogSyncOrchestrator : ICatalogSyncOrchestrator
             run => run.Status != IgdbSyncRunStatus.Succeeded,
             cancellationToken
         );
+    }
+
+    private async Task<bool> RequiresGameEngineBackfillAsync(CancellationToken cancellationToken)
+    {
+        var hasGames = await _dbContext.Games.AsNoTracking().AnyAsync(cancellationToken);
+        if (!hasGames)
+        {
+            return false;
+        }
+
+        return !await _dbContext.GameEngines.AsNoTracking().AnyAsync(cancellationToken);
     }
 
     private async Task CreateAndScheduleRunAsync(

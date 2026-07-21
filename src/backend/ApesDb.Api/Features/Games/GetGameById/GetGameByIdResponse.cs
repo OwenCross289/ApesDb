@@ -25,6 +25,7 @@ public sealed record GetGameByIdResponse(
     IReadOnlyList<GameReferenceResponse> Genres,
     IReadOnlyList<GameReferenceResponse> Themes,
     IReadOnlyList<GameReferenceResponse> GameModes,
+    IReadOnlyList<GameReferenceResponse> GameEngines,
     IReadOnlyList<GameReferenceResponse> PlayerPerspectives,
     IReadOnlyList<GameReferenceResponse> Platforms,
     IReadOnlyList<GameReferenceResponse> Collections,

@@ -33,6 +33,8 @@ public sealed record IgdbGameMode(
     DateTimeOffset? UpdatedAt
 );
 
+public sealed record IgdbGameEngine(long Id, string? Name, Guid? Checksum, DateTimeOffset? UpdatedAt);
+
 public sealed record IgdbPlayerPerspective(
     long Id,
     string? Name,
@@ -124,6 +126,7 @@ public sealed record IgdbGame(
     IReadOnlyList<long> GenreIds,
     IReadOnlyList<long> ThemeIds,
     IReadOnlyList<long> GameModeIds,
+    IReadOnlyList<long> GameEngineIds,
     IReadOnlyList<long> PlayerPerspectiveIds,
     IReadOnlyList<long> PlatformIds,
     IReadOnlyList<long> CollectionIds,
