@@ -1,4 +1,4 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { appName } from "@apesdb/common";
 
 const effectiveDate = "10 July 2026";
@@ -8,11 +8,7 @@ const logRetentionDays = "90";
 const contactEmail = "jb8fqjxoy@mozmail.com";
 const contactName = "Apes";
 
-export const Route = createFileRoute("/privacy")({
-  component: PrivacyPolicy,
-});
-
-function PrivacyPolicy() {
+export function PrivacyPolicyPage() {
   return (
     <main className="flex min-h-svh flex-col bg-background px-6 py-12 text-foreground">
       <div className="mx-auto w-full max-w-3xl space-y-8">

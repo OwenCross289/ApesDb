@@ -1,12 +1,4 @@
-import {
-  Link,
-  Outlet,
-  createFileRoute,
-  redirect,
-  useCanGoBack,
-  useNavigate,
-  useRouterState,
-} from "@tanstack/react-router";
+import { Link, Outlet, useCanGoBack, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useCallback, useState } from "react";
 import {
   Button,
@@ -28,33 +20,15 @@ import {
   TooltipProvider,
 } from "@apesdb/ui";
 import { ArrowLeft, Gamepad2, Home, Settings } from "lucide-react";
-import { useAuth } from "../auth-context";
-import { AccountMenu } from "../account-menu";
-import { AppBreadcrumbs } from "../app-breadcrumbs";
-import { NotificationBell } from "../features/notifications/notification-bell";
-import { useNotificationStream } from "../features/notifications/use-notification-stream";
-import { TeamProvider, useActiveTeam } from "../features/teams/team-context";
-import { TeamSwitcher } from "../features/teams/select-team/team-switcher";
+import { useAuth } from "../../auth-context";
+import { AccountMenu } from "../../account-menu";
+import { AppBreadcrumbs } from "../../app-breadcrumbs";
+import { NotificationBell } from "../notifications/notification-bell";
+import { useNotificationStream } from "../notifications/use-notification-stream";
+import { TeamProvider, useActiveTeam } from "../teams/team-context";
+import { TeamSwitcher } from "../teams/select-team/team-switcher";
 
-export const Route = createFileRoute("/_app")({
-  staticData: {
-    breadcrumbs: [{ icon: "home", label: "Home", to: "/" }],
-  },
-  beforeLoad: ({ context, location }) => {
-    if (!context.auth.isAuthenticated) {
-      throw redirect({
-        to: "/login",
-        search: {
-          redirect: location.href,
-        },
-        replace: true,
-      });
-    }
-  },
-  component: AppLayout,
-});
-
-function AppLayout() {
+export function AppLayout() {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const openNotifications = useCallback(() => {
     setNotificationsOpen(true);

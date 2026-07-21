@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Navigate } from "@tanstack/react-router";
+import { Navigate, getRouteApi } from "@tanstack/react-router";
 import {
   Avatar,
   AvatarFallback,
@@ -31,9 +31,7 @@ import { InviteTeamMemberDialog } from "./invite-team-member-dialog";
 import type { TeamDetails } from "./manage-team.schemas";
 import { useTeamDetails } from "./use-team-details";
 
-type ManageTeamPageProps = {
-  teamId: string;
-};
+const routeApi = getRouteApi("/_app/teams/$teamId/manage");
 
 function teamKindLabel(kind: TeamKind): string {
   if (kind === "solo") {
@@ -137,7 +135,9 @@ function MembersCard({ team, onInvite }: { team: TeamDetails; onInvite: () => vo
   );
 }
 
-export function ManageTeamPage({ teamId }: ManageTeamPageProps) {
+export function ManageTeamPage() {
+  const params = routeApi.useParams();
+  const teamId = params.teamId;
   const teamDetails = useTeamDetails(teamId);
   const { setActiveTeamId } = useActiveTeam();
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
