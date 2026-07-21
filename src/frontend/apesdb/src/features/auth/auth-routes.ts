@@ -6,7 +6,7 @@ type LoginSearch = {
   error?: "access-denied";
 };
 
-export const loginRoute = createRoute({
+const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "login",
   component: lazyRouteComponent(() => import("./login-page"), "LoginPage"),
@@ -15,6 +15,10 @@ export const loginRoute = createRoute({
     error: search.error === "access-denied" ? search.error : undefined,
   }),
 });
+
+export function addAuthRoutes() {
+  return loginRoute;
+}
 
 function isLocalReturnUrl(value: unknown): value is string {
   return (

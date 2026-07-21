@@ -4,6 +4,7 @@ import {
   lazyRouteComponent,
   redirect,
 } from "@tanstack/react-router";
+import type { AnyRoute } from "@tanstack/react-router";
 import type { AuthContextValue } from "../../auth-context";
 import { RootLayout } from "./root-layout";
 
@@ -32,3 +33,10 @@ export const appRoute = createRoute({
     }
   },
 });
+
+export function addAppShellRoutes<
+  const TAuthenticatedRoutes extends AnyRoute[],
+  const TPublicRoutes extends AnyRoute[],
+>(authenticatedRoutes: TAuthenticatedRoutes, publicRoutes: TPublicRoutes) {
+  return rootRoute.addChildren([appRoute.addChildren(authenticatedRoutes), ...publicRoutes]);
+}

@@ -1,7 +1,7 @@
 import { createRoute, lazyRouteComponent } from "@tanstack/react-router";
 import { appRoute } from "../app-shell/app-shell-routes";
 
-export const manageTeamRoute = createRoute({
+const manageTeamRoute = createRoute({
   getParentRoute: () => appRoute,
   path: "teams/$teamId/manage",
   component: lazyRouteComponent(() => import("./manage-team/manage-team-page"), "ManageTeamPage"),
@@ -9,3 +9,7 @@ export const manageTeamRoute = createRoute({
     breadcrumbs: [{ label: "Teams" }, { param: "teamId" }, { label: "Manage" }],
   },
 });
+
+export function addTeamRoutes() {
+  return manageTeamRoute;
+}

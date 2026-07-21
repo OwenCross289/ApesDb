@@ -1,16 +1,15 @@
 import { createRouter, defaultParseSearch } from "@tanstack/react-router";
-import { appRoute, rootRoute } from "./features/app-shell/app-shell-routes";
-import { loginRoute } from "./features/auth/auth-routes";
+import { addAppShellRoutes } from "./features/app-shell/app-shell-routes";
+import { addAuthRoutes } from "./features/auth/auth-routes";
 import { addGamesRoutes } from "./features/games/games-routes";
-import { homeRoute } from "./features/home/home-routes";
-import { privacyRoute } from "./features/privacy/privacy-routes";
-import { manageTeamRoute } from "./features/teams/teams-routes";
+import { addHomeRoutes } from "./features/home/home-routes";
+import { addPrivacyRoutes } from "./features/privacy/privacy-routes";
+import { addTeamRoutes } from "./features/teams/teams-routes";
 
-const routeTree = rootRoute.addChildren([
-  appRoute.addChildren([homeRoute, addGamesRoutes(), manageTeamRoute]),
-  loginRoute,
-  privacyRoute,
-]);
+const routeTree = addAppShellRoutes(
+  [addHomeRoutes(), addGamesRoutes(), addTeamRoutes()],
+  [addAuthRoutes(), addPrivacyRoutes()],
+);
 
 export const router = createRouter({
   routeTree,
