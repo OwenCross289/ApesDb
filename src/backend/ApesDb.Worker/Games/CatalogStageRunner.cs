@@ -53,7 +53,7 @@ public sealed class CatalogStageRunner : ICatalogStageRunner
     )
     {
         var (run, stage) = await LoadStageAsync(runId, stageKind, cancellationToken);
-        if (stage.Status == IgdbSyncStageStatus.Succeeded)
+        if (run.Status == IgdbSyncRunStatus.Superseded || stage.Status == IgdbSyncStageStatus.Succeeded)
         {
             return;
         }
@@ -1156,6 +1156,11 @@ public sealed class CatalogStageRunner : ICatalogStageRunner
     {
         _dbContext.ChangeTracker.Clear();
         var (run, stage) = await LoadStageAsync(runId, stageKind, cancellationToken);
+        if (run.Status == IgdbSyncRunStatus.Superseded)
+        {
+            return;
+        }
+
         var now = _dateTimeProvider.UtcNow;
         stage.Status = IgdbSyncStageStatus.Failed;
         stage.Error = exception.Message;

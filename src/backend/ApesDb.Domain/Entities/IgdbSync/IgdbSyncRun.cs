@@ -16,6 +16,7 @@ public enum IgdbSyncRunStatus
     Running,
     Failed,
     Succeeded,
+    Superseded,
 }
 
 public sealed class IgdbSyncRun
@@ -61,14 +62,14 @@ public sealed class IgdbSyncRunConfiguration : IEntityTypeConfiguration<IgdbSync
         run.HasIndex("CatalogLock")
             .IsUnique()
             .HasDatabaseName("UX_IgdbSyncRuns_Unfinished")
-            .HasFilter("\"Status\" <> 'Succeeded'");
+            .HasFilter("\"Status\" NOT IN ('Succeeded', 'Superseded')");
         run.HasIndex(value => new { value.Status, value.Through });
         run.ToTable(table =>
         {
             table.HasCheckConstraint("CK_IgdbSyncRuns_Mode", "\"Mode\" IN ('Bootstrap', 'Incremental')");
             table.HasCheckConstraint(
                 "CK_IgdbSyncRuns_Status",
-                "\"Status\" IN ('Pending', 'Running', 'Failed', 'Succeeded')"
+                "\"Status\" IN ('Pending', 'Running', 'Failed', 'Succeeded', 'Superseded')"
             );
             table.HasCheckConstraint("CK_IgdbSyncRuns_CatalogLock", "\"CatalogLock\" = 1");
             table.HasCheckConstraint(
@@ -80,7 +81,8 @@ public sealed class IgdbSyncRunConfiguration : IEntityTypeConfiguration<IgdbSync
             table.HasCheckConstraint("CK_IgdbSyncRuns_RowsSkipped", "\"RowsSkipped\" >= 0");
             table.HasCheckConstraint(
                 "CK_IgdbSyncRuns_Completion",
-                "(\"Status\" = 'Succeeded' AND \"CompletedAt\" IS NOT NULL) OR \"Status\" <> 'Succeeded'"
+                "(\"Status\" IN ('Succeeded', 'Superseded') AND \"CompletedAt\" IS NOT NULL) OR "
+                    + "\"Status\" NOT IN ('Succeeded', 'Superseded')"
             );
         });
     }

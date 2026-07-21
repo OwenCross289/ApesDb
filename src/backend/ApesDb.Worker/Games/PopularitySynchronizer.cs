@@ -37,7 +37,7 @@ public sealed class PopularitySynchronizer : IPopularitySynchronizer
         if (
             !allowDuringCatalogRun
             && await _dbContext.IgdbSyncRuns.AnyAsync(
-                run => run.Status != IgdbSyncRunStatus.Succeeded,
+                run => run.Status != IgdbSyncRunStatus.Succeeded && run.Status != IgdbSyncRunStatus.Superseded,
                 cancellationToken
             )
         )
