@@ -147,15 +147,6 @@ public sealed class CatalogSyncOrchestrator : ICatalogSyncOrchestrator
             return;
         }
 
-        if (await RequiresGameEngineBackfillAsync(cancellationToken))
-        {
-            _logger.LogWarning(
-                "Incremental IGDB synchronization is paused because the existing game catalog has no game engine "
-                    + "baseline. Run the full IGDB synchronization to backfill game engines."
-            );
-            return;
-        }
-
         var previous = await _dbContext
             .IgdbSyncRuns.AsNoTracking()
             .Where(run => run.Status == IgdbSyncRunStatus.Succeeded)
@@ -305,17 +296,6 @@ public sealed class CatalogSyncOrchestrator : ICatalogSyncOrchestrator
             run => run.Status != IgdbSyncRunStatus.Succeeded,
             cancellationToken
         );
-    }
-
-    private async Task<bool> RequiresGameEngineBackfillAsync(CancellationToken cancellationToken)
-    {
-        var hasGames = await _dbContext.Games.AsNoTracking().AnyAsync(cancellationToken);
-        if (!hasGames)
-        {
-            return false;
-        }
-
-        return !await _dbContext.GameEngines.AsNoTracking().AnyAsync(cancellationToken);
     }
 
     private async Task CreateAndScheduleRunAsync(
