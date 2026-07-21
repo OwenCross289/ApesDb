@@ -1,12 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { appName } from "@apesdb/common";
-import { useAuth } from "../auth-context";
+import { useAuth } from "../../auth-context";
 
-export const Route = createFileRoute("/_app/")({
-  component: WelcomeComponent,
-});
-
-function WelcomeComponent() {
+export function HomePage() {
   const { user } = useAuth();
 
   return (

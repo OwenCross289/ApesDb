@@ -1,21 +1,10 @@
 import { useEffect } from "react";
-import { Link, createFileRoute, useRouter } from "@tanstack/react-router";
+import { Link, getRouteApi, useRouter } from "@tanstack/react-router";
 import { Alert, AlertDescription, Button, ThemeModeSelector, useTheme } from "@apesdb/ui";
 import { appName } from "@apesdb/common";
-import { useAuth } from "../auth-context";
+import { useAuth } from "../../auth-context";
 
-type LoginSearch = {
-  redirect?: string;
-  error?: "access-denied";
-};
-
-export const Route = createFileRoute("/login")({
-  validateSearch: (search: Record<string, unknown>): LoginSearch => ({
-    redirect: isLocalReturnUrl(search.redirect) ? search.redirect : undefined,
-    error: search.error === "access-denied" ? search.error : undefined,
-  }),
-  component: LoginComponent,
-});
+const routeApi = getRouteApi("/login");
 
 function GoogleIcon() {
   return (
@@ -40,11 +29,11 @@ function GoogleIcon() {
   );
 }
 
-function LoginComponent() {
+export function LoginPage() {
   const { isAuthenticated, login } = useAuth();
   const { resolvedMode } = useTheme();
   const router = useRouter();
-  const { redirect = "/", error } = Route.useSearch();
+  const { redirect = "/", error } = routeApi.useSearch();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -105,14 +94,5 @@ function LoginComponent() {
         />
       </section>
     </main>
-  );
-}
-
-function isLocalReturnUrl(value: unknown): value is string {
-  return (
-    typeof value === "string" &&
-    value.startsWith("/") &&
-    !value.startsWith("//") &&
-    !value.startsWith("/\\")
   );
 }

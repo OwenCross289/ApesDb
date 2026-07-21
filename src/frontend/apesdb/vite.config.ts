@@ -1,5 +1,4 @@
 import tailwindcss from "@tailwindcss/vite";
-import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath, URL } from "node:url";
 import { defineConfig, type HtmlTagDescriptor } from "vite";
@@ -124,7 +123,6 @@ export default defineConfig(({ command }) => {
           return createFaviconTags(isLocalServe);
         },
       },
-      TanStackRouterVite({ target: "react", autoCodeSplitting: true }),
       react(),
       tailwindcss(),
       VitePWA({

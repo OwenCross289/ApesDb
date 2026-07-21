@@ -1,30 +1,16 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { RouterProvider, createRouter, defaultParseSearch } from "@tanstack/react-router";
+import { RouterProvider } from "@tanstack/react-router";
 import { ThemeProvider, Toaster } from "@apesdb/ui";
 import { AuthGate, AuthProvider } from "./auth-context";
 import { registerPwaUpdateListener } from "./register-pwa-update-listener";
-import { routeTree } from "./routeTree.gen";
+import { router } from "./router";
 import "./styles.css";
 
 registerPwaUpdateListener();
 
 const queryClient = new QueryClient();
-
-const router = createRouter({
-  routeTree,
-  parseSearch: (search) => defaultParseSearch(search.replaceAll("+", "%20")),
-  context: {
-    auth: undefined!,
-  },
-});
-
-declare module "@tanstack/react-router" {
-  interface Register {
-    router: typeof router;
-  }
-}
 
 const rootElement = document.getElementById("root");
 

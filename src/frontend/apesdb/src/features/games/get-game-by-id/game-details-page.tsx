@@ -1,12 +1,11 @@
 import { Button, Item, ItemContent, ItemDescription, ItemTitle, Skeleton } from "@apesdb/ui";
+import { getRouteApi } from "@tanstack/react-router";
 import { RefreshCw } from "lucide-react";
 import { GameDetailsHeader } from "./game-details-header";
 import { GameDetailsSections } from "./game-details-sections";
 import { useGameDetails } from "./use-game-details";
 
-type GameDetailsPageProps = {
-  gameId: number;
-};
+const routeApi = getRouteApi("/_app/games/$gameId");
 
 function GameDetailsSkeleton() {
   return (
@@ -41,8 +40,9 @@ function UnavailableGame({ invalid }: { invalid: boolean }) {
   );
 }
 
-export function GameDetailsPage({ gameId }: GameDetailsPageProps) {
-  const gameDetails = useGameDetails(gameId);
+export function GameDetailsPage() {
+  const params = routeApi.useParams();
+  const gameDetails = useGameDetails(Number(params.gameId));
 
   let content;
   if (gameDetails.isInvalid || gameDetails.isNotFound) {

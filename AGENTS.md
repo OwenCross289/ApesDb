@@ -12,6 +12,14 @@
 - When a needed shadcn component is not already available in `@apesdb/ui`, add it to the shared UI package and export it before using it in an app.
 - NEVER HANDROLL COMPONENTS UNLESS EXPLICITLY TOLD TO ALWAYS USE THE SHADCN COMMAND TO ADD IT.
 
+## Frontend Routing
+
+- Use code-based TanStack Router configuration. Do not add file-based route generation or generated route-tree files.
+- Each routed feature must own exactly one explicitly named `<feature>-routes.ts` or `<feature>-routes.tsx` file containing all of that feature's route definitions, metadata, guards, validation, lazy component imports, and internal child-route assembly.
+- Keep feature route constants private. Export one `add<Feature>Routes()` function as the feature's composition boundary; for example, `addGamesRoutes()` must assemble the games layout, index, and detail routes internally.
+- The central `router.ts` must compose features only through their `add<Feature>Routes()` functions. It must not import feature route constants or call `.addChildren(...)` for feature-owned routes.
+- Parent anchor routes such as `rootRoute` and `appRoute` may be exported only so feature routing modules can declare their parent relationship. Their `.addChildren(...)` calls remain owned by the app-shell routing module.
+
 ## Integration Testing
 
 The tests in `tests/backend/ApesDb.Api.Tests` are black-box integration tests. New and modified tests must interact with the application only through its public HTTP API by using `ApiTestClient`.
