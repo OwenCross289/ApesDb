@@ -1,5 +1,6 @@
 using ApesDb.Domain.Entities.Games;
 using ApesDb.Domain.Entities.IgdbSync;
+using ApesDb.Domain.Entities.Notifications;
 using ApesDb.Domain.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +14,8 @@ public sealed class ApplicationDbContext : DbContext
     public DbSet<User> Users => Set<User>();
 
     public DbSet<AllowedUser> AllowedUsers => Set<AllowedUser>();
+
+    public DbSet<Notification> Notifications => Set<Notification>();
 
     public DbSet<Game> Games => Set<Game>();
 

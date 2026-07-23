@@ -17,6 +17,8 @@ public sealed class BaseTestData
     {
         var allowedUsers = AllowedUserTestData.Create();
         var users = UserTestData.Create();
+        var usersById = users.ToDictionary(user => user.Id);
+        var notifications = NotificationTestData.Create(usersById);
         var gameTypes = GameTypeTestData.Create();
         var gameStatuses = GameStatusTestData.Create();
         var genres = GenreTestData.Create();
@@ -50,6 +52,7 @@ public sealed class BaseTestData
         var entities = new List<object>();
         entities.AddRange(allowedUsers);
         entities.AddRange(users);
+        entities.AddRange(notifications);
         entities.AddRange(gameTypes.Values);
         entities.AddRange(gameStatuses.Values);
         entities.AddRange(genres.Values);

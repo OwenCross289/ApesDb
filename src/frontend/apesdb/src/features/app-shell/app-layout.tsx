@@ -1,5 +1,5 @@
 import { Link, Outlet, useCanGoBack, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import {
   Button,
   Separator,
@@ -23,8 +23,17 @@ import { ArrowLeft, Gamepad2, Home } from "lucide-react";
 import { useAuth } from "../../auth-context";
 import { AccountMenu } from "../../account-menu";
 import { AppBreadcrumbs } from "../../app-breadcrumbs";
+import { NotificationBell } from "../notifications/notification-bell";
+import { useNotificationStream } from "../notifications/use-notification-stream";
 
 export function AppLayout() {
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const openNotifications = useCallback(() => {
+    setNotificationsOpen(true);
+  }, []);
+
+  useNotificationStream(openNotifications);
+
   return (
     <TooltipProvider>
       <SidebarProvider className="h-svh overflow-hidden">
@@ -34,6 +43,9 @@ export function AppLayout() {
             <SidebarTrigger className="-ml-1" size="icon-lg" />
             <Separator className="h-4" orientation="vertical" />
             <AppBreadcrumbs />
+            <div className="ml-auto flex items-center">
+              <NotificationBell open={notificationsOpen} onOpenChange={setNotificationsOpen} />
+            </div>
           </header>
           <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-3">
             <AppBackButton />
